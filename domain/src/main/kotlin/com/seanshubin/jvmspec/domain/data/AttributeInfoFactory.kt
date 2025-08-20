@@ -5,7 +5,7 @@ import java.io.DataInput
 
 object AttributeInfoFactory {
     fun fromDataInput(input: DataInput, constantPoolLookup: ConstantPoolLookup): AttributeInfo {
-        val attributeNameIndex = input.readShort()
+        val attributeNameIndex = input.readUnsignedShort().toUShort()
         val attributeLength = input.readInt()
         val info = input.readByteList(attributeLength)
         val attributeName = constantPoolLookup.getUtf8(attributeNameIndex)

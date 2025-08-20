@@ -4,8 +4,8 @@ import java.io.DataInput
 
 data class ConstantMethodRefInfo(
     override val tag: ConstantPoolTag,
-    val classIndex: Short,
-    val nameAndTypeIndex: Short
+    val classIndex: UShort,
+    val nameAndTypeIndex: UShort
 ) : ConstantInfo {
     override fun line(): String {
         return "${tag.line()} $classIndex $nameAndTypeIndex"
@@ -17,8 +17,8 @@ data class ConstantMethodRefInfo(
         val TAG: ConstantPoolTag = ConstantPoolTag.METHOD_REF
 
         fun fromDataInput(tag: ConstantPoolTag, input: DataInput): ConstantMethodRefInfo {
-            val classIndex = input.readShort()
-            val nameAndTypeIndex = input.readShort()
+            val classIndex = input.readUnsignedShort().toUShort()
+            val nameAndTypeIndex = input.readUnsignedShort().toUShort()
             return ConstantMethodRefInfo(tag, classIndex, nameAndTypeIndex)
         }
     }

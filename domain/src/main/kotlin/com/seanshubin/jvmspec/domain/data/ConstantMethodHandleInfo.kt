@@ -4,11 +4,11 @@ import java.io.DataInput
 
 data class ConstantMethodHandleInfo(
     override val tag: ConstantPoolTag,
-    val referenceKind: Byte,
-    val referenceIndex: Short
+    val referenceKind: ReferenceKind,
+    val referenceIndex: UShort
 ) : ConstantInfo {
     override fun line(): String {
-        return "${tag.line()} $referenceKind $referenceIndex"
+        return "${tag.line()} ${referenceKind.line()} $referenceIndex"
     }
 
     override val entriesTaken: Int get() = 1
@@ -17,8 +17,9 @@ data class ConstantMethodHandleInfo(
         val TAG: ConstantPoolTag = ConstantPoolTag.METHOD_HANDLE
 
         fun fromDataInput(tag: ConstantPoolTag, input: DataInput): ConstantMethodHandleInfo {
-            val referenceKind = input.readByte()
-            val referenceIndex = input.readShort()
+            val referenceKindUByte = input.readUnsignedByte().toUByte()
+            val referenceKind = ReferenceKind.fromCode(referenceKindUByte)
+            val referenceIndex = input.readUnsignedShort().toUShort()
             return ConstantMethodHandleInfo(tag, referenceKind, referenceIndex)
         }
     }

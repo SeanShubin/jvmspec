@@ -5,7 +5,7 @@ import java.io.ByteArrayInputStream
 import java.io.DataInputStream
 
 data class AttributeCodeInfo(
-    override val attributeNameIndex: Short,
+    override val attributeNameIndex: UShort,
     override val attributeLength: Int,
     override val info: List<Byte>,
     val maxStack: Short,

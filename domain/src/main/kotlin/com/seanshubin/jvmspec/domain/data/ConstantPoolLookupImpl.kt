@@ -11,8 +11,8 @@ class ConstantPoolLookupImpl(constantList: List<ConstantInfo>) : ConstantPoolLoo
         }
     }
 
-    override fun getUtf8(constantIndex: Short): String {
+    override fun getUtf8(constantIndex: UShort): String {
         val utf8 = constantMap.getValue(constantIndex.toInt()) as ConstantUtf8Info
-        return String(utf8.bytes.toByteArray(), Charsets.UTF_8)
+        return utf8.utf8Value
     }
 }

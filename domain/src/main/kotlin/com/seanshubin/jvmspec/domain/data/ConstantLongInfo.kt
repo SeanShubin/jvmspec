@@ -4,11 +4,10 @@ import java.io.DataInput
 
 data class ConstantLongInfo(
     override val tag: ConstantPoolTag,
-    val highBytes: Int,
-    val lowBytes: Int
+    val longValue: Long
 ) : ConstantInfo {
     override fun line(): String {
-        return "${tag.line()} $highBytes $lowBytes"
+        return "${tag.line()} $longValue"
     }
 
     override val entriesTaken: Int get() = 2
@@ -17,9 +16,8 @@ data class ConstantLongInfo(
         val TAG: ConstantPoolTag = ConstantPoolTag.LONG
 
         fun fromDataInput(tag: ConstantPoolTag, input: DataInput): ConstantLongInfo {
-            val highBytes = input.readInt()
-            val lowBytes = input.readInt()
-            return ConstantLongInfo(tag, highBytes, lowBytes)
+            val longValue = input.readLong()
+            return ConstantLongInfo(tag, longValue)
         }
     }
 }

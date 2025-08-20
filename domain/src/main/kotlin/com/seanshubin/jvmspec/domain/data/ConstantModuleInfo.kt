@@ -4,7 +4,7 @@ import java.io.DataInput
 
 data class ConstantModuleInfo(
     override val tag: ConstantPoolTag,
-    val nameIndex: Short
+    val nameIndex: UShort
 ) : ConstantInfo {
     override fun line(): String {
         return "${tag.line()} $nameIndex"
@@ -16,7 +16,7 @@ data class ConstantModuleInfo(
         val TAG: ConstantPoolTag = ConstantPoolTag.MODULE
 
         fun fromDataInput(tag: ConstantPoolTag, input: DataInput): ConstantModuleInfo {
-            val nameIndex = input.readShort()
+            val nameIndex = input.readUnsignedShort().toUShort()
             return ConstantModuleInfo(tag, nameIndex)
         }
     }

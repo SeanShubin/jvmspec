@@ -4,7 +4,7 @@ import java.io.DataInput
 
 data class ConstantPackageInfo(
     override val tag: ConstantPoolTag,
-    val nameIndex: Short
+    val nameIndex: UShort
 ) : ConstantInfo {
     override fun line(): String {
         return "${tag.line()} $nameIndex"
@@ -16,7 +16,7 @@ data class ConstantPackageInfo(
         val TAG: ConstantPoolTag = ConstantPoolTag.PACKAGE
 
         fun fromDataInput(tag: ConstantPoolTag, input: DataInput): ConstantPackageInfo {
-            val nameIndex = input.readShort()
+            val nameIndex = input.readUnsignedShort().toUShort()
             return ConstantPackageInfo(tag, nameIndex)
         }
     }

@@ -8,6 +8,9 @@ object DataFormat {
     fun List<Byte>.asHex(): String =
         this.toByteArray().asHex()
 
+    fun String.asSanitizedString(): String =
+        this.toByteArray().asSanitizedString()
+
     fun List<Byte>.asSanitizedString(): String =
         this.toByteArray().asSanitizedString()
 

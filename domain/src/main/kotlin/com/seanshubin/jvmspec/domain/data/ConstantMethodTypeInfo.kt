@@ -4,7 +4,7 @@ import java.io.DataInput
 
 data class ConstantMethodTypeInfo(
     override val tag: ConstantPoolTag,
-    val descriptorIndex: Short
+    val descriptorIndex: UShort
 ) : ConstantInfo {
     override fun line(): String {
         return "${tag.line()} $descriptorIndex"
@@ -16,7 +16,7 @@ data class ConstantMethodTypeInfo(
         val TAG: ConstantPoolTag = ConstantPoolTag.METHOD_TYPE
 
         fun fromDataInput(tag: ConstantPoolTag, input: DataInput): ConstantMethodTypeInfo {
-            val descriptorIndex = input.readShort()
+            val descriptorIndex = input.readUnsignedShort().toUShort()
             return ConstantMethodTypeInfo(tag, descriptorIndex)
         }
     }
