@@ -4,10 +4,11 @@ import java.io.DataInput
 
 data class ConstantIntegerInfo(
     override val tag: ConstantPoolTag,
+    override val index: Int,
     val intValue: Int
 ) : ConstantInfo {
     override fun line(): String {
-        return "${tag.line()} $intValue"
+        return "[$index] ${tag.line()} $intValue"
     }
 
     override val entriesTaken: Int get() = 1
@@ -15,9 +16,9 @@ data class ConstantIntegerInfo(
     companion object {
         val TAG: ConstantPoolTag = ConstantPoolTag.INTEGER
 
-        fun fromDataInput(tag: ConstantPoolTag, input: DataInput): ConstantIntegerInfo {
+        fun fromDataInput(tag: ConstantPoolTag, index: Int, input: DataInput): ConstantIntegerInfo {
             val intValue = input.readInt()
-            return ConstantIntegerInfo(tag, intValue)
+            return ConstantIntegerInfo(tag, index, intValue)
         }
     }
 }

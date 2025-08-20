@@ -4,11 +4,12 @@ import java.io.DataInput
 
 data class ConstantMethodRefInfo(
     override val tag: ConstantPoolTag,
+    override val index: Int,
     val classIndex: UShort,
     val nameAndTypeIndex: UShort
 ) : ConstantInfo {
     override fun line(): String {
-        return "${tag.line()} $classIndex $nameAndTypeIndex"
+        return "[$index] ${tag.line()} $classIndex $nameAndTypeIndex"
     }
 
     override val entriesTaken: Int get() = 1
@@ -16,10 +17,10 @@ data class ConstantMethodRefInfo(
     companion object {
         val TAG: ConstantPoolTag = ConstantPoolTag.METHOD_REF
 
-        fun fromDataInput(tag: ConstantPoolTag, input: DataInput): ConstantMethodRefInfo {
+        fun fromDataInput(tag: ConstantPoolTag, index: Int, input: DataInput): ConstantMethodRefInfo {
             val classIndex = input.readUnsignedShort().toUShort()
             val nameAndTypeIndex = input.readUnsignedShort().toUShort()
-            return ConstantMethodRefInfo(tag, classIndex, nameAndTypeIndex)
+            return ConstantMethodRefInfo(tag, index, classIndex, nameAndTypeIndex)
         }
     }
 }

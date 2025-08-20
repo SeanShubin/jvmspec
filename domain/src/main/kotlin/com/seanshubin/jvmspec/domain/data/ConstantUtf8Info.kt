@@ -5,11 +5,12 @@ import java.io.DataInput
 
 data class ConstantUtf8Info(
     override val tag: ConstantPoolTag,
+    override val index: Int,
     val length: UShort,
     val utf8Value: String
 ) : ConstantInfo {
     override fun line(): String {
-        return "${tag.line()} $length ${utf8Value.asSanitizedString()}"
+        return "[$index] ${tag.line()} $length ${utf8Value.asSanitizedString()}"
     }
 
     override val entriesTaken: Int get() = 1
@@ -17,12 +18,12 @@ data class ConstantUtf8Info(
     companion object {
         val TAG: ConstantPoolTag = ConstantPoolTag.UTF8
 
-        fun fromDataInput(tag: ConstantPoolTag, input: DataInput): ConstantUtf8Info {
+        fun fromDataInput(tag: ConstantPoolTag, index: Int, input: DataInput): ConstantUtf8Info {
             val length = input.readUnsignedShort().toUShort()
             val bytes: ByteArray = ByteArray(length.toInt())
             input.readFully(bytes)
             val utf8Value = String(bytes)
-            return ConstantUtf8Info(tag, length, utf8Value)
+            return ConstantUtf8Info(tag, index, length, utf8Value)
         }
     }
 }

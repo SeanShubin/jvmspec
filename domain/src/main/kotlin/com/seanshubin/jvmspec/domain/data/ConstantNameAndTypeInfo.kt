@@ -4,11 +4,12 @@ import java.io.DataInput
 
 data class ConstantNameAndTypeInfo(
     override val tag: ConstantPoolTag,
+    override val index: Int,
     val nameIndex: UShort,
     val descriptorIndex: UShort
 ) : ConstantInfo {
     override fun line(): String {
-        return "${tag.line()} $nameIndex $descriptorIndex"
+        return "[$index] ${tag.line()} $nameIndex $descriptorIndex"
     }
 
     override val entriesTaken: Int get() = 1
@@ -16,10 +17,10 @@ data class ConstantNameAndTypeInfo(
     companion object {
         val TAG: ConstantPoolTag = ConstantPoolTag.NAME_AND_TYPE
 
-        fun fromDataInput(tag: ConstantPoolTag, input: DataInput): ConstantNameAndTypeInfo {
+        fun fromDataInput(tag: ConstantPoolTag, index: Int, input: DataInput): ConstantNameAndTypeInfo {
             val nameIndex = input.readUnsignedShort().toUShort()
             val descriptorIndex = input.readUnsignedShort().toUShort()
-            return ConstantNameAndTypeInfo(tag, nameIndex, descriptorIndex)
+            return ConstantNameAndTypeInfo(tag, index, nameIndex, descriptorIndex)
         }
     }
 }

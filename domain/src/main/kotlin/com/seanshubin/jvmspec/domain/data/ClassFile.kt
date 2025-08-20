@@ -21,9 +21,7 @@ data class ClassFile(
     val attributes: List<AttributeInfo>
 ) {
     fun lines(): List<String> {
-        val constantPoolLines = constantPool.mapIndexed { index, constantInfo ->
-            "[$index] ${constantInfo.line()}"
-        }.map(indent)
+        val constantPoolLines = constantPool.map { it.line() }.map(indent)
         return listOf(
             "magic: $magic",
             "minorVersion: $minorVersion",
@@ -90,7 +88,7 @@ data class ClassFile(
             var index = 1
             val constantPool = mutableListOf<ConstantInfo>()
             while (index < count) {
-                val constantInfo = ConstantInfoFactory.fromDataInput(input)
+                val constantInfo = ConstantInfoFactory.fromDataInput(index, input)
                 constantPool.add(constantInfo)
                 index += constantInfo.entriesTaken
             }
