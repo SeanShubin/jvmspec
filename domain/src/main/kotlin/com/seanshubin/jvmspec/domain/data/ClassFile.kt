@@ -27,17 +27,19 @@ data class ClassFile(
             val majorVersion = input.readShort()
             val constantPoolCount = input.readShort()
             val constantPool = readConstantPool(input, constantPoolCount)
+            val constantNameLookup = ConstantPoolLookupImpl(constantPool)
             val accessFlags = input.readShort()
             val thisClass = input.readShort()
             val superClass = input.readShort()
             val interfacesCount = input.readShort()
             val interfaces = List(interfacesCount.toInt()) { input.readShort() }
             val fieldsCount = input.readShort()
-            val fields = List(fieldsCount.toInt()) { FieldInfo.fromDataInput(input) }
+            val fields = List(fieldsCount.toInt()) { FieldInfo.fromDataInput(input, constantNameLookup) }
             val methodsCount = input.readShort()
-            val methods = List(methodsCount.toInt()) { MethodInfo.fromDataInput(input) }
+            val methods = List(methodsCount.toInt()) { MethodInfo.fromDataInput(input, constantNameLookup) }
             val attributesCount = input.readShort()
-            val attributes = List(attributesCount.toInt()) { AttributeInfo.fromDataInput(input) }
+            val attributes =
+                List(attributesCount.toInt()) { AttributeInfoFactory.fromDataInput(input, constantNameLookup) }
             return ClassFile(
                 magic,
                 minorVersion,
@@ -63,6 +65,7 @@ data class ClassFile(
             val constantPool = mutableListOf<ConstantInfo>()
             while (index < count) {
                 val constantInfo = ConstantInfoFactory.fromDataInput(input)
+                constantPool.add(constantInfo)
                 index += constantInfo.entriesTaken
             }
             return constantPool

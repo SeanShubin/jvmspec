@@ -1,30 +1,64 @@
 package com.seanshubin.jvmspec.domain.operations
 
 import com.seanshubin.jvmspec.domain.data.ClassFile
+import com.seanshubin.jvmspec.domain.files.FilesContract
 import com.seanshubin.jvmspec.domain.json.JsonMappers
 import java.io.DataInputStream
-import java.nio.file.Files
 import java.nio.file.Path
+import java.time.Clock
 
-object Analyzer {
+class Analyzer(
+    private val args: Array<String>,
+    private val files: FilesContract,
+    private val clock: Clock,
+    private val events: Events
+) : Runnable {
+    override fun run() {
+        withTimer {
+            if (args.size != 2) {
+                throw IllegalArgumentException("Expected 2 arguments: <inputDir> <outputDir>")
+            }
+            val inputDir = Path.of(args[0])
+            val outputDir = Path.of(args[1])
+            files.walk(inputDir).forEach { inputFile ->
+                if (accept(inputFile)) {
+                    processFile(inputDir, outputDir, inputFile)
+                }
+            }
+        }
+    }
+
+    fun withTimer(f: () -> Unit) {
+        val startTime = clock.millis()
+        f()
+        val endTime = clock.millis()
+        val durationMillis = endTime - startTime
+        events.timeTakenMillis(durationMillis)
+    }
+
     fun accept(file: Path): Boolean {
         return file.toString().endsWith(".class")
     }
 
     fun processFile(baseInputDir: Path, baseOutputDir: Path, inputFile: Path) {
-        if (!accept(inputFile)) return
         val relativePath = baseInputDir.relativize(inputFile)
         val fileName = inputFile.fileName.toString()
         val outputDir = baseOutputDir.resolve(relativePath).parent
-        Files.createDirectories(outputDir)
+        files.createDirectories(outputDir)
         val outputFileName = "${fileName}.json"
         val outputFile = outputDir.resolve(outputFileName)
+        events.processingFile(inputFile, outputDir)
         println("$inputFile -> $outputFile")
-        val javaFile = Files.newInputStream(inputFile).use { inputStream ->
+        val javaFile = files.newInputStream(inputFile).use { inputStream ->
             val dataInput = DataInputStream(inputStream)
             ClassFile.fromDataInput(dataInput)
         }
         val json = JsonMappers.pretty.writeValueAsString(javaFile)
-        Files.writeString(outputFile, json)
+        files.writeString(outputFile, json)
+    }
+
+    interface Events {
+        fun processingFile(inputFile: Path, outputDir: Path)
+        fun timeTakenMillis(millis: Long)
     }
 }

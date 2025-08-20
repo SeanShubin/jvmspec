@@ -10,12 +10,13 @@ data class MethodInfo(
     val attributes: List<AttributeInfo>
 ) {
     companion object {
-        fun fromDataInput(input: DataInput): MethodInfo {
+        fun fromDataInput(input: DataInput, constantPoolLookup: ConstantPoolLookup): MethodInfo {
             val accessFlags = input.readShort()
             val nameIndex = input.readShort()
             val descriptorIndex = input.readShort()
             val attributesCount = input.readShort()
-            val attributes = List(attributesCount.toInt()) { AttributeInfo.fromDataInput(input) }
+            val attributes =
+                List(attributesCount.toInt()) { AttributeInfoFactory.fromDataInput(input, constantPoolLookup) }
             return MethodInfo(accessFlags, nameIndex, descriptorIndex, attributesCount, attributes)
         }
     }
