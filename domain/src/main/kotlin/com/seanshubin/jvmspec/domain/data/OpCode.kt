@@ -206,8 +206,10 @@ enum class OpCode(val ubyte: UByte, val operandType: OperandType) {
     SWAP(0x5fu, OperandType.NONE),
     TABLESWITCH(0xaau, OperandType.TABLE_SWITCH),
     WIDE(0xc4u, OperandType.WIDE);
-    val mnemonic:String get() = name.lowercase(getDefault())
-    val formatted:String get()  = "(0x${ubyte.asHex()})$mnemonic"
+
+    val mnemonic: String get() = name.lowercase(getDefault())
+    val formatted: String get() = "(0x${ubyte.asHex()})$mnemonic"
+
     companion object {
         fun fromUByte(opcode: UByte): OpCode {
             return entries.firstOrNull { it.ubyte == opcode }

@@ -2,8 +2,8 @@ package com.seanshubin.jvmspec.domain.io
 
 import java.io.DataInput
 
-class IndexedDataInput(private val delegate:DataInput): DataInput {
-    var index:Int = 0
+class IndexedDataInput(private val delegate: DataInput) : DataInput {
+    var index: Int = 0
     override fun readFully(b: ByteArray) {
         delegate.readFully(b)
         index += b.size
@@ -15,14 +15,14 @@ class IndexedDataInput(private val delegate:DataInput): DataInput {
     }
 
     override fun skipBytes(n: Int): Int {
-        return delegate.skipBytes(n).also{
+        return delegate.skipBytes(n).also {
             index += n
         }
     }
 
     override fun readBoolean(): Boolean {
         return delegate.readBoolean().also {
-            index +=1
+            index += 1
         }
     }
 

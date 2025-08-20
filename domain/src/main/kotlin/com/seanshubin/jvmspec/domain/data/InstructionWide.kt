@@ -27,10 +27,10 @@ abstract class InstructionWide(
         fun fromDataInput(opCode: OpCode, dataInput: DataInput, index: Int): Instruction {
             val modifiedOpCodeByte = dataInput.readUnsignedByte().toUByte()
             val modifiedOpCode = OpCode.fromUByte(modifiedOpCodeByte)
-            val instruction = if(format1OpCodes.contains(modifiedOpCode)) {
+            val instruction = if (format1OpCodes.contains(modifiedOpCode)) {
                 InstructionWideFormat1.fromDataInput(opCode, modifiedOpCode, dataInput, index)
-            } else if(format2OpCodes.contains(modifiedOpCode)) {
-                InstructionWideFormat2.fromDataInput(opCode, modifiedOpCode,  dataInput, index)
+            } else if (format2OpCodes.contains(modifiedOpCode)) {
+                InstructionWideFormat2.fromDataInput(opCode, modifiedOpCode, dataInput, index)
             } else {
                 throw IllegalArgumentException("Unexpected opcode $opCode for wide instruction at index $index")
             }

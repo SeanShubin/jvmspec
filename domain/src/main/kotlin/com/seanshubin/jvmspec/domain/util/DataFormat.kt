@@ -1,9 +1,9 @@
 package com.seanshubin.jvmspec.domain.util
 
 object DataFormat {
-    fun UByte.asHex():String = this.toByte().asHex()
+    fun UByte.asHex(): String = this.toByte().asHex()
 
-    fun Byte.asHex():String = String.format("%02X", this)
+    fun Byte.asHex(): String = String.format("%02X", this)
 
     fun List<Byte>.asHex(): String =
         this.toByteArray().asHex()

@@ -1,14 +1,12 @@
 package com.seanshubin.jvmspec.domain.data
 
 import com.seanshubin.jvmspec.domain.io.IndexedDataInput
-import com.seanshubin.jvmspec.domain.util.DataFormat
-import com.seanshubin.jvmspec.domain.util.DataFormat.asHex
 import java.io.ByteArrayInputStream
 import java.io.DataInput
 import java.io.DataInputStream
 
 object InstructionFactory {
-    fun allInstructions(code:List<Byte>):List<Instruction>{
+    fun allInstructions(code: List<Byte>): List<Instruction> {
         val input = IndexedDataInput(DataInputStream(ByteArrayInputStream(code.toByteArray())))
         val instructions = mutableListOf<Instruction>()
         while (input.index < code.size) {
@@ -17,7 +15,8 @@ object InstructionFactory {
         }
         return instructions
     }
-    fun nextInstruction(input:IndexedDataInput):Instruction{
+
+    fun nextInstruction(input: IndexedDataInput): Instruction {
         val index = input.index
         val opCodeByte = input.readUnsignedByte().toUByte()
         val opCode = OpCode.fromUByte(opCodeByte)
@@ -27,6 +26,7 @@ object InstructionFactory {
         val instruction = factory(opCode, input, index)
         return instruction
     }
+
     private val factoryMap = mapOf<OperandType, (OpCode, DataInput, Int) -> Instruction>(
         InstructionNoArg.OPERAND_TYPE to InstructionNoArg::fromDataInput,
         InstructionLocalVariableIndex.OPERAND_TYPE to InstructionLocalVariableIndex::fromDataInput,
