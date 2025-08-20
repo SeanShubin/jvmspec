@@ -8,7 +8,7 @@ class InstructionConstantPoolIndexThenDimensions(
     val dimensions: Int
 ) : Instruction {
     override fun line(): String {
-        return "${opcode.formatted} $classIndex $dimensions"
+        return "${opcode.line} $classIndex $dimensions"
     }
 
     companion object {

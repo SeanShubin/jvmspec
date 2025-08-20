@@ -4,13 +4,14 @@ import java.io.DataInput
 
 object ConstantInfoFactory {
     fun fromDataInput(input: DataInput): ConstantInfo {
-        val tag = input.readByte()
+        val tagByte = input.readUnsignedByte().toUByte()
+        val tag = ConstantPoolTag.fromId(tagByte)
         val factory = factoryMap[tag]
             ?: throw IllegalArgumentException("Unknown constant tag: $tag")
         return factory(tag, input)
     }
 
-    val factoryMap: Map<Byte, (Byte, DataInput) -> ConstantInfo> = mapOf(
+    val factoryMap: Map<ConstantPoolTag, (ConstantPoolTag, DataInput) -> ConstantInfo> = mapOf(
         ConstantUtf8Info.TAG to ConstantUtf8Info::fromDataInput,
         ConstantIntegerInfo.TAG to ConstantIntegerInfo::fromDataInput,
         ConstantFloatInfo.TAG to ConstantFloatInfo::fromDataInput,

@@ -7,7 +7,7 @@ class InstructionByte(
     val value: Byte
 ) : Instruction {
     override fun line(): String {
-        return "${opcode.formatted} $value"
+        return "${opcode.line} $value"
     }
 
     companion object {

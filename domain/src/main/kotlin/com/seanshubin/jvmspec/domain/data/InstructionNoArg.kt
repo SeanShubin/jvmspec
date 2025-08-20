@@ -6,7 +6,7 @@ class InstructionNoArg(
     override val opcode: OpCode
 ) : Instruction {
     override fun line(): String {
-        return opcode.formatted
+        return opcode.line
     }
 
     companion object {

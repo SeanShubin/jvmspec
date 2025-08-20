@@ -3,15 +3,19 @@ package com.seanshubin.jvmspec.domain.data
 import java.io.DataInput
 
 data class ConstantModuleInfo(
-    override val tag: Byte,
+    override val tag: ConstantPoolTag,
     val nameIndex: Short
 ) : ConstantInfo {
+    override fun line(): String {
+        return "${tag.line()} $nameIndex"
+    }
+
     override val entriesTaken: Int get() = 1
 
     companion object {
-        const val TAG: Byte = 19
+        val TAG: ConstantPoolTag = ConstantPoolTag.MODULE
 
-        fun fromDataInput(tag: Byte, input: DataInput): ConstantModuleInfo {
+        fun fromDataInput(tag: ConstantPoolTag, input: DataInput): ConstantModuleInfo {
             val nameIndex = input.readShort()
             return ConstantModuleInfo(tag, nameIndex)
         }

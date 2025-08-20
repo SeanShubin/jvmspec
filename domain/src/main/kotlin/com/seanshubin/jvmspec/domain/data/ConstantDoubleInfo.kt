@@ -3,15 +3,19 @@ package com.seanshubin.jvmspec.domain.data
 import java.io.DataInput
 
 data class ConstantDoubleInfo(
-    override val tag: Byte,
+    override val tag: ConstantPoolTag,
     val highBytes: Int,
     val lowBytes: Int
 ) : ConstantInfo {
+    override fun line(): String {
+        return "${tag.line()} $highBytes $lowBytes"
+    }
+
     override val entriesTaken: Int get() = 2
 
     companion object {
-        const val TAG: Byte = 6
-        fun fromDataInput(tag: Byte, input: DataInput): ConstantDoubleInfo {
+        val TAG: ConstantPoolTag = ConstantPoolTag.DOUBLE
+        fun fromDataInput(tag: ConstantPoolTag, input: DataInput): ConstantDoubleInfo {
             val highBytes = input.readInt()
             val lowBytes = input.readInt()
             return ConstantDoubleInfo(tag, highBytes, lowBytes)

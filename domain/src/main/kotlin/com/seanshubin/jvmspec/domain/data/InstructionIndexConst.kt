@@ -8,7 +8,7 @@ class InstructionIndexConst(
     val const: Byte
 ) : Instruction {
     override fun line(): String {
-        return "${opcode.formatted} $index $const"
+        return "${opcode.line} $index $const"
     }
 
     companion object {

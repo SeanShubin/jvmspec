@@ -13,7 +13,7 @@ class InstructionTableSwitch(
 ) : Instruction {
     override fun line(): String {
         val jumpOffsetsString = jumpOffsets.joinToString(" ") { it.toString() }
-        return "${opcode.formatted} padding(0x${padding.asHex()}) $default $low $high $jumpOffsetsString"
+        return "${opcode.line} padding(0x${padding.asHex()}) $default $low $high $jumpOffsetsString"
     }
 
     companion object {

@@ -20,7 +20,33 @@ data class ClassFile(
     val attributesCount: Short,
     val attributes: List<AttributeInfo>
 ) {
+    fun lines(): List<String> {
+        val constantPoolLines = constantPool.mapIndexed { index, constantInfo ->
+            "[$index] ${constantInfo.line()}"
+        }.map(indent)
+        return listOf(
+            "magic: $magic",
+            "minorVersion: $minorVersion",
+            "majorVersion: $majorVersion",
+            "constantPoolCount: $constantPoolCount",
+            "constantPool:",
+            *constantPoolLines.toTypedArray(),
+            "accessFlags: $accessFlags",
+            "thisClass: $thisClass",
+            "superClass: $superClass",
+            "interfacesCount: $interfacesCount",
+            "interfaces: ${interfaces.joinToString(", ")}",
+            "fieldsCount: $fieldsCount",
+            "fields: ${fields.joinToString("\n")}",
+            "methodsCount: $methodsCount",
+            "methods: ${methods.joinToString("\n")}",
+            "attributesCount: $attributesCount",
+            "attributes: ${attributes.joinToString("\n")}"
+        )
+    }
+
     companion object {
+        val indent: (String) -> String = { it.padStart(it.length + 2) }
         fun fromDataInput(input: DataInput): ClassFile {
             val magic = input.readInt()
             val minorVersion = input.readShort()

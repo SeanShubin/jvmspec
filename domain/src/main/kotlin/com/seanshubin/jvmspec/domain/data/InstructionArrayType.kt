@@ -7,7 +7,7 @@ class InstructionArrayType(
     val arrayType: ArrayType
 ) : Instruction {
     override fun line(): String {
-        return "${opcode.formatted} ${arrayType.line()}"
+        return "${opcode.line} ${arrayType.line()}"
     }
 
     companion object {

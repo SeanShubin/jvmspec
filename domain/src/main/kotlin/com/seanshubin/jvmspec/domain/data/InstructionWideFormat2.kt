@@ -9,7 +9,7 @@ class InstructionWideFormat2(
     val constant: Short
 ) : InstructionWide(opcode) {
     override fun line(): String {
-        return "${opcode.formatted} ${modifiedOpCode.formatted} $localVariableIndex $constant"
+        return "${opcode.line} ${modifiedOpCode.line} $localVariableIndex $constant"
     }
 
     companion object {

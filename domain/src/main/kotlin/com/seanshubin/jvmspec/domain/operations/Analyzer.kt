@@ -2,7 +2,6 @@ package com.seanshubin.jvmspec.domain.operations
 
 import com.seanshubin.jvmspec.domain.data.ClassFile
 import com.seanshubin.jvmspec.domain.files.FilesContract
-import com.seanshubin.jvmspec.domain.json.JsonMappers
 import java.io.DataInputStream
 import java.nio.file.Path
 import java.time.Clock
@@ -45,15 +44,15 @@ class Analyzer(
         val fileName = inputFile.fileName.toString()
         val outputDir = baseOutputDir.resolve(relativePath).parent
         files.createDirectories(outputDir)
-        val outputFileName = "${fileName}.json"
+        val outputFileName = "${fileName}.txt"
         val outputFile = outputDir.resolve(outputFileName)
         events.processingFile(inputFile, outputDir)
         val javaFile = files.newInputStream(inputFile).use { inputStream ->
             val dataInput = DataInputStream(inputStream)
             ClassFile.fromDataInput(dataInput)
         }
-        val json = JsonMappers.pretty.writeValueAsString(javaFile)
-        files.writeString(outputFile, json)
+        val lines = javaFile.lines()
+        files.write(outputFile, lines)
     }
 
     interface Events {

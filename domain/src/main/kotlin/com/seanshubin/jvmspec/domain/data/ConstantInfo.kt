@@ -1,6 +1,7 @@
 package com.seanshubin.jvmspec.domain.data
 
 interface ConstantInfo {
-    val tag: Byte
+    val tag: ConstantPoolTag
     val entriesTaken: Int
+    fun line(): String
 }

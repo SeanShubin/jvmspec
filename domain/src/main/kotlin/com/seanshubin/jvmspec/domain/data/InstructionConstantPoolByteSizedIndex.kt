@@ -7,7 +7,7 @@ class InstructionConstantPoolByteSizedIndex(
     val constantPoolIndex: Int
 ) : Instruction {
     override fun line(): String {
-        return "${opcode.formatted} $constantPoolIndex"
+        return "${opcode.line} $constantPoolIndex"
     }
 
     companion object {

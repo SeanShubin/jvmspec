@@ -8,7 +8,7 @@ class InstructionConstantPoolIndexThenCountThenZero(
     val count: Int
 ) : Instruction {
     override fun line(): String {
-        return "${opcode.formatted} $constantPoolIndex $count 0"
+        return "${opcode.line} $constantPoolIndex $count 0"
     }
 
     companion object {

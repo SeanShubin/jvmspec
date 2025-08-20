@@ -7,7 +7,7 @@ class InstructionShort(
     val value: Short
 ) : Instruction {
     override fun line(): String {
-        return "${opcode.formatted} $value"
+        return "${opcode.line} $value"
     }
 
     companion object {

@@ -208,7 +208,7 @@ enum class OpCode(val ubyte: UByte, val operandType: OperandType) {
     WIDE(0xc4u, OperandType.WIDE);
 
     val mnemonic: String get() = name.lowercase(getDefault())
-    val formatted: String get() = "(0x${ubyte.asHex()})$mnemonic"
+    val line: String get() = "(0x${ubyte.asHex()})$mnemonic"
 
     companion object {
         fun fromUByte(opcode: UByte): OpCode {

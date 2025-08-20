@@ -3,14 +3,18 @@ package com.seanshubin.jvmspec.domain.data
 import java.io.DataInput
 
 data class ConstantClassInfo(
-    override val tag: Byte,
+    override val tag: ConstantPoolTag,
     val nameIndex: Short
 ) : ConstantInfo {
+    override fun line(): String {
+        return "${tag.line()} $nameIndex"
+    }
+
     override val entriesTaken: Int get() = 1
 
     companion object {
-        const val TAG: Byte = 7
-        fun fromDataInput(tag: Byte, input: DataInput): ConstantClassInfo {
+        val TAG: ConstantPoolTag = ConstantPoolTag.CLASS
+        fun fromDataInput(tag: ConstantPoolTag, input: DataInput): ConstantClassInfo {
             val nameIndex = input.readShort()
             return ConstantClassInfo(tag, nameIndex)
         }

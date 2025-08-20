@@ -12,7 +12,7 @@ class InstructionLookupSwitch(
 ) : Instruction {
     override fun line(): String {
         val pairsString = pairs.joinToString(" ") { (match, offset) -> "$match:$offset" }
-        return "${opcode.formatted} padding(0x${padding.asHex()}) $default $nPairs $pairsString"
+        return "${opcode.line} padding(0x${padding.asHex()}) $default $nPairs $pairsString"
     }
 
     companion object {

@@ -7,7 +7,7 @@ class InstructionConstantPoolIndexThenTwoZeroes(
     val constantPoolIndex: Int
 ) : Instruction {
     override fun line(): String {
-        return "${opcode.formatted} $constantPoolIndex 0 0"
+        return "${opcode.line} $constantPoolIndex 0 0"
     }
 
     companion object {

@@ -7,7 +7,7 @@ class InstructionBranchOffset(
     val branchOffset: Short
 ) : Instruction {
     override fun line(): String {
-        return "${opcode.formatted} $branchOffset"
+        return "${opcode.line} $branchOffset"
     }
 
     companion object {

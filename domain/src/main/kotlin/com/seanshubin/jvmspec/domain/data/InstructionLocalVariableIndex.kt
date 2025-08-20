@@ -7,7 +7,7 @@ class InstructionLocalVariableIndex(
     val localVariableIndex: Int
 ) : Instruction {
     override fun line(): String {
-        return "${opcode.formatted} $localVariableIndex"
+        return "${opcode.line} $localVariableIndex"
     }
 
     companion object {
