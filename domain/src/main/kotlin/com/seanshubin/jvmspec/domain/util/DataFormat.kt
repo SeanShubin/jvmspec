@@ -5,8 +5,8 @@ object DataFormat {
     fun Int.toHex(): String = String.format("%02X", this)
     fun Short.toHex(): String = String.format("%02X", this)
     fun Short.toDecHex(): String = "${this}(0x${this.toHex()})"
-    fun UShort.toHex(): String = String.format("%02X", this)
-    fun UShort.toDecHex(): String = "${this}(0x${this.toHex()})"
+    fun UShort.toHex(): String = toInt().toHex()
+    fun UShort.toDecHex(): String = toInt().toDecHex()
     fun Byte.toDecHex(): String = "${this}(0x${this.toHex()})"
     fun UByte.toHex(): String = this.toByte().toHex()
 

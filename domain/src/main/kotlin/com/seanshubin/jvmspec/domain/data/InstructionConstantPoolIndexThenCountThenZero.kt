@@ -1,5 +1,6 @@
 package com.seanshubin.jvmspec.domain.data
 
+import com.seanshubin.jvmspec.domain.util.DataFormat.toDecHex
 import java.io.DataInput
 
 class InstructionConstantPoolIndexThenCountThenZero(
@@ -8,7 +9,7 @@ class InstructionConstantPoolIndexThenCountThenZero(
     val count: Int
 ) : Instruction {
     override fun line(): String {
-        return "${opcode.line} $constantPoolIndex $count 0"
+        return "${opcode.line} ${constantPoolIndex.toDecHex()} ${count.toDecHex()} 0"
     }
 
     companion object {
