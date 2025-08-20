@@ -9,7 +9,6 @@ import java.io.DataInputStream
 
 object InstructionFactory {
     fun allInstructions(code:List<Byte>):List<Instruction>{
-        println(code.asHex())
         val input = IndexedDataInput(DataInputStream(ByteArrayInputStream(code.toByteArray())))
         val instructions = mutableListOf<Instruction>()
         while (input.index < code.size) {
@@ -26,7 +25,6 @@ object InstructionFactory {
         val factory = factoryMap[operandType]
             ?: throw IllegalArgumentException("No factory for operand type $operandType with opCode $opCode")
         val instruction = factory(opCode, input, index)
-        println("[$index] ${instruction.line()}")
         return instruction
     }
     private val factoryMap = mapOf<OperandType, (OpCode, DataInput, Int) -> Instruction>(
@@ -40,7 +38,11 @@ object InstructionFactory {
         InstructionIndexConst.OPERAND_TYPE to InstructionIndexConst::fromDataInput,
         InstructionByte.OPERAND_TYPE to InstructionByte::fromDataInput,
         InstructionArrayType.OPERAND_TYPE to InstructionArrayType::fromDataInput,
-        InstructionShort.OPERAND_TYPE to InstructionShort::fromDataInput
+        InstructionShort.OPERAND_TYPE to InstructionShort::fromDataInput,
+        InstructionLookupSwitch.OPERAND_TYPE to InstructionLookupSwitch::fromDataInput,
+        InstructionTableSwitch.OPERAND_TYPE to InstructionTableSwitch::fromDataInput,
+        InstructionConstantPoolIndexThenDimensions.OPERAND_TYPE to InstructionConstantPoolIndexThenDimensions::fromDataInput,
+        InstructionWide.OPERAND_TYPE to InstructionWide::fromDataInput
     )
 }
 /*
