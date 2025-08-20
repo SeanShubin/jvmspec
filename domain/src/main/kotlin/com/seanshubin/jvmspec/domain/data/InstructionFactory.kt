@@ -45,6 +45,3 @@ object InstructionFactory {
         InstructionWide.OPERAND_TYPE to InstructionWide::fromDataInput
     )
 }
-/*
-
- */
