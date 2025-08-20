@@ -1,0 +1,44 @@
+{
+  prefix [com seanshubin]
+  name [jvmspec]
+  description 'JVM Specification'
+  version 0.1.0
+  language kotlin
+  developer {
+    name 'Sean Shubin'
+    githubName SeanShubin
+    mavenUserName SeanShubin
+    organization 'Sean Shubin'
+    url http://seanshubin.com/
+  }
+  dependencies {
+    stdlib {
+      group org.jetbrains.kotlin
+      artifact kotlin-stdlib-jdk8
+    }
+    test {
+      group org.jetbrains.kotlin
+      artifact kotlin-test-junit
+      scope test
+    }
+    jackson {
+        group com.fasterxml.jackson.module
+        artifact jackson-module-kotlin
+    }
+    jackson-time {
+        group com.fasterxml.jackson.datatype
+        artifact jackson-datatype-jsr310
+    }
+  }
+  global [ stdlib test ]
+  modules {
+    domain  [jackson jackson-time]
+    console [domain]
+  }
+  detangler [domain]
+  consoleEntryPoint {
+    console com.seanshubin.jvmspec.Main
+  }
+  javaVersion 21
+  deployableToMavenCentral true
+}
