@@ -1,5 +1,6 @@
 package com.seanshubin.jvmspec.domain.data
 
+import com.seanshubin.jvmspec.domain.util.DataFormat.toDecHex
 import java.io.DataInput
 
 class InstructionShort(
@@ -7,7 +8,7 @@ class InstructionShort(
     val value: Short
 ) : Instruction {
     override fun line(): String {
-        return "${opcode.line} $value"
+        return "${opcode.line} ${value.toDecHex()}"
     }
 
     companion object {

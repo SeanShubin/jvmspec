@@ -1,6 +1,7 @@
 package com.seanshubin.jvmspec.domain.data
 
-import com.seanshubin.jvmspec.domain.util.DataFormat.asHex
+import com.seanshubin.jvmspec.domain.util.DataFormat.toDecHex
+import com.seanshubin.jvmspec.domain.util.DataFormat.toHex
 import java.io.DataInput
 
 class InstructionTableSwitch(
@@ -12,8 +13,8 @@ class InstructionTableSwitch(
     val jumpOffsets: List<Int>,
 ) : Instruction {
     override fun line(): String {
-        val jumpOffsetsString = jumpOffsets.joinToString(" ") { it.toString() }
-        return "${opcode.line} padding(0x${padding.asHex()}) $default $low $high $jumpOffsetsString"
+        val jumpOffsetsString = jumpOffsets.joinToString(" ") { it.toDecHex() }
+        return "${opcode.line} padding(0x${padding.toHex()}) ${default.toDecHex()} ${low.toDecHex()} ${high.toDecHex()} $jumpOffsetsString"
     }
 
     companion object {

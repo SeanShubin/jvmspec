@@ -1,6 +1,6 @@
 package com.seanshubin.jvmspec.domain.data
 
-import com.seanshubin.jvmspec.domain.util.DataFormat.asHex
+import com.seanshubin.jvmspec.domain.util.DataFormat.toHex
 import java.util.Locale.getDefault
 
 enum class OpCode(val ubyte: UByte, val operandType: OperandType) {
@@ -208,7 +208,7 @@ enum class OpCode(val ubyte: UByte, val operandType: OperandType) {
     WIDE(0xc4u, OperandType.WIDE);
 
     val mnemonic: String get() = name.lowercase(getDefault())
-    val line: String get() = "(0x${ubyte.asHex()})$mnemonic"
+    val line: String get() = "(0x${ubyte.toHex()})$mnemonic"
 
     companion object {
         fun fromUByte(opcode: UByte): OpCode {

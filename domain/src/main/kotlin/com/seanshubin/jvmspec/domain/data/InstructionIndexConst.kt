@@ -1,5 +1,6 @@
 package com.seanshubin.jvmspec.domain.data
 
+import com.seanshubin.jvmspec.domain.util.DataFormat.toDecHex
 import java.io.DataInput
 
 class InstructionIndexConst(
@@ -8,7 +9,7 @@ class InstructionIndexConst(
     val const: Byte
 ) : Instruction {
     override fun line(): String {
-        return "${opcode.line} $index $const"
+        return "${opcode.line} ${index.toDecHex()} ${const.toDecHex()}"
     }
 
     companion object {

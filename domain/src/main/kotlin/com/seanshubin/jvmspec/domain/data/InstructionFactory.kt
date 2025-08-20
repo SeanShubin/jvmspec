@@ -6,12 +6,15 @@ import java.io.DataInput
 import java.io.DataInputStream
 
 object InstructionFactory {
-    fun allInstructions(code: List<Byte>): List<Instruction> {
+    fun allInstructions(code: List<Byte>): List<InstructionAndBytes> {
         val input = IndexedDataInput(DataInputStream(ByteArrayInputStream(code.toByteArray())))
-        val instructions = mutableListOf<Instruction>()
+        val instructions = mutableListOf<InstructionAndBytes>()
         while (input.index < code.size) {
+            val startIndex = input.index
             val instruction = nextInstruction(input)
-            instructions.add(instruction)
+            val endIndex = input.index
+            val bytes = code.subList(startIndex, endIndex)
+            instructions.add(InstructionAndBytes(instruction, bytes))
         }
         return instructions
     }

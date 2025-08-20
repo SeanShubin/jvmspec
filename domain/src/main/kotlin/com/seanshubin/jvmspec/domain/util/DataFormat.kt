@@ -1,22 +1,29 @@
 package com.seanshubin.jvmspec.domain.util
 
 object DataFormat {
-    fun UByte.asHex(): String = this.toByte().asHex()
+    fun Int.toDecHex(): String = "${this}(0x${this.toHex()})"
+    fun Int.toHex(): String = String.format("%02X", this)
+    fun Short.toHex(): String = String.format("%02X", this)
+    fun Short.toDecHex(): String = "${this}(0x${this.toHex()})"
+    fun UShort.toHex(): String = String.format("%02X", this)
+    fun UShort.toDecHex(): String = "${this}(0x${this.toHex()})"
+    fun Byte.toDecHex(): String = "${this}(0x${this.toHex()})"
+    fun UByte.toHex(): String = this.toByte().toHex()
 
-    fun Byte.asHex(): String = String.format("%02X", this)
+    fun Byte.toHex(): String = String.format("%02X", this)
 
-    fun List<Byte>.asHex(): String =
-        this.toByteArray().asHex()
+    fun List<Byte>.toHex(): String =
+        this.toByteArray().toHex()
 
-    fun String.asSanitizedString(): String =
-        this.toByteArray().asSanitizedString()
+    fun String.toSanitizedString(): String =
+        this.toByteArray().toSanitizedString()
 
-    fun List<Byte>.asSanitizedString(): String =
-        this.toByteArray().asSanitizedString()
+    fun List<Byte>.toSanitizedString(): String =
+        this.toByteArray().toSanitizedString()
 
-    fun ByteArray.asHex(): String =
-        this.joinToString("") { it.asHex() }
+    fun ByteArray.toHex(): String =
+        this.joinToString("") { it.toHex() }
 
-    fun ByteArray.asSanitizedString(): String =
+    fun ByteArray.toSanitizedString(): String =
         this.joinToString("") { if (it in 32..126) it.toInt().toChar().toString() else "." }
 }

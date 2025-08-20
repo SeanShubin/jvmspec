@@ -1,6 +1,6 @@
 package com.seanshubin.jvmspec.domain.data
 
-import com.seanshubin.jvmspec.domain.util.DataFormat.asSanitizedString
+import com.seanshubin.jvmspec.domain.util.DataFormat.toSanitizedString
 import java.io.DataInput
 
 data class ConstantUtf8Info(
@@ -10,7 +10,7 @@ data class ConstantUtf8Info(
     val utf8Value: String
 ) : ConstantInfo {
     override fun line(): String {
-        return "[$index] ${tag.line()} $length ${utf8Value.asSanitizedString()}"
+        return "[$index] ${tag.line()} $length ${utf8Value.toSanitizedString()}"
     }
 
     override val entriesTaken: Int get() = 1

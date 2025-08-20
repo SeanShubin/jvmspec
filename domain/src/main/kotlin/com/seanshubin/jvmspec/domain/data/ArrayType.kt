@@ -1,6 +1,6 @@
 package com.seanshubin.jvmspec.domain.data
 
-import com.seanshubin.jvmspec.domain.util.DataFormat.asHex
+import com.seanshubin.jvmspec.domain.util.DataFormat.toHex
 
 enum class ArrayType(val code: Byte) {
     BOOLEAN(4),
@@ -17,7 +17,7 @@ enum class ArrayType(val code: Byte) {
     companion object {
         fun fromByte(byte: Byte): ArrayType {
             return entries.firstOrNull { it.code == byte }
-                ?: throw IllegalArgumentException("Unknown array type code: 0x${byte.asHex()}")
+                ?: throw IllegalArgumentException("Unknown array type code: 0x${byte.toHex()}")
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.seanshubin.jvmspec.domain.data
 
-import com.seanshubin.jvmspec.domain.util.DataFormat.asHex
+import com.seanshubin.jvmspec.domain.util.DataFormat.toDecHex
+import com.seanshubin.jvmspec.domain.util.DataFormat.toHex
 import java.io.DataInput
 
 class InstructionLookupSwitch(
@@ -11,8 +12,8 @@ class InstructionLookupSwitch(
     val pairs: List<MatchOffset>,
 ) : Instruction {
     override fun line(): String {
-        val pairsString = pairs.joinToString(" ") { (match, offset) -> "$match:$offset" }
-        return "${opcode.line} padding(0x${padding.asHex()}) $default $nPairs $pairsString"
+        val pairsString = pairs.joinToString(" ") { (match, offset) -> "${match.toDecHex()}:${offset.toDecHex()}" }
+        return "${opcode.line} padding(0x${padding.toHex()}) ${default.toDecHex()} ${nPairs.toDecHex()} $pairsString"
     }
 
     companion object {

@@ -12,7 +12,7 @@ data class AttributeCodeInfo(
     val maxLocals: Short,
     val codeLength: Int,
     val code: List<Byte>,
-    val instructions: List<Instruction>,
+    val instructions: List<InstructionAndBytes>,
     val exceptionTableLength: Short,
     val exceptionTable: List<ExceptionTable>,
     val attributesCount: Short,
@@ -30,6 +30,7 @@ data class AttributeCodeInfo(
             val codeLength = input.readInt()
             val code = input.readByteList(codeLength)
             val instructions = InstructionFactory.allInstructions(code)
+            instructions.forEach { it.lines().forEach(::println) }
             val exceptionTableLength = input.readShort()
             val exceptionTable = (0 until exceptionTableLength).map {
                 ExceptionTable.fromDataInput(input)

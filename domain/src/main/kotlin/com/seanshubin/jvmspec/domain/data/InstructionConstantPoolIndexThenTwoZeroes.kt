@@ -1,5 +1,6 @@
 package com.seanshubin.jvmspec.domain.data
 
+import com.seanshubin.jvmspec.domain.util.DataFormat.toDecHex
 import java.io.DataInput
 
 class InstructionConstantPoolIndexThenTwoZeroes(
@@ -7,7 +8,7 @@ class InstructionConstantPoolIndexThenTwoZeroes(
     val constantPoolIndex: Int
 ) : Instruction {
     override fun line(): String {
-        return "${opcode.line} $constantPoolIndex 0 0"
+        return "${opcode.line} ${constantPoolIndex.toDecHex()} 0 0"
     }
 
     companion object {

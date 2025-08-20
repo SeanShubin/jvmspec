@@ -1,5 +1,6 @@
 package com.seanshubin.jvmspec.domain.data
 
+import com.seanshubin.jvmspec.domain.util.DataFormat.toDecHex
 import java.io.DataInput
 
 class InstructionWideFormat1(
@@ -8,7 +9,7 @@ class InstructionWideFormat1(
     val localVariableIndex: UShort
 ) : InstructionWide(opcode) {
     override fun line(): String {
-        return "${opcode.line} ${modifiedOpCode.line} $localVariableIndex"
+        return "${opcode.line} ${modifiedOpCode.line} ${localVariableIndex.toDecHex()}"
     }
 
     companion object {
