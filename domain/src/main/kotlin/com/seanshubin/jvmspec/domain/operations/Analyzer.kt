@@ -48,7 +48,6 @@ class Analyzer(
         val outputFileName = "${fileName}.json"
         val outputFile = outputDir.resolve(outputFileName)
         events.processingFile(inputFile, outputDir)
-        println("$inputFile -> $outputFile")
         val javaFile = files.newInputStream(inputFile).use { inputStream ->
             val dataInput = DataInputStream(inputStream)
             ClassFile.fromDataInput(dataInput)

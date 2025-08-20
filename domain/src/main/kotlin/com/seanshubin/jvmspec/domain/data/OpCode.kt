@@ -1,8 +1,9 @@
 package com.seanshubin.jvmspec.domain.data
 
+import com.seanshubin.jvmspec.domain.util.DataFormat.asHex
 import java.util.Locale.getDefault
 
-enum class OpCode(val opcode: UByte, val operandType: OperandType) {
+enum class OpCode(val ubyte: UByte, val operandType: OperandType) {
     AALOAD(0x32u, OperandType.NONE),
     AASTORE(0x53u, OperandType.NONE),
     ACONST_NULL(0x01u, OperandType.NONE),
@@ -22,7 +23,7 @@ enum class OpCode(val opcode: UByte, val operandType: OperandType) {
     ATHROW(0xbfu, OperandType.NONE),
     BALOAD(0x33u, OperandType.NONE),
     BASTORE(0x54u, OperandType.NONE),
-    BIPUSH(0x10u, OperandType.BYTE_VALUE),
+    BIPUSH(0x10u, OperandType.BYTE),
     CALOAD(0x34u, OperandType.NONE),
     CASTORE(0x55u, OperandType.NONE),
     CHECKCAST(0xc0u, OperandType.CONSTANT_POOL_INDEX),
@@ -162,7 +163,7 @@ enum class OpCode(val opcode: UByte, val operandType: OperandType) {
     LCMP(0x94u, OperandType.NONE),
     LCONST_0(0x09u, OperandType.NONE),
     LCONST_1(0x0au, OperandType.NONE),
-    LDC(0x12u, OperandType.CONSTANT_POOL_INDEX_SHORT),
+    LDC(0x12u, OperandType.CONSTANT_POOL_BYTE_SIZED_INDEX),
     LDC_W(0x13u, OperandType.CONSTANT_POOL_INDEX),
     LDC2_W(0x14u, OperandType.CONSTANT_POOL_INDEX),
     LDIV(0x6du, OperandType.NONE),
@@ -201,14 +202,15 @@ enum class OpCode(val opcode: UByte, val operandType: OperandType) {
     RETURN(0xb1u, OperandType.NONE),
     SALOAD(0x35u, OperandType.NONE),
     SASTORE(0x56u, OperandType.NONE),
-    SIPUSH(0x11u, OperandType.SHORT_VALUE),
+    SIPUSH(0x11u, OperandType.SHORT),
     SWAP(0x5fu, OperandType.NONE),
     TABLESWITCH(0xaau, OperandType.TABLE_SWITCH),
     WIDE(0xc4u, OperandType.WIDE);
     val mnemonic:String get() = name.lowercase(getDefault())
+    val formatted:String get()  = "(0x${ubyte.asHex()})$mnemonic"
     companion object {
         fun fromUByte(opcode: UByte): OpCode {
-            return entries.firstOrNull { it.opcode == opcode }
+            return entries.firstOrNull { it.ubyte == opcode }
                 ?: throw IllegalArgumentException("Unknown opcode: $opcode")
         }
     }

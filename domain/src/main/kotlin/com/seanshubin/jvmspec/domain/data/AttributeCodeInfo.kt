@@ -28,6 +28,7 @@ data class AttributeCodeInfo(
             val maxLocals = input.readShort()
             val codeLength = input.readInt()
             val code = input.readByteList(codeLength)
+            val instructions = InstructionFactory.allInstructions(code)
             val exceptionTableLength = input.readShort()
             val exceptionTable = (0 until exceptionTableLength).map {
                 ExceptionTable.fromDataInput(input)
