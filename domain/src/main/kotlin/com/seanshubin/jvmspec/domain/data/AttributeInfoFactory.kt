@@ -6,15 +6,15 @@ import java.io.DataInput
 object AttributeInfoFactory {
     fun fromDataInput(input: DataInput, constantPoolLookup: ConstantPoolLookup): AttributeInfo {
         val attributeNameIndex = input.readUnsignedShort().toUShort()
+        val attributeName = IndexName.fromIndex(attributeNameIndex, constantPoolLookup)
         val attributeLength = input.readInt()
         val info = input.readByteList(attributeLength)
-        val attributeName = constantPoolLookup.getUtf8(attributeNameIndex)
         val unrecognizedInfo = AttributeUnrecognizedInfo(
-            attributeNameIndex,
+            attributeName,
             attributeLength,
             info
         )
-        val factory = factoryMap[attributeName]
+        val factory = factoryMap[attributeName.name]
         return if (factory == null) unrecognizedInfo else factory(unrecognizedInfo, constantPoolLookup)
     }
 
