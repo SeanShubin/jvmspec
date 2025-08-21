@@ -14,10 +14,10 @@ class InstructionConstantPoolIndexThenCountThenZero(
 
     companion object {
         val OPERAND_TYPE = OperandType.CONSTANT_POOL_INDEX_THEN_COUNT_THEN_ZERO
-        fun fromDataInput(opCode: OpCode, dataInput: DataInput, index: Int): Instruction {
-            val constantPoolIndex = dataInput.readUnsignedShort()
-            val count = dataInput.readUnsignedByte()
-            val zero = dataInput.readByte()
+        fun fromDataInput(opCode: OpCode, input: DataInput, index: Int): Instruction {
+            val constantPoolIndex = input.readUnsignedShort()
+            val count = input.readUnsignedByte()
+            val zero = input.readByte()
             if (zero != 0.toByte()) {
                 throw IllegalArgumentException("Expected zero but found $zero for opcode $opCode")
             }

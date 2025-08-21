@@ -23,6 +23,7 @@ data class FieldInfo(
         ).map(indent)
         return header + content
     }
+
     companion object {
         fun fromDataInput(input: DataInput, constantPoolLookup: ConstantPoolLookup): FieldInfo {
             val accessFlagsMask = input.readUnsignedShort().toUShort()

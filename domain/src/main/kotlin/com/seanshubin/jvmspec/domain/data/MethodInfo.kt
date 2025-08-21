@@ -23,6 +23,7 @@ data class MethodInfo(
         ).map(indent)
         return header + content
     }
+
     companion object {
         fun fromDataInput(input: DataInput, constantPoolLookup: ConstantPoolLookup): MethodInfo {
             val accessFlags = input.readShort()

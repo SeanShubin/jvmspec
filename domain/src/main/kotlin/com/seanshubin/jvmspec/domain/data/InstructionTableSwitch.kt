@@ -19,15 +19,15 @@ class InstructionTableSwitch(
 
     companion object {
         val OPERAND_TYPE = OperandType.TABLE_SWITCH
-        fun fromDataInput(opCode: OpCode, dataInput: DataInput, index: Int): Instruction {
+        fun fromDataInput(opCode: OpCode, input: DataInput, index: Int): Instruction {
             val paddingSize = (-index - 1).mod(4)
-            val padding = List(paddingSize) { dataInput.readByte() }
-            val default = dataInput.readInt()
-            val low = dataInput.readInt()
-            val high = dataInput.readInt()
+            val padding = List(paddingSize) { input.readByte() }
+            val default = input.readInt()
+            val low = input.readInt()
+            val high = input.readInt()
             val jumpOffsetCount = high - low + 1
             val jumpOffsets = List(jumpOffsetCount) {
-                dataInput.readInt()
+                input.readInt()
             }
             return InstructionTableSwitch(
                 opcode = opCode,

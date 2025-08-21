@@ -13,8 +13,8 @@ class InstructionByte(
 
     companion object {
         val OPERAND_TYPE = OperandType.BYTE
-        fun fromDataInput(opCode: OpCode, dataInput: DataInput, codeIndex: Int): Instruction {
-            val value = dataInput.readByte()
+        fun fromDataInput(opCode: OpCode, input: DataInput, codeIndex: Int): Instruction {
+            val value = input.readByte()
             val instruction = InstructionByte(opCode, value)
             return instruction
         }

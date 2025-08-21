@@ -13,8 +13,8 @@ class InstructionConstantPoolIndex(
 
     companion object {
         val OPERAND_TYPE = OperandType.CONSTANT_POOL_INDEX
-        fun fromDataInput(opCode: OpCode, dataInput: DataInput, index: Int): Instruction {
-            val constantPoolIndex = dataInput.readUnsignedShort()
+        fun fromDataInput(opCode: OpCode, input: DataInput, index: Int): Instruction {
+            val constantPoolIndex = input.readUnsignedShort()
             val instruction = InstructionConstantPoolIndex(opCode, constantPoolIndex)
             return instruction
         }

@@ -13,8 +13,8 @@ class InstructionBranchOffset(
 
     companion object {
         val OPERAND_TYPE = OperandType.BRANCH_OFFSET
-        fun fromDataInput(opCode: OpCode, dataInput: DataInput, index: Int): Instruction {
-            val branchOffset = dataInput.readShort()
+        fun fromDataInput(opCode: OpCode, input: DataInput, index: Int): Instruction {
+            val branchOffset = input.readShort()
             val instruction = InstructionBranchOffset(opCode, branchOffset)
             return instruction
         }

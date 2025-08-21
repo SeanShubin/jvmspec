@@ -14,9 +14,9 @@ class InstructionConstantPoolIndexThenDimensions(
 
     companion object {
         val OPERAND_TYPE = OperandType.CONSTANT_POOL_INDEX_THEN_DIMENSIONS
-        fun fromDataInput(opCode: OpCode, dataInput: DataInput, index: Int): Instruction {
-            val classIndex = dataInput.readUnsignedShort()
-            val dimensions = dataInput.readUnsignedByte()
+        fun fromDataInput(opCode: OpCode, input: DataInput, index: Int): Instruction {
+            val classIndex = input.readUnsignedShort()
+            val dimensions = input.readUnsignedByte()
             val instruction = InstructionConstantPoolIndexThenDimensions(opCode, classIndex, dimensions)
             return instruction
         }

@@ -14,9 +14,9 @@ class InstructionWideFormat2(
     }
 
     companion object {
-        fun fromDataInput(opCode: OpCode, modifiedOpCode: OpCode, dataInput: DataInput, index: Int): Instruction {
-            val localVariableIndex = dataInput.readUnsignedShort().toUShort()
-            val constant = dataInput.readShort()
+        fun fromDataInput(opCode: OpCode, modifiedOpCode: OpCode, input: DataInput, index: Int): Instruction {
+            val localVariableIndex = input.readUnsignedShort().toUShort()
+            val constant = input.readShort()
             return InstructionWideFormat2(
                 opcode = opCode,
                 modifiedOpCode = modifiedOpCode,

@@ -24,13 +24,13 @@ abstract class InstructionWide(
             OpCode.IINC
         )
 
-        fun fromDataInput(opCode: OpCode, dataInput: DataInput, index: Int): Instruction {
-            val modifiedOpCodeByte = dataInput.readUnsignedByte().toUByte()
+        fun fromDataInput(opCode: OpCode, input: DataInput, index: Int): Instruction {
+            val modifiedOpCodeByte = input.readUnsignedByte().toUByte()
             val modifiedOpCode = OpCode.fromUByte(modifiedOpCodeByte)
             val instruction = if (format1OpCodes.contains(modifiedOpCode)) {
-                InstructionWideFormat1.fromDataInput(opCode, modifiedOpCode, dataInput, index)
+                InstructionWideFormat1.fromDataInput(opCode, modifiedOpCode, input, index)
             } else if (format2OpCodes.contains(modifiedOpCode)) {
-                InstructionWideFormat2.fromDataInput(opCode, modifiedOpCode, dataInput, index)
+                InstructionWideFormat2.fromDataInput(opCode, modifiedOpCode, input, index)
             } else {
                 throw IllegalArgumentException("Unexpected opcode $opCode for wide instruction at index $index")
             }

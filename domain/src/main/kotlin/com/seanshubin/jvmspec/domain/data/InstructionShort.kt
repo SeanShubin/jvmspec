@@ -13,8 +13,8 @@ class InstructionShort(
 
     companion object {
         val OPERAND_TYPE = OperandType.SHORT
-        fun fromDataInput(opCode: OpCode, dataInput: DataInput, codeIndex: Int): Instruction {
-            val value = dataInput.readShort()
+        fun fromDataInput(opCode: OpCode, input: DataInput, codeIndex: Int): Instruction {
+            val value = input.readShort()
             val instruction = InstructionShort(opCode, value)
             return instruction
         }

@@ -13,8 +13,8 @@ class InstructionLocalVariableIndex(
 
     companion object {
         val OPERAND_TYPE = OperandType.LOCAL_VARIABLE_INDEX
-        fun fromDataInput(opCode: OpCode, dataInput: DataInput, index: Int): Instruction {
-            val localVariableIndex = dataInput.readUnsignedByte()
+        fun fromDataInput(opCode: OpCode, input: DataInput, index: Int): Instruction {
+            val localVariableIndex = input.readUnsignedByte()
             val instruction = InstructionLocalVariableIndex(opCode, localVariableIndex)
             return instruction
         }

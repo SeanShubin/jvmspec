@@ -13,8 +13,8 @@ class InstructionConstantPoolByteSizedIndex(
 
     companion object {
         val OPERAND_TYPE = OperandType.CONSTANT_POOL_BYTE_SIZED_INDEX
-        fun fromDataInput(opCode: OpCode, dataInput: DataInput, index: Int): Instruction {
-            val constantPoolIndex = dataInput.readUnsignedByte()
+        fun fromDataInput(opCode: OpCode, input: DataInput, index: Int): Instruction {
+            val constantPoolIndex = input.readUnsignedByte()
             val instruction = InstructionConstantPoolByteSizedIndex(opCode, constantPoolIndex)
             return instruction
         }

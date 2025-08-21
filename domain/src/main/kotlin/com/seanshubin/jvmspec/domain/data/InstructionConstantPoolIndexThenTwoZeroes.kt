@@ -13,13 +13,13 @@ class InstructionConstantPoolIndexThenTwoZeroes(
 
     companion object {
         val OPERAND_TYPE = OperandType.CONSTANT_POOL_INDEX_THEN_TWO_ZEROES
-        fun fromDataInput(opCode: OpCode, dataInput: DataInput, index: Int): Instruction {
-            val constantPoolIndex = dataInput.readUnsignedShort()
-            val firstZero = dataInput.readByte()
+        fun fromDataInput(opCode: OpCode, input: DataInput, index: Int): Instruction {
+            val constantPoolIndex = input.readUnsignedShort()
+            val firstZero = input.readByte()
             if (firstZero != 0.toByte()) {
                 throw IllegalArgumentException("Expected first zero byte, but found $firstZero")
             }
-            val secondZero = dataInput.readByte()
+            val secondZero = input.readByte()
             if (secondZero != 0.toByte()) {
                 throw IllegalArgumentException("Expected second zero byte, but found $secondZero")
             }

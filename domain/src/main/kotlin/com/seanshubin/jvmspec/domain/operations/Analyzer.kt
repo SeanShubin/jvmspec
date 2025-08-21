@@ -48,8 +48,8 @@ class Analyzer(
         val outputFile = outputDir.resolve(outputFileName)
         events.processingFile(inputFile, outputDir)
         val javaFile = files.newInputStream(inputFile).use { inputStream ->
-            val dataInput = DataInputStream(inputStream)
-            ClassFile.fromDataInput(dataInput)
+            val input = DataInputStream(inputStream)
+            ClassFile.fromDataInput(input)
         }
         val lines = javaFile.lines()
         files.write(outputFile, lines)

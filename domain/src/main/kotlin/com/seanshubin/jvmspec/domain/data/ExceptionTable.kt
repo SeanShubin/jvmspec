@@ -20,12 +20,13 @@ data class ExceptionTable(
         ).map(indent)
         return header + content
     }
+
     companion object {
-        fun fromDataInput(dataInput: DataInput): ExceptionTable {
-            val startProgramCounter = dataInput.readShort()
-            val endProgramCounter = dataInput.readShort()
-            val handlerProgramCounter = dataInput.readShort()
-            val catchType = dataInput.readShort()
+        fun fromDataInput(input: DataInput): ExceptionTable {
+            val startProgramCounter = input.readShort()
+            val endProgramCounter = input.readShort()
+            val handlerProgramCounter = input.readShort()
+            val catchType = input.readShort()
             return ExceptionTable(
                 startProgramCounter,
                 endProgramCounter,

@@ -14,9 +14,9 @@ class InstructionIndexConst(
 
     companion object {
         val OPERAND_TYPE = OperandType.INDEX_CONST
-        fun fromDataInput(opCode: OpCode, dataInput: DataInput, codeIndex: Int): Instruction {
-            val index = dataInput.readUnsignedByte()
-            val const = dataInput.readByte()
+        fun fromDataInput(opCode: OpCode, input: DataInput, codeIndex: Int): Instruction {
+            val index = input.readUnsignedByte()
+            val const = input.readByte()
             val instruction = InstructionIndexConst(opCode, index, const)
             return instruction
         }
