@@ -5,9 +5,9 @@ import java.io.DataInput
 
 data class FieldInfo(
     val accessFlags: Set<AccessFlag>,
-    val nameIndex: Short,
-    val descriptorIndex: Short,
-    val attributesCount: Short,
+    val nameIndex: UShort,
+    val descriptorIndex: UShort,
+    val attributesCount: UShort,
     val attributes: List<AttributeInfo>
 ) {
     fun lines(index: Int): List<String> {
@@ -28,9 +28,9 @@ data class FieldInfo(
         fun fromDataInput(input: DataInput, constantPoolLookup: ConstantPoolLookup): FieldInfo {
             val accessFlagsMask = input.readUnsignedShort().toUShort()
             val accessFlags = AccessFlag.fromMask(accessFlagsMask)
-            val nameIndex = input.readShort()
-            val descriptorIndex = input.readShort()
-            val attributesCount = input.readShort()
+            val nameIndex = input.readUnsignedShort().toUShort()
+            val descriptorIndex = input.readUnsignedShort().toUShort()
+            val attributesCount = input.readUnsignedShort().toUShort()
             val attributes =
                 List(attributesCount.toInt()) { AttributeInfoFactory.fromDataInput(input, constantPoolLookup) }
             return FieldInfo(accessFlags, nameIndex, descriptorIndex, attributesCount, attributes)

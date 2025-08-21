@@ -5,10 +5,10 @@ import com.seanshubin.jvmspec.domain.util.DataFormat.toDecHex
 import java.io.DataInput
 
 data class ExceptionTable(
-    val startProgramCounter: Short,
-    val endProgramCounter: Short,
-    val handlerProgramCounter: Short,
-    val catchType: Short
+    val startProgramCounter: UShort,
+    val endProgramCounter: UShort,
+    val handlerProgramCounter: UShort,
+    val catchType: UShort
 ) {
     fun lines(index: Int): List<String> {
         val header = listOf("ExceptionTable[$index]")
@@ -23,10 +23,10 @@ data class ExceptionTable(
 
     companion object {
         fun fromDataInput(input: DataInput): ExceptionTable {
-            val startProgramCounter = input.readShort()
-            val endProgramCounter = input.readShort()
-            val handlerProgramCounter = input.readShort()
-            val catchType = input.readShort()
+            val startProgramCounter = input.readUnsignedShort().toUShort()
+            val endProgramCounter = input.readUnsignedShort().toUShort()
+            val handlerProgramCounter = input.readUnsignedShort().toUShort()
+            val catchType = input.readUnsignedShort().toUShort()
             return ExceptionTable(
                 startProgramCounter,
                 endProgramCounter,

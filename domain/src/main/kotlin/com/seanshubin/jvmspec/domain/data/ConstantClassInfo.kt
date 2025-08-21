@@ -5,7 +5,7 @@ import java.io.DataInput
 data class ConstantClassInfo(
     override val tag: ConstantPoolTag,
     override val index: Int,
-    val nameIndex: Short
+    val nameIndex: UShort
 ) : ConstantInfo {
     override fun line(): String {
         return "[$index] ${tag.line()} $nameIndex"
@@ -16,7 +16,7 @@ data class ConstantClassInfo(
     companion object {
         val TAG: ConstantPoolTag = ConstantPoolTag.CLASS
         fun fromDataInput(tag: ConstantPoolTag, index: Int, input: DataInput): ConstantClassInfo {
-            val nameIndex = input.readShort()
+            val nameIndex = input.readUnsignedShort().toUShort()
             return ConstantClassInfo(tag, index, nameIndex)
         }
     }

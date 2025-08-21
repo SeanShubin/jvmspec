@@ -4,10 +4,10 @@ import com.seanshubin.jvmspec.domain.util.DataFormat.indent
 import java.io.DataInput
 
 data class MethodInfo(
-    val accessFlags: Short,
-    val nameIndex: Short,
-    val descriptorIndex: Short,
-    val attributesCount: Short,
+    val accessFlags: UShort,
+    val nameIndex: UShort,
+    val descriptorIndex: UShort,
+    val attributesCount: UShort,
     val attributes: List<AttributeInfo>
 ) {
     fun lines(index: Int): List<String> {
@@ -26,10 +26,10 @@ data class MethodInfo(
 
     companion object {
         fun fromDataInput(input: DataInput, constantPoolLookup: ConstantPoolLookup): MethodInfo {
-            val accessFlags = input.readShort()
-            val nameIndex = input.readShort()
-            val descriptorIndex = input.readShort()
-            val attributesCount = input.readShort()
+            val accessFlags = input.readUnsignedShort().toUShort()
+            val nameIndex = input.readUnsignedShort().toUShort()
+            val descriptorIndex = input.readUnsignedShort().toUShort()
+            val attributesCount = input.readUnsignedShort().toUShort()
             val attributes =
                 List(attributesCount.toInt()) { AttributeInfoFactory.fromDataInput(input, constantPoolLookup) }
             return MethodInfo(accessFlags, nameIndex, descriptorIndex, attributesCount, attributes)

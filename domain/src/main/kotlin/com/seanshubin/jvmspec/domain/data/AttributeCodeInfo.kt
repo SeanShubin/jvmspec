@@ -9,14 +9,14 @@ data class AttributeCodeInfo(
     override val attributeNameIndex: UShort,
     override val attributeLength: Int,
     override val info: List<Byte>,
-    val maxStack: Short,
-    val maxLocals: Short,
+    val maxStack: UShort,
+    val maxLocals: UShort,
     val codeLength: Int,
     val code: List<Byte>,
     val instructions: List<InstructionAndBytes>,
-    val exceptionTableLength: Short,
+    val exceptionTableLength: UShort,
     val exceptionTable: List<ExceptionTable>,
-    val attributesCount: Short,
+    val attributesCount: UShort,
     val attributes: List<AttributeInfo>
 ) : AttributeInfo {
     override fun lines(index: Int): List<String> {
@@ -48,17 +48,17 @@ data class AttributeCodeInfo(
             constantPoolLookup: ConstantPoolLookup
         ): AttributeCodeInfo {
             val input = DataInputStream(ByteArrayInputStream(attributeInfo.info.toByteArray()))
-            val maxStack = input.readShort()
-            val maxLocals = input.readShort()
+            val maxStack = input.readUnsignedShort().toUShort()
+            val maxLocals = input.readUnsignedShort().toUShort()
             val codeLength = input.readInt()
             val code = input.readByteList(codeLength)
             val instructions = InstructionFactory.allInstructions(code)
-            val exceptionTableLength = input.readShort()
-            val exceptionTable = (0 until exceptionTableLength).map {
+            val exceptionTableLength = input.readUnsignedShort().toUShort()
+            val exceptionTable = (0 until exceptionTableLength.toInt()).map {
                 ExceptionTable.fromDataInput(input)
             }
-            val attributesCount = input.readShort()
-            val attributes = (0 until attributesCount).map {
+            val attributesCount = input.readUnsignedShort().toUShort()
+            val attributes = (0 until attributesCount.toInt()).map {
                 AttributeInfoFactory.fromDataInput(input, constantPoolLookup)
             }
             return AttributeCodeInfo(

@@ -5,8 +5,8 @@ import java.io.DataInput
 data class ConstantDynamicInfo(
     override val tag: ConstantPoolTag,
     override val index: Int,
-    val bootstrapMethodAttrIndex: Short,
-    val nameAndTypeIndex: Short
+    val bootstrapMethodAttrIndex: UShort,
+    val nameAndTypeIndex: UShort
 ) : ConstantInfo {
     override fun line(): String {
         return "[$index] ${tag.line()} $bootstrapMethodAttrIndex $nameAndTypeIndex"
@@ -17,8 +17,8 @@ data class ConstantDynamicInfo(
     companion object {
         val TAG: ConstantPoolTag = ConstantPoolTag.DYNAMIC
         fun fromDataInput(tag: ConstantPoolTag, index: Int, input: DataInput): ConstantDynamicInfo {
-            val bootstrapMethodAttrIndex = input.readShort()
-            val nameAndTypeIndex = input.readShort()
+            val bootstrapMethodAttrIndex = input.readUnsignedShort().toUShort()
+            val nameAndTypeIndex = input.readUnsignedShort().toUShort()
             return ConstantDynamicInfo(tag, index, bootstrapMethodAttrIndex, nameAndTypeIndex)
         }
     }
