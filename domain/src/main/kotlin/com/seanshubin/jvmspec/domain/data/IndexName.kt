@@ -8,5 +8,9 @@ data class IndexName(val index: UShort, val name: String) {
             val name = constantPoolLookup.getUtf8(index)
             return IndexName(index, name)
         }
+        fun fromClassIndex(classIndex: UShort, constantPoolLookup: ConstantPoolLookup): IndexName {
+            val name = constantPoolLookup.getClassName(classIndex)
+            return IndexName(classIndex, name)
+        }
     }
 }

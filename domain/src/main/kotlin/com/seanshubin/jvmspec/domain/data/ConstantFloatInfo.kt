@@ -5,10 +5,10 @@ import java.io.DataInput
 data class ConstantFloatInfo(
     override val tag: ConstantPoolTag,
     override val index: Int,
-    val bytes: Int
+    val floatValue: Float
 ) : ConstantInfo {
     override fun line(): String {
-        return "[$index] ${tag.line()} $bytes"
+        return "[$index] ${tag.line()} $floatValue"
     }
 
     override val entriesTaken: Int get() = 1
@@ -17,8 +17,8 @@ data class ConstantFloatInfo(
         val TAG: ConstantPoolTag = ConstantPoolTag.FLOAT
 
         fun fromDataInput(tag: ConstantPoolTag, index: Int, input: DataInput): ConstantFloatInfo {
-            val bytes = input.readInt()
-            return ConstantFloatInfo(tag, index, bytes)
+            val floatValue = input.readFloat()
+            return ConstantFloatInfo(tag, index, floatValue)
         }
     }
 }

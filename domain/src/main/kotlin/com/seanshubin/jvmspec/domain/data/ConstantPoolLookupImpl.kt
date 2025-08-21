@@ -15,4 +15,9 @@ class ConstantPoolLookupImpl(constantList: List<ConstantInfo>) : ConstantPoolLoo
         val utf8 = constantMap.getValue(constantIndex.toInt()) as ConstantUtf8Info
         return utf8.utf8Value
     }
+
+    override fun getClassName(constantIndex: UShort): String {
+        val classInfo = constantMap.getValue(constantIndex.toInt()) as ConstantClassInfo
+        return getUtf8(classInfo.nameIndex)
+    }
 }

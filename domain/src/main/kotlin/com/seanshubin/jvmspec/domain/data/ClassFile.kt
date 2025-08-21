@@ -11,10 +11,10 @@ data class ClassFile(
     val constantPoolCount: UShort,
     val constantPool: List<ConstantInfo>,
     val accessFlags: Set<AccessFlag>,
-    val thisClass: UShort,
-    val superClass: UShort,
+    val thisClass: IndexName,
+    val superClass: IndexName?,
     val interfacesCount: UShort,
-    val interfaces: List<UShort>,
+    val interfaces: List<IndexName>,
     val fieldsCount: UShort,
     val fields: List<FieldInfo>,
     val methodsCount: UShort,
@@ -25,7 +25,7 @@ data class ClassFile(
     fun lines(): List<String> {
         val constantPoolLines = constantPool.map { it.line() }.map(indent)
         val interfaceLines = interfaces.mapIndexed { index, interfaceValue ->
-            "[$index] ${interfaceValue.toDecHex()}"
+            "[$index] ${interfaceValue.line()}"
         }.map(indent)
         return listOf(
             "magic: ${magic.toDecHex()}",
@@ -35,8 +35,8 @@ data class ClassFile(
             "constantPool:",
             *constantPoolLines.toTypedArray(),
             "accessFlags: $accessFlags",
-            "thisClass: ${thisClass.toDecHex()}",
-            "superClass: ${superClass.toDecHex()}",
+            "thisClass: ${thisClass.line()}",
+            "superClass: ${superClass?.line() ?: "<null>"}",
             "interfacesCount: ${interfacesCount.toDecHex()}",
             "interfaces:",
             *interfaceLines.toTypedArray(),
@@ -60,20 +60,32 @@ data class ClassFile(
             val majorVersion = input.readUnsignedShort().toUShort()
             val constantPoolCount = input.readUnsignedShort().toUShort()
             val constantPool = readConstantPool(input, constantPoolCount)
-            val constantNameLookup = ConstantPoolLookupImpl(constantPool)
+            val constantPoolLookup = ConstantPoolLookupImpl(constantPool)
             val accessFlagsMask = input.readUnsignedShort().toUShort()
             val accessFlags = AccessFlag.fromMask(accessFlagsMask)
-            val thisClass = input.readUnsignedShort().toUShort()
-            val superClass = input.readUnsignedShort().toUShort()
+            val thisClassIndex = input.readUnsignedShort().toUShort()
+            val thisClass = IndexName.fromClassIndex(
+                thisClassIndex,
+                constantPoolLookup
+            )
+            val superClassIndex = input.readUnsignedShort().toUShort()
+            val superClass = if (superClassIndex.toInt() == 0) null else IndexName.fromClassIndex(
+                superClassIndex,
+                constantPoolLookup
+            )
             val interfacesCount = input.readUnsignedShort().toUShort()
-            val interfaces = List(interfacesCount.toInt()) { input.readUnsignedShort().toUShort() }
+            val interfaces = List(interfacesCount.toInt()) {
+                val interfaceIndex = input.readUnsignedShort().toUShort()
+                val interfaceValue = IndexName.fromClassIndex(interfaceIndex, constantPoolLookup)
+                interfaceValue
+            }
             val fieldsCount = input.readUnsignedShort().toUShort()
-            val fields = List(fieldsCount.toInt()) { FieldInfo.fromDataInput(input, constantNameLookup) }
+            val fields = List(fieldsCount.toInt()) { FieldInfo.fromDataInput(input, constantPoolLookup) }
             val methodsCount = input.readUnsignedShort().toUShort()
-            val methods = List(methodsCount.toInt()) { MethodInfo.fromDataInput(input, constantNameLookup) }
+            val methods = List(methodsCount.toInt()) { MethodInfo.fromDataInput(input, constantPoolLookup) }
             val attributesCount = input.readUnsignedShort().toUShort()
             val attributes =
-                List(attributesCount.toInt()) { AttributeInfoFactory.fromDataInput(input, constantNameLookup) }
+                List(attributesCount.toInt()) { AttributeInfoFactory.fromDataInput(input, constantPoolLookup) }
             return ClassFile(
                 magic,
                 minorVersion,
