@@ -1,39 +1,44 @@
 package com.seanshubin.jvmspec.domain.data
 
+import com.seanshubin.jvmspec.domain.util.DataFormat.toDecHex
 import java.io.DataInput
 
 data class ClassFile(
-    val magic: Int,
-    val minorVersion: Short,
-    val majorVersion: Short,
-    val constantPoolCount: Short,
+    val magic: UInt,
+    val minorVersion: UShort,
+    val majorVersion: UShort,
+    val constantPoolCount: UShort,
     val constantPool: List<ConstantInfo>,
-    val accessFlags: Short,
-    val thisClass: Short,
-    val superClass: Short,
-    val interfacesCount: Short,
-    val interfaces: List<Short>,
-    val fieldsCount: Short,
+    val accessFlags: Set<AccessFlag>,
+    val thisClass: UShort,
+    val superClass: UShort,
+    val interfacesCount: UShort,
+    val interfaces: List<UShort>,
+    val fieldsCount: UShort,
     val fields: List<FieldInfo>,
-    val methodsCount: Short,
+    val methodsCount: UShort,
     val methods: List<MethodInfo>,
-    val attributesCount: Short,
+    val attributesCount: UShort,
     val attributes: List<AttributeInfo>
 ) {
     fun lines(): List<String> {
         val constantPoolLines = constantPool.map { it.line() }.map(indent)
+        val interfaceLines = interfaces.mapIndexed { index, interfaceValue ->
+            "[$index] ${interfaceValue.toDecHex()}"
+        }.map(indent)
         return listOf(
-            "magic: $magic",
-            "minorVersion: $minorVersion",
-            "majorVersion: $majorVersion",
-            "constantPoolCount: $constantPoolCount",
+            "magic: ${magic.toDecHex()}",
+            "minorVersion: ${minorVersion.toDecHex()}",
+            "majorVersion: ${majorVersion.toDecHex()}",
+            "constantPoolCount: ${constantPoolCount.toDecHex()}",
             "constantPool:",
             *constantPoolLines.toTypedArray(),
             "accessFlags: $accessFlags",
-            "thisClass: $thisClass",
-            "superClass: $superClass",
-            "interfacesCount: $interfacesCount",
-            "interfaces: ${interfaces.joinToString(", ")}",
+            "thisClass: ${thisClass.toDecHex()}",
+            "superClass: ${superClass.toDecHex()}",
+            "interfacesCount: ${interfacesCount.toDecHex()}",
+            "interfaces:",
+            *interfaceLines.toTypedArray(),
             "fieldsCount: $fieldsCount",
             "fields: ${fields.joinToString("\n")}",
             "methodsCount: $methodsCount",
@@ -46,22 +51,23 @@ data class ClassFile(
     companion object {
         val indent: (String) -> String = { it.padStart(it.length + 2) }
         fun fromDataInput(input: DataInput): ClassFile {
-            val magic = input.readInt()
-            val minorVersion = input.readShort()
-            val majorVersion = input.readShort()
-            val constantPoolCount = input.readShort()
+            val magic = input.readInt().toUInt()
+            val minorVersion = input.readUnsignedShort().toUShort()
+            val majorVersion = input.readUnsignedShort().toUShort()
+            val constantPoolCount = input.readUnsignedShort().toUShort()
             val constantPool = readConstantPool(input, constantPoolCount)
             val constantNameLookup = ConstantPoolLookupImpl(constantPool)
-            val accessFlags = input.readShort()
-            val thisClass = input.readShort()
-            val superClass = input.readShort()
-            val interfacesCount = input.readShort()
-            val interfaces = List(interfacesCount.toInt()) { input.readShort() }
-            val fieldsCount = input.readShort()
+            val accessFlagsMask = input.readUnsignedShort().toUShort()
+            val accessFlags = AccessFlag.fromMask(accessFlagsMask)
+            val thisClass = input.readUnsignedShort().toUShort()
+            val superClass = input.readUnsignedShort().toUShort()
+            val interfacesCount = input.readUnsignedShort().toUShort()
+            val interfaces = List(interfacesCount.toInt()) { input.readUnsignedShort().toUShort() }
+            val fieldsCount = input.readUnsignedShort().toUShort()
             val fields = List(fieldsCount.toInt()) { FieldInfo.fromDataInput(input, constantNameLookup) }
-            val methodsCount = input.readShort()
+            val methodsCount = input.readUnsignedShort().toUShort()
             val methods = List(methodsCount.toInt()) { MethodInfo.fromDataInput(input, constantNameLookup) }
-            val attributesCount = input.readShort()
+            val attributesCount = input.readUnsignedShort().toUShort()
             val attributes =
                 List(attributesCount.toInt()) { AttributeInfoFactory.fromDataInput(input, constantNameLookup) }
             return ClassFile(
@@ -84,10 +90,11 @@ data class ClassFile(
             )
         }
 
-        fun readConstantPool(input: DataInput, count: Short): List<ConstantInfo> {
+        fun readConstantPool(input: DataInput, count: UShort): List<ConstantInfo> {
             var index = 1
+            val intCount = count.toInt()
             val constantPool = mutableListOf<ConstantInfo>()
-            while (index < count) {
+            while (index < intCount) {
                 val constantInfo = ConstantInfoFactory.fromDataInput(index, input)
                 constantPool.add(constantInfo)
                 index += constantInfo.entriesTaken
