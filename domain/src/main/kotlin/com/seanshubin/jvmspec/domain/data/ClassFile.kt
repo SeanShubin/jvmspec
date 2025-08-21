@@ -1,5 +1,6 @@
 package com.seanshubin.jvmspec.domain.data
 
+import com.seanshubin.jvmspec.domain.util.DataFormat.indent
 import com.seanshubin.jvmspec.domain.util.DataFormat.toDecHex
 import java.io.DataInput
 
@@ -40,16 +41,19 @@ data class ClassFile(
             "interfaces:",
             *interfaceLines.toTypedArray(),
             "fieldsCount: $fieldsCount",
-            "fields: ${fields.joinToString("\n")}",
+            *fields.flatMapIndexed { index, field ->
+                field.lines(index)
+            }.toTypedArray(),
             "methodsCount: $methodsCount",
-            "methods: ${methods.joinToString("\n")}",
+            *methods.flatMapIndexed { index, method ->
+                method.lines(index)
+            }.toTypedArray(),
             "attributesCount: $attributesCount",
             "attributes: ${attributes.joinToString("\n")}"
         )
     }
 
     companion object {
-        val indent: (String) -> String = { it.padStart(it.length + 2) }
         fun fromDataInput(input: DataInput): ClassFile {
             val magic = input.readInt().toUInt()
             val minorVersion = input.readUnsignedShort().toUShort()

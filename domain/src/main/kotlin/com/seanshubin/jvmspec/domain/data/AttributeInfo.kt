@@ -4,4 +4,5 @@ interface AttributeInfo {
     val attributeNameIndex: UShort
     val attributeLength: Int
     val info: List<Byte>
+    fun lines(index: Int): List<String>
 }

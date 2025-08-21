@@ -1,6 +1,7 @@
 package com.seanshubin.jvmspec.domain.util
 
 object DataFormat {
+    val indent: (String) -> String = { it.padStart(it.length + 2) }
     fun Int.toDecHex(): String = "${this}(0x${this.toHex()})"
     fun Int.toHex(): String = String.format("%02X", this)
     fun Short.toHex(): String = String.format("%02X", this)
