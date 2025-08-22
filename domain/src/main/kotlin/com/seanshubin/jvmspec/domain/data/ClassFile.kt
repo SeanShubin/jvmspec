@@ -12,10 +12,10 @@ data class ClassFile(
     val constantPool: List<ConstantInfo>,
     val constantPoolLookup: ConstantPoolLookup,
     val accessFlags: Set<AccessFlag>,
-    val thisClass: IndexName,
-    val superClass: IndexName?,
+    val thisClass: UShort,
+    val superClass: UShort,
     val interfacesCount: UShort,
-    val interfaces: List<IndexName>,
+    val interfaces: List<UShort>,
     val fieldsCount: UShort,
     val fields: List<FieldInfo>,
     val methodsCount: UShort,
@@ -25,7 +25,7 @@ data class ClassFile(
 ) {
     fun lines(): List<String> {
         val interfaceLines = interfaces.mapIndexed { index, interfaceValue ->
-            "[$index] ${interfaceValue.line()}"
+            "[$index] ${constantPoolLookup.classLine(interfaceValue)}"
         }.map(indent)
         return listOf(
             "magic: ${magic.toDecHex()}",
@@ -35,21 +35,23 @@ data class ClassFile(
             "constantPool:",
             *constantPoolLookup.lines().toTypedArray(),
             "accessFlags: $accessFlags",
-            "thisClass: ${thisClass.line()}",
-            "superClass: ${superClass?.line() ?: "<null>"}",
+            "thisClass: ${constantPoolLookup.classLine(thisClass)}",
+            "superClass: ${constantPoolLookup.classLine(superClass)}",
             "interfacesCount: ${interfacesCount.toDecHex()}",
             "interfaces:",
             *interfaceLines.toTypedArray(),
             "fieldsCount: $fieldsCount",
             *fields.flatMapIndexed { index, field ->
-                field.lines(index)
+                field.lines(index, constantPoolLookup)
             }.toTypedArray(),
             "methodsCount: $methodsCount",
             *methods.flatMapIndexed { index, method ->
-                method.lines(index)
+                method.lines(index, constantPoolLookup)
             }.toTypedArray(),
             "attributesCount: $attributesCount",
-            "attributes: ${attributes.joinToString("\n")}"
+            *attributes.flatMapIndexed { index, attribute ->
+                attribute.lines(index, constantPoolLookup)
+            }.toTypedArray()
         )
     }
 
@@ -63,21 +65,11 @@ data class ClassFile(
             val constantPoolLookup = ConstantPoolLookupImpl(constantPool)
             val accessFlagsMask = input.readUnsignedShort().toUShort()
             val accessFlags = AccessFlag.fromMask(accessFlagsMask)
-            val thisClassIndex = input.readUnsignedShort().toUShort()
-            val thisClass = IndexName.fromClassIndex(
-                thisClassIndex,
-                constantPoolLookup
-            )
-            val superClassIndex = input.readUnsignedShort().toUShort()
-            val superClass = if (superClassIndex.toInt() == 0) null else IndexName.fromClassIndex(
-                superClassIndex,
-                constantPoolLookup
-            )
+            val thisClass = input.readUnsignedShort().toUShort()
+            val superClass = input.readUnsignedShort().toUShort()
             val interfacesCount = input.readUnsignedShort().toUShort()
             val interfaces = List(interfacesCount.toInt()) {
-                val interfaceIndex = input.readUnsignedShort().toUShort()
-                val interfaceValue = IndexName.fromClassIndex(interfaceIndex, constantPoolLookup)
-                interfaceValue
+                input.readUnsignedShort().toUShort()
             }
             val fieldsCount = input.readUnsignedShort().toUShort()
             val fields = List(fieldsCount.toInt()) { FieldInfo.fromDataInput(input, constantPoolLookup) }

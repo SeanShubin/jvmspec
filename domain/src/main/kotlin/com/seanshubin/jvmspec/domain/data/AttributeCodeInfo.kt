@@ -6,7 +6,7 @@ import java.io.ByteArrayInputStream
 import java.io.DataInputStream
 
 data class AttributeCodeInfo(
-    override val attributeName: IndexName,
+    override val attributeIndex: UShort,
     override val attributeLength: Int,
     override val info: List<Byte>,
     val maxStack: UShort,
@@ -19,10 +19,10 @@ data class AttributeCodeInfo(
     val attributesCount: UShort,
     val attributes: List<AttributeInfo>
 ) : AttributeInfo {
-    override fun lines(index: Int): List<String> {
+    override fun lines(index: Int, constantPoolLookup: ConstantPoolLookup): List<String> {
         val header = listOf("Attribute[$index]")
         val content = listOf(
-            "attributeName=${attributeName.line()}",
+            "attributeName=${constantPoolLookup.utf8Line(attributeIndex)}",
             "attributeLength=$attributeLength",
             "maxStack=$maxStack",
             "maxLocals=$maxLocals",
@@ -35,7 +35,7 @@ data class AttributeCodeInfo(
             }.toTypedArray(),
             "attributesCount=$attributesCount",
             *attributes.flatMapIndexed { index, attribute ->
-                attribute.lines(index)
+                attribute.lines(index, constantPoolLookup)
             }.map(indent).toTypedArray()
         ).map(indent)
         return header + content
@@ -62,7 +62,7 @@ data class AttributeCodeInfo(
                 AttributeInfoFactory.fromDataInput(input, constantPoolLookup)
             }
             return AttributeCodeInfo(
-                attributeInfo.attributeName,
+                attributeInfo.attributeIndex,
                 attributeInfo.attributeLength,
                 attributeInfo.info,
                 maxStack,

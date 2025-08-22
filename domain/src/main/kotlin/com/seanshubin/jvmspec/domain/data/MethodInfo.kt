@@ -5,20 +5,20 @@ import java.io.DataInput
 
 data class MethodInfo(
     val accessFlags: UShort,
-    val name: IndexName,
-    val descriptor: IndexName,
+    val nameIndex: UShort,
+    val descriptorIndex: UShort,
     val attributesCount: UShort,
     val attributes: List<AttributeInfo>
 ) {
-    fun lines(index: Int): List<String> {
+    fun lines(index: Int, constantPoolLookup: ConstantPoolLookup): List<String> {
         val header = listOf("Method[$index]")
         val content = listOf(
             "accessFlags=$accessFlags",
-            "name=${name.line()}",
-            "descriptor=${descriptor.line()}",
+            "name=${constantPoolLookup.utf8Line(nameIndex)}",
+            "descriptor=${constantPoolLookup.utf8Line(descriptorIndex)}",
             "attributesCount=$attributesCount",
             *attributes.flatMapIndexed { index, attribute ->
-                attribute.lines(index)
+                attribute.lines(index, constantPoolLookup)
             }.toTypedArray()
         ).map(indent)
         return header + content
@@ -28,13 +28,11 @@ data class MethodInfo(
         fun fromDataInput(input: DataInput, constantPoolLookup: ConstantPoolLookup): MethodInfo {
             val accessFlags = input.readUnsignedShort().toUShort()
             val nameIndex = input.readUnsignedShort().toUShort()
-            val name = IndexName.fromIndex(nameIndex, constantPoolLookup)
             val descriptorIndex = input.readUnsignedShort().toUShort()
-            val descriptor = IndexName.fromIndex(descriptorIndex, constantPoolLookup)
             val attributesCount = input.readUnsignedShort().toUShort()
             val attributes =
                 List(attributesCount.toInt()) { AttributeInfoFactory.fromDataInput(input, constantPoolLookup) }
-            return MethodInfo(accessFlags, name, descriptor, attributesCount, attributes)
+            return MethodInfo(accessFlags, nameIndex, descriptorIndex, attributesCount, attributes)
         }
     }
 }

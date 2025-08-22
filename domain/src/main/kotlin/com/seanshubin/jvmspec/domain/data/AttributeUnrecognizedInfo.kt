@@ -4,14 +4,14 @@ import com.seanshubin.jvmspec.domain.util.DataFormat.indent
 import com.seanshubin.jvmspec.domain.util.DataFormat.toHex
 
 data class AttributeUnrecognizedInfo(
-    override val attributeName: IndexName,
+    override val attributeIndex: UShort,
     override val attributeLength: Int,
     override val info: List<Byte>
 ) : AttributeInfo {
-    override fun lines(index: Int): List<String> {
+    override fun lines(index: Int, constantPoolLookup: ConstantPoolLookup): List<String> {
         val header = listOf("Attribute[$index]")
         val content = listOf(
-            "attributeName=${attributeName.line()}",
+            "attributeName=${constantPoolLookup.utf8Line(attributeIndex)}",
             "attributeLength=$attributeLength",
             "bytes=${info.toHex()}"
         ).map(indent)
@@ -24,7 +24,7 @@ data class AttributeUnrecognizedInfo(
             constantPoolLookup: ConstantPoolLookup
         ): AttributeUnrecognizedInfo {
             return AttributeUnrecognizedInfo(
-                attributeInfo.attributeName,
+                attributeInfo.attributeIndex,
                 attributeInfo.attributeLength,
                 attributeInfo.info
             )
