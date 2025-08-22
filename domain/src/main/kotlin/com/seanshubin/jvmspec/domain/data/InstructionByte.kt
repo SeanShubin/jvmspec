@@ -7,7 +7,7 @@ class InstructionByte(
     override val opcode: OpCode,
     val value: Byte
 ) : Instruction {
-    override fun line(): String {
+    override fun line(constantPoolLookup: ConstantPoolLookup): String {
         return "${opcode.line} ${value.toDecHex()}"
     }
 

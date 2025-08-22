@@ -7,7 +7,7 @@ class InstructionLocalVariableIndex(
     override val opcode: OpCode,
     val localVariableIndex: Int
 ) : Instruction {
-    override fun line(): String {
+    override fun line(constantPoolLookup: ConstantPoolLookup): String {
         return "${opcode.line} ${localVariableIndex.toDecHex()}"
     }
 

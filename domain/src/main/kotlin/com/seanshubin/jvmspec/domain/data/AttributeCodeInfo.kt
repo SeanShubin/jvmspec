@@ -22,13 +22,13 @@ data class AttributeCodeInfo(
     override fun lines(index: Int, constantPoolLookup: ConstantPoolLookup): List<String> {
         val header = listOf("Attribute[$index]")
         val content = listOf(
-            "attributeName=${constantPoolLookup.utf8Line(attributeIndex)}",
+            "attributeName=${constantPoolLookup.line(attributeIndex)}",
             "attributeLength=$attributeLength",
             "maxStack=$maxStack",
             "maxLocals=$maxLocals",
             "codeLength=$codeLength",
             "instructions:",
-            *instructions.map { it.line() }.map(indent).toTypedArray(),
+            *instructions.map { it.line(constantPoolLookup) }.map(indent).toTypedArray(),
             "exceptionTableLength=$exceptionTableLength",
             *exceptionTable.flatMapIndexed { index, exceptionTable ->
                 exceptionTable.lines(index)

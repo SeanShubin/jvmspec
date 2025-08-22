@@ -25,7 +25,7 @@ data class ClassFile(
 ) {
     fun lines(): List<String> {
         val interfaceLines = interfaces.mapIndexed { index, interfaceValue ->
-            "[$index] ${constantPoolLookup.classLine(interfaceValue)}"
+            "[$index] ${constantPoolLookup.line(interfaceValue)}"
         }
         return listOf(
             "magic: ${magic.toDecHex()}",
@@ -35,8 +35,8 @@ data class ClassFile(
             "constantPool:",
             *constantPoolLookup.lines().map(indent).toTypedArray(),
             "accessFlags: $accessFlags",
-            "thisClass: ${constantPoolLookup.classLine(thisClass)}",
-            "superClass: ${constantPoolLookup.classLine(superClass)}",
+            "thisClass: ${constantPoolLookup.line(thisClass)}",
+            "superClass: ${constantPoolLookup.line(superClass)}",
             "interfacesCount: ${interfacesCount.toDecHex()}",
             "interfaces:",
             *interfaceLines.map(indent).toTypedArray(),

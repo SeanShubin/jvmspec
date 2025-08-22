@@ -7,4 +7,5 @@ interface ConstantPoolLookup {
     fun nameAndTypeLine(index: UShort): String
     fun referenceIndexLine(index: UShort): String
     fun lines(): List<String>
+    fun line(index: UShort): String
 }

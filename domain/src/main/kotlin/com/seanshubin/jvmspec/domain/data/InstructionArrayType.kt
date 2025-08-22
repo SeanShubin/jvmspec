@@ -6,7 +6,7 @@ class InstructionArrayType(
     override val opcode: OpCode,
     val arrayType: ArrayType
 ) : Instruction {
-    override fun line(): String {
+    override fun line(constantPoolLookup: ConstantPoolLookup): String {
         return "${opcode.line} ${arrayType.line()}"
     }
 

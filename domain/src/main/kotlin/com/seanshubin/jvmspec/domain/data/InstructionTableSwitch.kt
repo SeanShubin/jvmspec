@@ -12,7 +12,7 @@ class InstructionTableSwitch(
     val high: Int,
     val jumpOffsets: List<Int>,
 ) : Instruction {
-    override fun line(): String {
+    override fun line(constantPoolLookup: ConstantPoolLookup): String {
         val jumpOffsetsString = jumpOffsets.joinToString(" ") { it.toDecHex() }
         return "${opcode.line} padding(0x${padding.toHex()}) ${default.toDecHex()} ${low.toDecHex()} ${high.toDecHex()} $jumpOffsetsString"
     }

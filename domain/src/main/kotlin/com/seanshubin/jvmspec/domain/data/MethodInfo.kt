@@ -14,8 +14,8 @@ data class MethodInfo(
         val header = listOf("Method[$index]")
         val content = listOf(
             "accessFlags=$accessFlags",
-            "name=${constantPoolLookup.utf8Line(nameIndex)}",
-            "descriptor=${constantPoolLookup.utf8Line(descriptorIndex)}",
+            "name=${constantPoolLookup.line(nameIndex)}",
+            "descriptor=${constantPoolLookup.line(descriptorIndex)}",
             "attributesCount=$attributesCount",
             *attributes.flatMapIndexed { index, attribute ->
                 attribute.lines(index, constantPoolLookup)

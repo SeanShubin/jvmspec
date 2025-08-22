@@ -11,7 +11,7 @@ data class AttributeUnrecognizedInfo(
     override fun lines(index: Int, constantPoolLookup: ConstantPoolLookup): List<String> {
         val header = listOf("Attribute[$index]")
         val content = listOf(
-            "attributeName=${constantPoolLookup.utf8Line(attributeIndex)}",
+            "attributeName=${constantPoolLookup.line(attributeIndex)}",
             "attributeLength=$attributeLength",
             "bytes=${info.toHex()}"
         ).map(indent)

@@ -5,7 +5,7 @@ import java.io.DataInput
 class InstructionNoArg(
     override val opcode: OpCode
 ) : Instruction {
-    override fun line(): String {
+    override fun line(constantPoolLookup: ConstantPoolLookup): String {
         return opcode.line
     }
 

@@ -22,6 +22,12 @@ class ConstantPoolLookupImpl(val constantList: List<ConstantInfo>) : ConstantPoo
         return constantList.map { it.annotatedLine(this) }
     }
 
+    override fun line(index: UShort): String {
+        if (index.toInt() == 0) return "<none>"
+        val info = constantMap.getValue(index.toInt())
+        return info.annotatedLine(this)
+    }
+
     override fun utf8Line(index: UShort): String {
         val utf8Info = constantMap.getValue(index.toInt()) as ConstantUtf8Info
         val utf8Value = utf8Info.utf8Value

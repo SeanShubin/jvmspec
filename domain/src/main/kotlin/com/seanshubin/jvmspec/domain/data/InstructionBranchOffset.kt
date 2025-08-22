@@ -7,7 +7,7 @@ class InstructionBranchOffset(
     override val opcode: OpCode,
     val branchOffset: Short
 ) : Instruction {
-    override fun line(): String {
+    override fun line(constantPoolLookup: ConstantPoolLookup): String {
         return "${opcode.line} ${branchOffset.toDecHex()}"
     }
 

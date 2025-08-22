@@ -11,7 +11,7 @@ class InstructionLookupSwitch(
     val nPairs: Int,
     val pairs: List<MatchOffset>,
 ) : Instruction {
-    override fun line(): String {
+    override fun line(constantPoolLookup: ConstantPoolLookup): String {
         val pairsString = pairs.joinToString(" ") { (match, offset) -> "${match.toDecHex()}:${offset.toDecHex()}" }
         return "${opcode.line} padding(0x${padding.toHex()}) ${default.toDecHex()} ${nPairs.toDecHex()} $pairsString"
     }

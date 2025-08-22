@@ -8,7 +8,7 @@ class InstructionIndexConst(
     val index: Int,
     val const: Byte
 ) : Instruction {
-    override fun line(): String {
+    override fun line(constantPoolLookup: ConstantPoolLookup): String {
         return "${opcode.line} ${index.toDecHex()} ${const.toDecHex()}"
     }
 
