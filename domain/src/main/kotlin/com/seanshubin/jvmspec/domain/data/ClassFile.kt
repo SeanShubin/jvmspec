@@ -26,32 +26,32 @@ data class ClassFile(
     fun lines(): List<String> {
         val interfaceLines = interfaces.mapIndexed { index, interfaceValue ->
             "[$index] ${constantPoolLookup.classLine(interfaceValue)}"
-        }.map(indent)
+        }
         return listOf(
             "magic: ${magic.toDecHex()}",
             "minorVersion: ${minorVersion.toDecHex()}",
             "majorVersion: ${majorVersion.toDecHex()}",
             "constantPoolCount: ${constantPoolCount.toDecHex()}",
             "constantPool:",
-            *constantPoolLookup.lines().toTypedArray(),
+            *constantPoolLookup.lines().map(indent).toTypedArray(),
             "accessFlags: $accessFlags",
             "thisClass: ${constantPoolLookup.classLine(thisClass)}",
             "superClass: ${constantPoolLookup.classLine(superClass)}",
             "interfacesCount: ${interfacesCount.toDecHex()}",
             "interfaces:",
-            *interfaceLines.toTypedArray(),
+            *interfaceLines.map(indent).toTypedArray(),
             "fieldsCount: $fieldsCount",
             *fields.flatMapIndexed { index, field ->
                 field.lines(index, constantPoolLookup)
-            }.toTypedArray(),
+            }.map(indent).toTypedArray(),
             "methodsCount: $methodsCount",
             *methods.flatMapIndexed { index, method ->
                 method.lines(index, constantPoolLookup)
-            }.toTypedArray(),
+            }.map(indent).toTypedArray(),
             "attributesCount: $attributesCount",
             *attributes.flatMapIndexed { index, attribute ->
                 attribute.lines(index, constantPoolLookup)
-            }.toTypedArray()
+            }.map(indent).toTypedArray()
         )
     }
 
