@@ -5,11 +5,11 @@ data class IndexName(val index: UShort, val name: String) {
 
     companion object {
         fun fromIndex(index: UShort, constantPoolLookup: ConstantPoolLookup): IndexName {
-            val name = constantPoolLookup.getUtf8(index)
+            val name = constantPoolLookup.lookupUtf8Value(index)
             return IndexName(index, name)
         }
         fun fromClassIndex(classIndex: UShort, constantPoolLookup: ConstantPoolLookup): IndexName {
-            val name = constantPoolLookup.getClassName(classIndex)
+            val name = constantPoolLookup.lookupClassNameValue(classIndex)
             return IndexName(classIndex, name)
         }
     }

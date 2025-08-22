@@ -11,6 +11,8 @@ data class ConstantDoubleInfo(
         return "[$index] ${tag.line()} $doubleValue"
     }
 
+    override fun annotatedLine(constantPoolLookup: ConstantPoolLookup): String = line()
+
     override val entriesTaken: Int get() = 2
 
     companion object {

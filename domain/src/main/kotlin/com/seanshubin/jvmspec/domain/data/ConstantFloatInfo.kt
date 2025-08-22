@@ -11,6 +11,8 @@ data class ConstantFloatInfo(
         return "[$index] ${tag.line()} $floatValue"
     }
 
+    override fun annotatedLine(constantPoolLookup: ConstantPoolLookup): String = line()
+
     override val entriesTaken: Int get() = 1
 
     companion object {

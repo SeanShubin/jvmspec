@@ -13,6 +13,8 @@ data class ConstantUtf8Info(
         return "[$index] ${tag.line()} $length ${utf8Value.toSanitizedString()}"
     }
 
+    override fun annotatedLine(constantPoolLookup: ConstantPoolLookup): String = line()
+
     override val entriesTaken: Int get() = 1
 
     companion object {

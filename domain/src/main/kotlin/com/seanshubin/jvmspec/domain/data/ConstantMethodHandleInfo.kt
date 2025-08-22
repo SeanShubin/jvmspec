@@ -12,6 +12,11 @@ data class ConstantMethodHandleInfo(
         return "[$index] ${tag.line()} ${referenceKind.line()} $referenceIndex"
     }
 
+    override fun annotatedLine(constantPoolLookup: ConstantPoolLookup): String {
+        val referenceLine = constantPoolLookup.referenceIndexLine(referenceIndex)
+        return "[$index] ${tag.line()} ${referenceKind.line()} $referenceLine"
+    }
+
     override val entriesTaken: Int get() = 1
 
     companion object {

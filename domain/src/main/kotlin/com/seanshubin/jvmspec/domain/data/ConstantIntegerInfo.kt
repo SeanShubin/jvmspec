@@ -11,6 +11,8 @@ data class ConstantIntegerInfo(
         return "[$index] ${tag.line()} $intValue"
     }
 
+    override fun annotatedLine(constantPoolLookup: ConstantPoolLookup): String = line()
+
     override val entriesTaken: Int get() = 1
 
     companion object {

@@ -11,6 +11,11 @@ data class ConstantStringInfo(
         return "[$index] ${tag.line()} $stringIndex"
     }
 
+    override fun annotatedLine(constantPoolLookup: ConstantPoolLookup): String {
+        val stringLine = constantPoolLookup.utf8Line(stringIndex)
+        return "[$index] ${tag.line()} $stringLine"
+    }
+
     override val entriesTaken: Int get() = 1
 
     companion object {

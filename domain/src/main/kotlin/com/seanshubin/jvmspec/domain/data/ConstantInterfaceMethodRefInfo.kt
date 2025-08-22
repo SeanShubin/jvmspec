@@ -5,11 +5,17 @@ import java.io.DataInput
 data class ConstantInterfaceMethodRefInfo(
     override val tag: ConstantPoolTag,
     override val index: Int,
-    val classIndex: UShort,
-    val nameAndTypeIndex: UShort
-) : ConstantInfo {
+    override val classIndex: UShort,
+    override val nameAndTypeIndex: UShort
+) : ConstantRefInfo {
     override fun line(): String {
         return "[$index] ${tag.line()} $classIndex $nameAndTypeIndex"
+    }
+
+    override fun annotatedLine(constantPoolLookup: ConstantPoolLookup): String {
+        val classLine = constantPoolLookup.classLine(classIndex)
+        val nameAndTypeLine = constantPoolLookup.nameAndTypeLine(nameAndTypeIndex)
+        return "[$index] ${tag.line()} $classLine $nameAndTypeLine"
     }
 
     override val entriesTaken: Int get() = 1

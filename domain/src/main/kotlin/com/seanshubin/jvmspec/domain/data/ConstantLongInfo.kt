@@ -11,6 +11,8 @@ data class ConstantLongInfo(
         return "[$index] ${tag.line()} $longValue"
     }
 
+    override fun annotatedLine(constantPoolLookup: ConstantPoolLookup): String = line()
+
     override val entriesTaken: Int get() = 2
 
     companion object {

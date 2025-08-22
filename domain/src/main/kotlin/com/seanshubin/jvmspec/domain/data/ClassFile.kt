@@ -10,6 +10,7 @@ data class ClassFile(
     val majorVersion: UShort,
     val constantPoolCount: UShort,
     val constantPool: List<ConstantInfo>,
+    val constantPoolLookup: ConstantPoolLookup,
     val accessFlags: Set<AccessFlag>,
     val thisClass: IndexName,
     val superClass: IndexName?,
@@ -23,7 +24,6 @@ data class ClassFile(
     val attributes: List<AttributeInfo>
 ) {
     fun lines(): List<String> {
-        val constantPoolLines = constantPool.map { it.line() }.map(indent)
         val interfaceLines = interfaces.mapIndexed { index, interfaceValue ->
             "[$index] ${interfaceValue.line()}"
         }.map(indent)
@@ -33,7 +33,7 @@ data class ClassFile(
             "majorVersion: ${majorVersion.toDecHex()}",
             "constantPoolCount: ${constantPoolCount.toDecHex()}",
             "constantPool:",
-            *constantPoolLines.toTypedArray(),
+            *constantPoolLookup.lines().toTypedArray(),
             "accessFlags: $accessFlags",
             "thisClass: ${thisClass.line()}",
             "superClass: ${superClass?.line() ?: "<null>"}",
@@ -92,6 +92,7 @@ data class ClassFile(
                 majorVersion,
                 constantPoolCount,
                 constantPool,
+                constantPoolLookup,
                 accessFlags,
                 thisClass,
                 superClass,

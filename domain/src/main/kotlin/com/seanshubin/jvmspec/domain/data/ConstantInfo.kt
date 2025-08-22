@@ -5,4 +5,5 @@ interface ConstantInfo {
     val index: Int
     val entriesTaken: Int
     fun line(): String
+    fun annotatedLine(constantPoolLookup: ConstantPoolLookup): String
 }

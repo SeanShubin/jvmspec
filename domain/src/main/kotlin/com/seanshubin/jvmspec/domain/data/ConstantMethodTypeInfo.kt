@@ -11,6 +11,11 @@ data class ConstantMethodTypeInfo(
         return "[$index] ${tag.line()} $descriptorIndex"
     }
 
+    override fun annotatedLine(constantPoolLookup: ConstantPoolLookup): String {
+        val descriptorLine = constantPoolLookup.utf8Line(descriptorIndex)
+        return "[$index] ${tag.line()} $descriptorLine"
+    }
+
     override val entriesTaken: Int get() = 1
 
     companion object {

@@ -11,6 +11,11 @@ data class ConstantPackageInfo(
         return "[$index] ${tag.line()} $nameIndex"
     }
 
+    override fun annotatedLine(constantPoolLookup: ConstantPoolLookup): String {
+        val nameLine = constantPoolLookup.utf8Line(nameIndex)
+        return "[$index] ${tag.line()} $nameLine"
+    }
+
     override val entriesTaken: Int get() = 1
 
     companion object {

@@ -12,6 +12,11 @@ data class ConstantDynamicInfo(
         return "[$index] ${tag.line()} $bootstrapMethodAttrIndex $nameAndTypeIndex"
     }
 
+    override fun annotatedLine(constantPoolLookup: ConstantPoolLookup): String {
+        val nameAndTypeLine = constantPoolLookup.nameAndTypeLine(nameAndTypeIndex)
+        return "[$index] ${tag.line()} $bootstrapMethodAttrIndex $nameAndTypeLine"
+    }
+
     override val entriesTaken: Int get() = 1
 
     companion object {
