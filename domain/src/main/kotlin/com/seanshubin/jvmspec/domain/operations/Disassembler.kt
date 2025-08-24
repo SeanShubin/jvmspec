@@ -6,7 +6,7 @@ import java.io.DataInputStream
 import java.nio.file.Path
 import java.time.Clock
 
-class Analyzer(
+class Disassembler(
     private val args: Array<String>,
     private val files: FilesContract,
     private val clock: Clock,
