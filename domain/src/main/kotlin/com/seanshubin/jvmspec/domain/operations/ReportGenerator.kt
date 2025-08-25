@@ -1,19 +1,18 @@
 package com.seanshubin.jvmspec.domain.operations
 
 import com.seanshubin.jvmspec.domain.command.Command
-import com.seanshubin.jvmspec.domain.command.CreateDirectories
-import com.seanshubin.jvmspec.domain.command.WriteLines
 import com.seanshubin.jvmspec.domain.data.ClassFile
 import com.seanshubin.jvmspec.domain.files.FilesContract
 import java.io.DataInputStream
 import java.nio.file.Path
 import java.time.Clock
 
-class Disassembler(
+class ReportGenerator(
     private val args: Array<String>,
     private val files: FilesContract,
     private val clock: Clock,
-    private val events: Events
+    private val events: Events,
+    private val report: Report
 ) : Runnable {
     override fun run() {
         withTimer {
@@ -46,16 +45,14 @@ class Disassembler(
         val relativePath = baseInputDir.relativize(inputFile)
         val fileName = inputFile.fileName.toString()
         val outputDir = baseOutputDir.resolve(relativePath).parent
-        events.executeCommand(CreateDirectories(outputDir))
-        val outputFileName = "${fileName}.txt"
-        val outputFile = outputDir.resolve(outputFileName)
         events.processingFile(inputFile, outputDir)
         val javaFile = files.newInputStream(inputFile).use { inputStream ->
             val input = DataInputStream(inputStream)
             ClassFile.fromDataInput(input)
         }
-        val lines = javaFile.lines()
-        events.executeCommand(WriteLines(outputFile, lines))
+        report.reportCommands(fileName, outputDir, javaFile).forEach { command ->
+            events.executeCommand(command)
+        }
     }
 
     interface Events {
