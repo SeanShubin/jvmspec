@@ -17,6 +17,12 @@ class Dependencies(args: Array<String>) {
     val notifications: Notifications = LineEmittingNotifications(emit, commandRunner)
     val clock: Clock = Clock.systemUTC()
     val disassembleReport: Report = DisassembleReport()
-    val compositeReport: Report = CompositeReport(listOf(disassembleReport))
+    val methodReport: Report = MethodReport()
+    val compositeReport: Report = CompositeReport(
+        listOf(
+            disassembleReport,
+            methodReport
+        )
+    )
     val runner: Runnable = ReportGenerator(args, files, clock, notifications, compositeReport)
 }

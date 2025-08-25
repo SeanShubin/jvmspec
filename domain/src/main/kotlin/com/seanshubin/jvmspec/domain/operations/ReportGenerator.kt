@@ -1,6 +1,7 @@
 package com.seanshubin.jvmspec.domain.operations
 
 import com.seanshubin.jvmspec.domain.command.Command
+import com.seanshubin.jvmspec.domain.command.CreateDirectories
 import com.seanshubin.jvmspec.domain.data.ClassFile
 import com.seanshubin.jvmspec.domain.files.FilesContract
 import java.io.DataInputStream
@@ -50,6 +51,7 @@ class ReportGenerator(
             val input = DataInputStream(inputStream)
             ClassFile.fromDataInput(input)
         }
+        events.executeCommand(CreateDirectories(outputDir))
         report.reportCommands(fileName, outputDir, javaFile).forEach { command ->
             events.executeCommand(command)
         }
