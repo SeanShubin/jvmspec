@@ -1,5 +1,8 @@
 package com.seanshubin.jvmspec.domain.operations
 
+import com.seanshubin.jvmspec.domain.command.Command
+import com.seanshubin.jvmspec.domain.command.CreateDirectories
+import com.seanshubin.jvmspec.domain.command.WriteLines
 import com.seanshubin.jvmspec.domain.data.ClassFile
 import com.seanshubin.jvmspec.domain.files.FilesContract
 import java.io.DataInputStream
@@ -43,7 +46,7 @@ class Disassembler(
         val relativePath = baseInputDir.relativize(inputFile)
         val fileName = inputFile.fileName.toString()
         val outputDir = baseOutputDir.resolve(relativePath).parent
-        files.createDirectories(outputDir)
+        events.executeCommand(CreateDirectories(outputDir))
         val outputFileName = "${fileName}.txt"
         val outputFile = outputDir.resolve(outputFileName)
         events.processingFile(inputFile, outputDir)
@@ -52,11 +55,12 @@ class Disassembler(
             ClassFile.fromDataInput(input)
         }
         val lines = javaFile.lines()
-        files.write(outputFile, lines)
+        events.executeCommand(WriteLines(outputFile, lines))
     }
 
     interface Events {
         fun processingFile(inputFile: Path, outputDir: Path)
         fun timeTakenMillis(millis: Long)
+        fun executeCommand(command: Command)
     }
 }
