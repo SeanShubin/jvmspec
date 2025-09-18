@@ -1,5 +1,7 @@
 package com.seanshubin.jvmspec.console
 
+import com.seanshubin.jvmspec.domain.aggregation.Aggregator
+import com.seanshubin.jvmspec.domain.aggregation.AggregatorImpl
 import com.seanshubin.jvmspec.domain.command.CommandRunner
 import com.seanshubin.jvmspec.domain.command.CommandRunnerImpl
 import com.seanshubin.jvmspec.domain.command.Environment
@@ -17,12 +19,20 @@ class Dependencies(args: Array<String>) {
     val notifications: Notifications = LineEmittingNotifications(emit, commandRunner)
     val clock: Clock = Clock.systemUTC()
     val disassembleReport: Report = DisassembleReport()
-    val methodReport: Report = MethodReport()
+    val aggregator: Aggregator = AggregatorImpl()
+    val methodReport: Report = MethodReport(aggregator)
     val compositeReport: Report = CompositeReport(
         listOf(
             disassembleReport,
             methodReport
         )
     )
-    val runner: Runnable = ReportGenerator(args, files, clock, notifications, compositeReport)
+    val runner: Runnable = ReportGenerator(
+        args,
+        files,
+        clock,
+        notifications,
+        compositeReport,
+        aggregator
+    )
 }

@@ -16,6 +16,8 @@ class InstructionLookupSwitch(
         return "${opcode.line} padding(0x${padding.toHex()}) ${default.toDecHex()} ${nPairs.toDecHex()} $pairsString"
     }
 
+    override fun cyclomaticComplexity(): Int = pairs.size
+
     companion object {
         val OPERAND_TYPE = OperandType.LOOKUP_SWITCH
         fun fromDataInput(opCode: OpCode, input: DataInput, index: Int): Instruction {

@@ -11,6 +11,8 @@ class InstructionByte(
         return "${opcode.line} ${value.toDecHex()}"
     }
 
+    override fun cyclomaticComplexity(): Int = 0
+
     companion object {
         val OPERAND_TYPE = OperandType.BYTE
         fun fromDataInput(opCode: OpCode, input: DataInput, codeIndex: Int): Instruction {

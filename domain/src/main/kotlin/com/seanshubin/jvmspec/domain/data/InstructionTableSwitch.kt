@@ -17,6 +17,8 @@ class InstructionTableSwitch(
         return "${opcode.line} padding(0x${padding.toHex()}) ${default.toDecHex()} ${low.toDecHex()} ${high.toDecHex()} $jumpOffsetsString"
     }
 
+    override fun cyclomaticComplexity(): Int = jumpOffsets.size
+
     companion object {
         val OPERAND_TYPE = OperandType.TABLE_SWITCH
         fun fromDataInput(opCode: OpCode, input: DataInput, index: Int): Instruction {

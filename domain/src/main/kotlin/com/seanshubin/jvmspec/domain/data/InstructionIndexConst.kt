@@ -12,6 +12,8 @@ class InstructionIndexConst(
         return "${opcode.line} ${index.toDecHex()} ${const.toDecHex()}"
     }
 
+    override fun cyclomaticComplexity(): Int = 0
+
     companion object {
         val OPERAND_TYPE = OperandType.INDEX_CONST
         fun fromDataInput(opCode: OpCode, input: DataInput, codeIndex: Int): Instruction {

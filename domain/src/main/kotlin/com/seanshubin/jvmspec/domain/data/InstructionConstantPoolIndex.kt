@@ -10,6 +10,8 @@ class InstructionConstantPoolIndex(
         return "${opcode.line} ${constantPoolLookup.line(constantPoolIndex)}"
     }
 
+    override fun cyclomaticComplexity(): Int = 0
+
     companion object {
         val OPERAND_TYPE = OperandType.CONSTANT_POOL_INDEX
         fun fromDataInput(opCode: OpCode, input: DataInput, index: Int): Instruction {

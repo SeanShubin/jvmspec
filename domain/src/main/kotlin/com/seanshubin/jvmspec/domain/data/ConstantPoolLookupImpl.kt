@@ -18,6 +18,33 @@ class ConstantPoolLookupImpl(val constantList: List<ConstantInfo>) : ConstantPoo
         return utf8.utf8Value
     }
 
+    override fun className(index: UShort): String {
+        val classInfo = constantMap.getValue(index.toInt()) as ConstantClassInfo
+        val utf8Index = classInfo.nameIndex
+        val utf8Value = lookupUtf8Value(utf8Index)
+        return utf8Value
+    }
+
+    override fun ref(index: UShort): Triple<String, String, String> {
+        val methodRefInfo = constantMap.getValue(index.toInt()) as ConstantRefInfo
+        val classIndex = methodRefInfo.classIndex
+        val nameAndTypeIndex = methodRefInfo.nameAndTypeIndex
+        val className = className(classIndex)
+        val methodNameAndType = nameAndType(nameAndTypeIndex)
+        val methodName = methodNameAndType.first
+        val methodDescriptor = methodNameAndType.second
+        return Triple(className, methodName, methodDescriptor)
+    }
+
+    override fun nameAndType(index: UShort): Pair<String, String> {
+        val nameAndTypeInfo = constantMap.getValue(index.toInt()) as ConstantNameAndTypeInfo
+        val nameIndex = nameAndTypeInfo.nameIndex
+        val descriptorIndex = nameAndTypeInfo.descriptorIndex
+        val name = lookupUtf8Value(nameIndex)
+        val descriptor = lookupUtf8Value(descriptorIndex)
+        return Pair(name, descriptor)
+    }
+
     override fun lines(): List<String> {
         return constantList.map { it.annotatedLine(this) }
     }

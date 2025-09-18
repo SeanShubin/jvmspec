@@ -13,6 +13,8 @@ class InstructionWideFormat2(
         return "${opcode.line} ${modifiedOpCode.line} ${localVariableIndex.toDecHex()} ${constant.toDecHex()}"
     }
 
+    override fun cyclomaticComplexity(): Int = 0
+
     companion object {
         fun fromDataInput(opCode: OpCode, modifiedOpCode: OpCode, input: DataInput, index: Int): Instruction {
             val localVariableIndex = input.readUnsignedShort().toUShort()

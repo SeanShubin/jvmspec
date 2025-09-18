@@ -1,5 +1,6 @@
 package com.seanshubin.jvmspec.domain.operations
 
+import com.seanshubin.jvmspec.domain.aggregation.Aggregator
 import com.seanshubin.jvmspec.domain.command.Command
 import com.seanshubin.jvmspec.domain.command.CreateDirectories
 import com.seanshubin.jvmspec.domain.data.ClassFile
@@ -13,7 +14,8 @@ class ReportGenerator(
     private val files: FilesContract,
     private val clock: Clock,
     private val events: Events,
-    private val report: Report
+    private val report: Report,
+    private val aggregator: Aggregator,
 ) : Runnable {
     override fun run() {
         withTimer {
@@ -27,6 +29,8 @@ class ReportGenerator(
                     processFile(inputDir, outputDir, inputFile)
                 }
             }
+            files.write(outputDir.resolve("summary-static.txt"), aggregator.summaryDescendingStaticReferenceCount())
+            files.write(outputDir.resolve("summary-complexity.txt"), aggregator.summaryDescendingCyclomaticComplexity())
         }
     }
 

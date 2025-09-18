@@ -55,6 +55,10 @@ data class ClassFile(
         )
     }
 
+    fun thisClassName(): String {
+        return constantPoolLookup.className(thisClass)
+    }
+
     companion object {
         fun fromDataInput(input: DataInput): ClassFile {
             val magic = input.readInt().toUInt()

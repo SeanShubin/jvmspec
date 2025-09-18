@@ -11,6 +11,8 @@ class InstructionBranchOffset(
         return "${opcode.line} ${branchOffset.toDecHex()}"
     }
 
+    override fun cyclomaticComplexity(): Int = 1
+
     companion object {
         val OPERAND_TYPE = OperandType.BRANCH_OFFSET
         fun fromDataInput(opCode: OpCode, input: DataInput, index: Int): Instruction {

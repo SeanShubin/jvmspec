@@ -10,6 +10,8 @@ class InstructionArrayType(
         return "${opcode.line} ${arrayType.line()}"
     }
 
+    override fun cyclomaticComplexity(): Int = 0
+
     companion object {
         val OPERAND_TYPE = OperandType.ARRAY_TYPE
         fun fromDataInput(opCode: OpCode, input: DataInput, codeIndex: Int): Instruction {

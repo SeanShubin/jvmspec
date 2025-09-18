@@ -11,6 +11,8 @@ class InstructionShort(
         return "${opcode.line} ${value.toDecHex()}"
     }
 
+    override fun cyclomaticComplexity(): Int = 0
+
     companion object {
         val OPERAND_TYPE = OperandType.SHORT
         fun fromDataInput(opCode: OpCode, input: DataInput, codeIndex: Int): Instruction {
