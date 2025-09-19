@@ -1,7 +1,9 @@
 package com.seanshubin.jvmspec.domain.aggregation
 
-class AggregatorImpl : Aggregator {
-    private var aggregateData: AggregateData = AggregateData.empty
+import com.seanshubin.jvmspec.domain.util.MatchEnum
+
+class AggregatorImpl(private val initialAggregateData: AggregateData) : Aggregator {
+    private var aggregateData: AggregateData = initialAggregateData
     override fun invokeStatic(
         source: QualifiedMethod,
         target: QualifiedMethod
@@ -43,5 +45,13 @@ class AggregatorImpl : Aggregator {
 
     override fun summaryDescendingStaticReferenceCount(): List<String> {
         return aggregateData.summaryDescendingStaticReferenceCount()
+    }
+
+    override fun summaryMethodNames(matchEnum: MatchEnum): List<String> {
+        return aggregateData.summaryMethodNames(matchEnum)
+    }
+
+    override fun summaryClassNames(matchEnum: MatchEnum): List<String> {
+        return aggregateData.summaryClassNames(matchEnum)
     }
 }

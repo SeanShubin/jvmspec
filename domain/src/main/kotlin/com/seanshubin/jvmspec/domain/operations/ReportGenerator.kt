@@ -1,37 +1,74 @@
 package com.seanshubin.jvmspec.domain.operations
 
-import com.seanshubin.jvmspec.domain.aggregation.Aggregator
+import com.seanshubin.jvmspec.domain.aggregation.AggregateData
+import com.seanshubin.jvmspec.domain.aggregation.AggregatorImpl
+import com.seanshubin.jvmspec.domain.aggregation.QualifiedMethod
 import com.seanshubin.jvmspec.domain.command.Command
 import com.seanshubin.jvmspec.domain.command.CreateDirectories
 import com.seanshubin.jvmspec.domain.data.ClassFile
 import com.seanshubin.jvmspec.domain.files.FilesContract
+import com.seanshubin.jvmspec.domain.util.MatchEnum
+import com.seanshubin.jvmspec.domain.util.RegexUtil
 import java.io.DataInputStream
+import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Clock
 
 class ReportGenerator(
-    private val args: Array<String>,
+    private val inputDir: Path,
+    private val outputDir: Path,
+    private val includeMethod: List<String>,
+    private val excludeMethod: List<String>,
+    private val includeClass: List<String>,
+    private val excludeClass: List<String>,
     private val files: FilesContract,
     private val clock: Clock,
     private val events: Events,
-    private val report: Report,
-    private val aggregator: Aggregator,
+    private val disassembleReport: Report,
 ) : Runnable {
     override fun run() {
         withTimer {
-            if (args.size != 2) {
-                throw IllegalArgumentException("Expected 2 arguments: <inputDir> <outputDir>")
+            val acceptMethodKey = RegexUtil.createMatchFunctionFromList(includeMethod, excludeMethod)
+            val acceptMethod = { qualifiedMethod: QualifiedMethod ->
+                acceptMethodKey(qualifiedMethod.regexMatchKey())
             }
-            val inputDir = Path.of(args[0])
-            val outputDir = Path.of(args[1])
+            val acceptClass = RegexUtil.createMatchFunctionFromList(includeClass, excludeClass)
+            val initialAggregateData = AggregateData.create(acceptMethod, acceptClass)
+            val aggregator = AggregatorImpl(initialAggregateData)
+            val methodReport: Report = MethodReport(aggregator)
+            val compositeReport: Report = CompositeReport(
+                listOf(
+                    disassembleReport,
+                    methodReport
+                )
+            )
             files.walk(inputDir).forEach { inputFile ->
                 if (accept(inputFile)) {
-                    processFile(inputDir, outputDir, inputFile)
+                    processFile(compositeReport, inputDir, outputDir, inputFile)
                 }
             }
-            files.write(outputDir.resolve("summary-static.txt"), aggregator.summaryDescendingStaticReferenceCount())
-            files.write(outputDir.resolve("summary-complexity.txt"), aggregator.summaryDescendingCyclomaticComplexity())
+            files.write(newFile(outputDir, "summary-static.txt"), aggregator.summaryDescendingStaticReferenceCount())
+            files.write(
+                newFile(outputDir, "summary-complexity.txt"),
+                aggregator.summaryDescendingCyclomaticComplexity()
+            )
+            MatchEnum.entries.forEach { matchEnum ->
+                files.write(
+                    newFile(outputDir, "summary-methods-$matchEnum.txt"),
+                    aggregator.summaryMethodNames(matchEnum)
+                )
+                files.write(
+                    newFile(outputDir, "summary-classes-$matchEnum.txt"),
+                    aggregator.summaryClassNames(matchEnum)
+                )
+            }
         }
+    }
+
+    private fun newFile(dir: Path, name: String): Path {
+        val file = dir.resolve(name)
+        Files.deleteIfExists(file)
+        return file
     }
 
     fun withTimer(f: () -> Unit) {
@@ -46,7 +83,7 @@ class ReportGenerator(
         return file.toString().endsWith(".class")
     }
 
-    fun processFile(baseInputDir: Path, baseOutputDir: Path, inputFile: Path) {
+    fun processFile(report: Report, baseInputDir: Path, baseOutputDir: Path, inputFile: Path) {
         val relativePath = baseInputDir.relativize(inputFile)
         val fileName = inputFile.fileName.toString()
         val outputDir = baseOutputDir.resolve(relativePath).parent

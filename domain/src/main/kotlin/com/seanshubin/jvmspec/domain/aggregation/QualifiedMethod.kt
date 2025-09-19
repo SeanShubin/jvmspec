@@ -10,4 +10,5 @@ data class QualifiedMethod(
         val key = if (indexOfDollar == -1) className else className.take(indexOfDollar)
         return key
     }
+    fun regexMatchKey(): String = "$className:$methodName:$methodDescriptor"
 }
