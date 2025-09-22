@@ -61,7 +61,7 @@ data class AggregateData(
 
     fun summaryDescendingCyclomaticComplexity(): List<String> {
         return classDataMap.values.sortedBy {
-            it.name
+            it.classBaseName
         }.sortedByDescending {
             it.staticReferenceCount
         }.sortedByDescending {
@@ -71,7 +71,7 @@ data class AggregateData(
 
     fun summaryDescendingStaticReferenceCount(): List<String> {
         return classDataMap.values.sortedBy {
-            it.name
+            it.classBaseName
         }.sortedByDescending {
             it.cyclomaticComplexity
         }.sortedByDescending {

@@ -1,7 +1,7 @@
 package com.seanshubin.jvmspec.domain.aggregation
 
 data class ClassData(
-    val name: String,
+    val classBaseName: String,
     val staticReferenceCount: Int,
     val cyclomaticComplexity: Int
 ) {
@@ -11,7 +11,7 @@ data class ClassData(
     fun addToCyclomaticComplexity(increment: Int): ClassData =
         copy(cyclomaticComplexity = cyclomaticComplexity + increment)
 
-    fun toLine(): String = "[static=$staticReferenceCount, complexity=$cyclomaticComplexity] $name"
+    fun toLine(): String = "[static=$staticReferenceCount, complexity=$cyclomaticComplexity] $classBaseName"
 
     companion object {
         fun create(name: String): ClassData = ClassData(name, 0, 0)
