@@ -76,7 +76,7 @@ data class AggregateData(
             it.cyclomaticComplexity
         }.sortedByDescending {
             it.staticReferenceCount
-        }.map { it.toLine() }
+        }.flatMap { it.toStaticInvocationLines() }
     }
 
     fun summaryOrigin(): List<String> {
@@ -144,7 +144,7 @@ data class AggregateData(
 
     fun summaryMethodNames(matchEnum: MatchEnum): List<String> {
         val set = methods[matchEnum] ?: emptySet()
-        return set.map { it.regexMatchKey() }.toList().sorted()
+        return set.map { it.id() }.toList().sorted()
     }
 
     fun summaryClassNames(matchEnum: MatchEnum): List<String> {

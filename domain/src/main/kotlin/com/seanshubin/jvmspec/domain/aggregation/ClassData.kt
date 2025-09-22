@@ -4,13 +4,17 @@ data class ClassData(
     val classBaseName: String,
     val staticReferenceCount: Int,
     val cyclomaticComplexity: Int,
-    val newInstanceCount: Int
+    val newInstanceCount: Int,
+    val staticInvocations: Set<QualifiedMethod>
 ) {
     fun addToStaticReferenceCount(
         source: QualifiedMethod,
         target: QualifiedMethod
     ): ClassData =
-        copy(staticReferenceCount = staticReferenceCount + 1)
+        copy(
+            staticReferenceCount = staticReferenceCount + 1,
+            staticInvocations = staticInvocations + target
+        )
 
     fun addToNewInstanceCount(
         source: QualifiedMethod,
@@ -26,7 +30,21 @@ data class ClassData(
 
     fun toLine(): String = "[static=$staticReferenceCount, complexity=$cyclomaticComplexity] $classBaseName"
 
+    fun toStaticInvocationLines(): List<String> {
+        val header = listOf(toLine())
+        val ids = staticInvocations.map {
+            "  ${it.id()}"
+        }
+        return header + ids
+    }
+
     companion object {
-        fun create(name: String): ClassData = ClassData(name, 0, 0, 0)
+        fun create(name: String): ClassData = ClassData(
+            classBaseName = name,
+            staticReferenceCount = 0,
+            cyclomaticComplexity = 0,
+            newInstanceCount = 0,
+            staticInvocations = emptySet()
+        )
     }
 }

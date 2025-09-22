@@ -39,7 +39,7 @@ class ReportGenerator(
             }
             val acceptMethodKey = RegexUtil.createMatchFunctionFromList(methodWhitelist, methodBlacklist)
             val acceptMethod = { qualifiedMethod: QualifiedMethod ->
-                acceptMethodKey(qualifiedMethod.regexMatchKey())
+                acceptMethodKey(qualifiedMethod.id())
             }
             val acceptClass = RegexUtil.createMatchFunctionFromList(classWhitelist, classBlacklist)
             val initialAggregateData = AggregateData.create(acceptMethod, acceptClass)
