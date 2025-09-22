@@ -1,5 +1,6 @@
 package com.seanshubin.jvmspec.domain.aggregation
 
+import com.seanshubin.jvmspec.domain.data.ClassFile
 import com.seanshubin.jvmspec.domain.util.MatchEnum
 
 data class AggregateData(
@@ -7,20 +8,30 @@ data class AggregateData(
     val acceptMethod: (QualifiedMethod) -> MatchEnum,
     val acceptClass: (String) -> MatchEnum,
     val methods: Map<MatchEnum, Set<QualifiedMethod>>,
-    val classes: Map<MatchEnum, Set<String>>
+    val classes: Map<MatchEnum, Set<String>>,
+    val mapClassNameOriginIds: Map<String, List<String>>
 ) {
+    fun classFile(classFile: ClassFile): AggregateData {
+        val originId = classFile.origin.id
+        val className = classFile.thisClassName()
+        val oldOriginIds = mapClassNameOriginIds[className] ?: emptyList()
+        if (oldOriginIds.contains(originId)) throw RuntimeException("Duplicate origin $originId for $className")
+        val newOriginIds = oldOriginIds + originId
+        val newMapClassNameOriginIds = mapClassNameOriginIds + (className to newOriginIds)
+        return copy(mapClassNameOriginIds = newMapClassNameOriginIds)
+    }
     fun invokeStatic(
         source: QualifiedMethod,
         target: QualifiedMethod
     ): AggregateData {
-        return incrementStaticReferenceCountIfIncluded(source, target)
+        return incrementStaticReferenceCountIfOnBlacklist(source, target)
     }
 
     fun getStatic(
         source: QualifiedMethod,
         target: QualifiedMethod
     ): AggregateData {
-        return incrementStaticReferenceCountIfIncluded(source, target)
+        return incrementStaticReferenceCountIfOnBlacklist(source, target)
     }
 
 
@@ -28,14 +39,14 @@ data class AggregateData(
         source: QualifiedMethod,
         target: QualifiedMethod
     ): AggregateData {
-        return incrementStaticReferenceCountIfIncluded(source, target)
+        return incrementStaticReferenceCountIfOnBlacklist(source, target)
     }
 
     fun newInstance(
         source: QualifiedMethod,
         targetClassName: String
     ): AggregateData {
-        return incrementStaticReferenceCountIfIncluded(source, targetClassName)
+        return incrementStaticReferenceCountIfOnBlacklist(source, targetClassName)
     }
 
     fun cyclomaticComplexity(
@@ -49,11 +60,36 @@ data class AggregateData(
     }
 
     fun summaryDescendingCyclomaticComplexity(): List<String> {
-        return classDataMap.values.sortedByDescending { it.cyclomaticComplexity }.map { it.toLine() }
+        return classDataMap.values.sortedBy {
+            it.name
+        }.sortedByDescending {
+            it.staticReferenceCount
+        }.sortedByDescending {
+            it.cyclomaticComplexity
+        }.map { it.toLine() }
     }
 
     fun summaryDescendingStaticReferenceCount(): List<String> {
-        return classDataMap.values.sortedByDescending { it.staticReferenceCount }.map { it.toLine() }
+        return classDataMap.values.sortedBy {
+            it.name
+        }.sortedByDescending {
+            it.cyclomaticComplexity
+        }.sortedByDescending {
+            it.staticReferenceCount
+        }.map { it.toLine() }
+    }
+
+    fun summaryOrigin(): List<String> {
+        val classNames = mapClassNameOriginIds.keys.sorted()
+        return classNames.flatMap { className ->
+            val originIds = mapClassNameOriginIds.getValue(className)
+            val originIdCount = originIds.size
+            val classNameLine = "[$originIdCount] $className"
+            val originIdLines = originIds.map { originId ->
+                "  $originId"
+            }
+            listOf(classNameLine) + originIdLines
+        }
     }
 
     private fun updateEntry(key: String, update: (ClassData) -> ClassData): AggregateData {
@@ -77,13 +113,13 @@ data class AggregateData(
         return copy(classes = newMap)
     }
 
-    private fun incrementStaticReferenceCountIfIncluded(
+    private fun incrementStaticReferenceCountIfOnBlacklist(
         source: QualifiedMethod,
         target: QualifiedMethod
     ): AggregateData {
         val matchEnum = acceptMethod(target)
         val a = updateMethods(matchEnum, target)
-        return if (matchEnum == MatchEnum.INCLUDED) {
+        return if (matchEnum == MatchEnum.BLACKLIST_ONLY) {
             val key = source.toAggregateKey()
             a.updateEntry(key) { classData ->
                 classData.addToStaticReferenceCount(1)
@@ -93,10 +129,10 @@ data class AggregateData(
         }
     }
 
-    private fun incrementStaticReferenceCountIfIncluded(source: QualifiedMethod, target: String): AggregateData {
+    private fun incrementStaticReferenceCountIfOnBlacklist(source: QualifiedMethod, target: String): AggregateData {
         val matchEnum = acceptClass(target)
         val a = updateClasses(matchEnum, target)
-        return if (matchEnum == MatchEnum.INCLUDED) {
+        return if (matchEnum == MatchEnum.BLACKLIST_ONLY) {
             val key = source.toAggregateKey()
             a.updateEntry(key) { classData ->
                 classData.addToStaticReferenceCount(1)
@@ -124,6 +160,7 @@ data class AggregateData(
             emptyMap(),
             acceptMethod,
             acceptClass,
+            emptyMap(),
             emptyMap(),
             emptyMap()
         )

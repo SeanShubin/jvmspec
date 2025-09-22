@@ -5,6 +5,7 @@ import com.seanshubin.jvmspec.domain.util.DataFormat.toDecHex
 import java.io.DataInput
 
 data class ClassFile(
+    val origin: Origin,
     val magic: UInt,
     val minorVersion: UShort,
     val majorVersion: UShort,
@@ -60,7 +61,7 @@ data class ClassFile(
     }
 
     companion object {
-        fun fromDataInput(input: DataInput): ClassFile {
+        fun fromDataInput(origin: Origin, input: DataInput): ClassFile {
             val magic = input.readInt().toUInt()
             val minorVersion = input.readUnsignedShort().toUShort()
             val majorVersion = input.readUnsignedShort().toUShort()
@@ -83,6 +84,7 @@ data class ClassFile(
             val attributes =
                 List(attributesCount.toInt()) { AttributeInfoFactory.fromDataInput(input, constantPoolLookup) }
             return ClassFile(
+                origin,
                 magic,
                 minorVersion,
                 majorVersion,

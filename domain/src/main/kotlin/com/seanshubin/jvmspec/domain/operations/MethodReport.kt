@@ -9,6 +9,7 @@ import java.nio.file.Path
 
 class MethodReport(private val aggregator: Aggregator) : Report {
     override fun reportCommands(baseFileName: String, outputDir: Path, classFile: ClassFile): List<Command> {
+        aggregator.classFile(classFile)
         val className = classFile.thisClassName()
         val methods = classFile.methods
         val constantPoolLookup = classFile.constantPoolLookup

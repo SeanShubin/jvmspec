@@ -2,16 +2,16 @@ package com.seanshubin.jvmspec.domain.util
 
 object RegexUtil {
     fun createMatchFunctionFromList(
-        includePatternList: List<String>,
-        excludePatternList: List<String>
+        whitelistPatterns: List<String>,
+        blacklistPatterns: List<String>
     ): (String) -> MatchEnum = { s ->
-        val isIncluded = includePatternList.map { Regex(it) }.any { it.matches(s) }
-        val isExcluded = excludePatternList.map { Regex(it) }.any { it.matches(s) }
+        val isOnWhitelist = whitelistPatterns.map { Regex(it) }.any { it.matches(s) }
+        val isOnBlacklist = blacklistPatterns.map { Regex(it) }.any { it.matches(s) }
         when {
-            isIncluded && isExcluded -> MatchEnum.BOTH_INCLUDED_AND_EXCLUDED
-            isIncluded && !isExcluded -> MatchEnum.INCLUDED
-            !isIncluded && isExcluded -> MatchEnum.EXCLUDED
-            else -> MatchEnum.NEITHER_INCLUDED_NOR_EXCLUDED
+            isOnWhitelist && isOnBlacklist -> MatchEnum.BOTH_WHITELIST_AND_BLACKLIST
+            isOnWhitelist && !isOnBlacklist -> MatchEnum.WHITELIST_ONLY
+            !isOnWhitelist && isOnBlacklist -> MatchEnum.BLACKLIST_ONLY
+            else -> MatchEnum.UNKNOWN
         }
     }
 }

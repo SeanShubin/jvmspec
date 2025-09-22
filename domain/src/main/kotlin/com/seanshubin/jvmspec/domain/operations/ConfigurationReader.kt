@@ -12,17 +12,21 @@ class ConfigurationReader(
         val inputDir = Path.of(inputDirName)
         val outputDirName = keyValueStore.load(listOf("outputDir")) as String
         val outputDir = Path.of(outputDirName)
-        val includeMethodPatterns = keyValueStore.load(listOf("includeMethod")) as List<String>
-        val excludeMethodPatterns = keyValueStore.load(listOf("excludeMethod")) as List<String>
-        val includeClassPatterns = keyValueStore.load(listOf("includeClass")) as List<String>
-        val excludeClassPatterns = keyValueStore.load(listOf("excludeClass")) as List<String>
+        val include = keyValueStore.load(listOf("include")) as List<String>
+        val exclude = keyValueStore.load(listOf("exclude")) as List<String>
+        val methodWhitelist = keyValueStore.load(listOf("methodWhitelist")) as List<String>
+        val methodBlacklist = keyValueStore.load(listOf("methodBlacklist")) as List<String>
+        val classWhitelist = keyValueStore.load(listOf("classWhitelist")) as List<String>
+        val classBlacklist = keyValueStore.load(listOf("classBlacklist")) as List<String>
         val configuration = Configuration(
             inputDir,
             outputDir,
-            includeMethodPatterns,
-            excludeMethodPatterns,
-            includeClassPatterns,
-            excludeClassPatterns
+            include,
+            exclude,
+            methodWhitelist,
+            methodBlacklist,
+            classWhitelist,
+            classBlacklist
         )
         createFromConfig(configuration).run()
     }

@@ -1,9 +1,14 @@
 package com.seanshubin.jvmspec.domain.aggregation
 
+import com.seanshubin.jvmspec.domain.data.ClassFile
 import com.seanshubin.jvmspec.domain.util.MatchEnum
 
 class AggregatorImpl(private val initialAggregateData: AggregateData) : Aggregator {
     private var aggregateData: AggregateData = initialAggregateData
+    override fun classFile(classFile: ClassFile) {
+        aggregateData = aggregateData.classFile(classFile)
+    }
+
     override fun invokeStatic(
         source: QualifiedMethod,
         target: QualifiedMethod
@@ -53,5 +58,9 @@ class AggregatorImpl(private val initialAggregateData: AggregateData) : Aggregat
 
     override fun summaryClassNames(matchEnum: MatchEnum): List<String> {
         return aggregateData.summaryClassNames(matchEnum)
+    }
+
+    override fun summaryOrigin(): List<String> {
+        return aggregateData.summaryOrigin()
     }
 }

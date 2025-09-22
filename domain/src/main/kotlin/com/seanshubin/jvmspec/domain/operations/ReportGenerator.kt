@@ -6,6 +6,7 @@ import com.seanshubin.jvmspec.domain.aggregation.QualifiedMethod
 import com.seanshubin.jvmspec.domain.command.Command
 import com.seanshubin.jvmspec.domain.command.CreateDirectories
 import com.seanshubin.jvmspec.domain.data.ClassFile
+import com.seanshubin.jvmspec.domain.data.OriginClassFile
 import com.seanshubin.jvmspec.domain.files.FilesContract
 import com.seanshubin.jvmspec.domain.util.MatchEnum
 import com.seanshubin.jvmspec.domain.util.RegexUtil
@@ -17,10 +18,12 @@ import java.time.Clock
 class ReportGenerator(
     private val inputDir: Path,
     private val outputDir: Path,
-    private val includeMethod: List<String>,
-    private val excludeMethod: List<String>,
-    private val includeClass: List<String>,
-    private val excludeClass: List<String>,
+    private val include: List<String>,
+    private val exclude: List<String>,
+    private val methodWhitelist: List<String>,
+    private val methodBlacklist: List<String>,
+    private val classWhitelist: List<String>,
+    private val classBlacklist: List<String>,
     private val files: FilesContract,
     private val clock: Clock,
     private val events: Events,
@@ -28,11 +31,17 @@ class ReportGenerator(
 ) : Runnable {
     override fun run() {
         withTimer {
-            val acceptMethodKey = RegexUtil.createMatchFunctionFromList(includeMethod, excludeMethod)
+            val acceptFile = RegexUtil.createMatchFunctionFromList(include, exclude)
+            val acceptFileBoolean = { file: Path ->
+                val fileName = file.toString()
+                val result = acceptFile(fileName)
+                result == MatchEnum.WHITELIST_ONLY
+            }
+            val acceptMethodKey = RegexUtil.createMatchFunctionFromList(methodWhitelist, methodBlacklist)
             val acceptMethod = { qualifiedMethod: QualifiedMethod ->
                 acceptMethodKey(qualifiedMethod.regexMatchKey())
             }
-            val acceptClass = RegexUtil.createMatchFunctionFromList(includeClass, excludeClass)
+            val acceptClass = RegexUtil.createMatchFunctionFromList(classWhitelist, classBlacklist)
             val initialAggregateData = AggregateData.create(acceptMethod, acceptClass)
             val aggregator = AggregatorImpl(initialAggregateData)
             val methodReport: Report = MethodReport(aggregator)
@@ -43,7 +52,7 @@ class ReportGenerator(
                 )
             )
             files.walk(inputDir).forEach { inputFile ->
-                if (accept(inputFile)) {
+                if (acceptFileBoolean(inputFile)) {
                     processFile(compositeReport, inputDir, outputDir, inputFile)
                 }
             }
@@ -51,6 +60,10 @@ class ReportGenerator(
             files.write(
                 newFile(outputDir, "summary-complexity.txt"),
                 aggregator.summaryDescendingCyclomaticComplexity()
+            )
+            files.write(
+                newFile(outputDir, "summary-origin.txt"),
+                aggregator.summaryOrigin()
             )
             MatchEnum.entries.forEach { matchEnum ->
                 files.write(
@@ -79,10 +92,6 @@ class ReportGenerator(
         events.timeTakenMillis(durationMillis)
     }
 
-    fun accept(file: Path): Boolean {
-        return file.toString().endsWith(".class")
-    }
-
     fun processFile(report: Report, baseInputDir: Path, baseOutputDir: Path, inputFile: Path) {
         val relativePath = baseInputDir.relativize(inputFile)
         val fileName = inputFile.fileName.toString()
@@ -90,7 +99,8 @@ class ReportGenerator(
         events.processingFile(inputFile, outputDir)
         val javaFile = files.newInputStream(inputFile).use { inputStream ->
             val input = DataInputStream(inputStream)
-            ClassFile.fromDataInput(input)
+            val origin = OriginClassFile(inputFile)
+            ClassFile.fromDataInput(origin, input)
         }
         events.executeCommand(CreateDirectories(outputDir))
         report.reportCommands(fileName, outputDir, javaFile).forEach { command ->
