@@ -53,7 +53,7 @@ data class AggregateData(
         qualifiedMethod: QualifiedMethod,
         complexity: Int
     ): AggregateData {
-        val key = qualifiedMethod.toAggregateKey()
+        val key = qualifiedMethod.classBaseName()
         return updateEntry(key) { classData ->
             classData.addToCyclomaticComplexity(complexity)
         }
@@ -120,7 +120,7 @@ data class AggregateData(
         val matchEnum = acceptMethod(target)
         val a = updateMethods(matchEnum, target)
         return if (matchEnum == MatchEnum.BLACKLIST_ONLY) {
-            val key = source.toAggregateKey()
+            val key = source.classBaseName()
             a.updateEntry(key) { classData ->
                 classData.addToStaticReferenceCount(1)
             }
@@ -133,7 +133,7 @@ data class AggregateData(
         val matchEnum = acceptClass(target)
         val a = updateClasses(matchEnum, target)
         return if (matchEnum == MatchEnum.BLACKLIST_ONLY) {
-            val key = source.toAggregateKey()
+            val key = source.classBaseName()
             a.updateEntry(key) { classData ->
                 classData.addToStaticReferenceCount(1)
             }
