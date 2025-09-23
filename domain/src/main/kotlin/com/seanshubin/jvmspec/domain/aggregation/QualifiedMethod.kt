@@ -10,6 +10,7 @@ data class QualifiedMethod(
         val key = if (indexOfDollar == -1) className else className.take(indexOfDollar)
         return key
     }
+
     fun id(): String = "$className:$methodName:$methodDescriptor"
     fun javaSignature(): String {
         val signatureParts = DescriptorParser.build(methodDescriptor)

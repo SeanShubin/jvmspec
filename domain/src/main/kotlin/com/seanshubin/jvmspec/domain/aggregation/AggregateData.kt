@@ -20,6 +20,7 @@ data class AggregateData(
         val newMapClassNameOriginIds = mapClassNameOriginIds + (className to newOriginIds)
         return copy(mapClassNameOriginIds = newMapClassNameOriginIds)
     }
+
     fun invokeStatic(
         source: QualifiedMethod,
         target: QualifiedMethod
