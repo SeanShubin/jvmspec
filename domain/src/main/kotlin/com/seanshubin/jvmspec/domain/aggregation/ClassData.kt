@@ -33,7 +33,7 @@ data class ClassData(
     fun toStaticInvocationLines(): List<String> {
         val header = listOf(toLine())
         val ids = staticInvocations.map {
-            "  ${it.id()}"
+            "  ${it.javaSignature()}"
         }
         return header + ids
     }
