@@ -12,7 +12,7 @@ data class QualifiedMethod(
     }
     fun id(): String = "$className:$methodName:$methodDescriptor"
     fun javaSignature(): String {
-        val signatureParts = DescriptorBuilderState.build(methodDescriptor)
+        val signatureParts = DescriptorParser.build(methodDescriptor)
         val returnType = signatureParts.returnType.toJavaClassName()
         val signatureParameters = signatureParts.parameters
         val parameterList = if (signatureParameters == null) {

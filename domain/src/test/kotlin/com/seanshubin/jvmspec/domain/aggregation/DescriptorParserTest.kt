@@ -3,7 +3,7 @@ package com.seanshubin.jvmspec.domain.aggregation
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class DescriptorBuilderStateTest {
+class DescriptorParserTest {
     @Test
     fun javaExamples() {
         verify(
@@ -21,7 +21,7 @@ class DescriptorBuilderStateTest {
         else "$name[$dimensions]"
 
     private fun verify(descriptor: String, expected: String) {
-        val signatureParts = DescriptorBuilderState.build(descriptor)
+        val signatureParts = DescriptorParser.build(descriptor)
         val parameters = signatureParts.parameters
         val parametersPart = if (parameters == null) {
             ""
