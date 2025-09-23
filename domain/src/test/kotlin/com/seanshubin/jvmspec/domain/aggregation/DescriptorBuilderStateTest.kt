@@ -13,7 +13,7 @@ class DescriptorBuilderStateTest {
         verify("(Ljava/lang/String;I)V", "(java/lang/String,int)void")
         verify("()[Ljava/lang/String;", "()java/lang/String[1]")
         verify("([Ljava/lang/String;)V", "(java/lang/String[1])void")
-        verify("Ljava/util/Locale;", "()java/util/Locale")
+        verify("Ljava/util/Locale;", "java/util/Locale")
     }
 
     private fun SignatureType.testString(): String =
@@ -22,12 +22,17 @@ class DescriptorBuilderStateTest {
 
     private fun verify(descriptor: String, expected: String) {
         val signatureParts = DescriptorBuilderState.build(descriptor)
-        val actual = signatureParts.parameters.joinToString(
-            ",",
-            "(",
-            ")"
-        ) { it.testString() } + signatureParts.returnType.testString()
+        val parameters = signatureParts.parameters
+        val parametersPart = if (parameters == null) {
+            ""
+        } else {
+            signatureParts.parameters.joinToString(
+                ",",
+                "(",
+                ")"
+            ) { it.testString() }
+        }
+        val actual = parametersPart + signatureParts.returnType.testString()
         assertEquals(expected, actual)
     }
-
 }
