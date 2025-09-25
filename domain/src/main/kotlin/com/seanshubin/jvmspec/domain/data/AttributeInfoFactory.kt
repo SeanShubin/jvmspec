@@ -15,10 +15,11 @@ object AttributeInfoFactory {
         )
         val attributeName = constantPoolLookup.lookupUtf8Value(attributeNameIndex)
         val factory = factoryMap[attributeName]
-        return if (factory == null) unrecognizedInfo else factory(unrecognizedInfo, constantPoolLookup)
+        return if (factory == null) unrecognizedInfo else factory(unrecognizedInfo, constantPoolLookup, ::fromDataInput)
     }
 
-    val factoryMap: Map<String, (AttributeInfo, ConstantPoolLookup) -> AttributeInfo> = mapOf(
+    val factoryMap: Map<String, (AttributeInfo, ConstantPoolLookup, (DataInput, ConstantPoolLookup) -> AttributeInfo) -> AttributeInfo> =
+        mapOf(
         AttributeCodeInfo.NAME to AttributeCodeInfo::fromAttributeInfo
     )
 }

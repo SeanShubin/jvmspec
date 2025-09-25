@@ -3,6 +3,7 @@ package com.seanshubin.jvmspec.domain.data
 import com.seanshubin.jvmspec.domain.util.DataFormat.indent
 import com.seanshubin.jvmspec.domain.util.DataInputExtensions.readByteList
 import java.io.ByteArrayInputStream
+import java.io.DataInput
 import java.io.DataInputStream
 
 data class AttributeCodeInfo(
@@ -45,7 +46,8 @@ data class AttributeCodeInfo(
         const val NAME = "Code"
         fun fromAttributeInfo(
             attributeInfo: AttributeInfo,
-            constantPoolLookup: ConstantPoolLookup
+            constantPoolLookup: ConstantPoolLookup,
+            attributeInfoFromDataInput: (DataInput, ConstantPoolLookup) -> AttributeInfo
         ): AttributeCodeInfo {
             val input = DataInputStream(ByteArrayInputStream(attributeInfo.info.toByteArray()))
             val maxStack = input.readUnsignedShort().toUShort()
@@ -59,7 +61,7 @@ data class AttributeCodeInfo(
             }
             val attributesCount = input.readUnsignedShort().toUShort()
             val attributes = (0 until attributesCount.toInt()).map {
-                AttributeInfoFactory.fromDataInput(input, constantPoolLookup)
+                attributeInfoFromDataInput(input, constantPoolLookup)
             }
             return AttributeCodeInfo(
                 attributeInfo.attributeIndex,
