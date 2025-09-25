@@ -8,7 +8,7 @@ class InstructionWideFormat2(
     val modifiedOpCode: OpCode,
     val localVariableIndex: UShort,
     val constant: Short
-) : InstructionWide(opcode) {
+) : Instruction {
     override fun line(constantPoolLookup: ConstantPoolLookup): String {
         return "${opcode.line} ${modifiedOpCode.line} ${localVariableIndex.toDecHex()} ${constant.toDecHex()}"
     }
