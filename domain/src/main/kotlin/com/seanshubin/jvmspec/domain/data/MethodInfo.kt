@@ -4,7 +4,7 @@ import com.seanshubin.jvmspec.domain.util.DataFormat.indent
 import java.io.DataInput
 
 data class MethodInfo(
-    val accessFlags: UShort,
+    val accessFlags: Set<AccessFlag>,
     val nameIndex: UShort,
     val descriptorIndex: UShort,
     val attributesCount: UShort,
@@ -26,7 +26,8 @@ data class MethodInfo(
 
     companion object {
         fun fromDataInput(input: DataInput, constantPoolLookup: ConstantPoolLookup): MethodInfo {
-            val accessFlags = input.readUnsignedShort().toUShort()
+            val accessFlagsMask = input.readUnsignedShort().toUShort()
+            val accessFlags = AccessFlag.fromMask(accessFlagsMask)
             val nameIndex = input.readUnsignedShort().toUShort()
             val descriptorIndex = input.readUnsignedShort().toUShort()
             val attributesCount = input.readUnsignedShort().toUShort()
