@@ -7,6 +7,7 @@ data class ClassData(
     val newInstanceCount: Int,
     val staticInvocations: Map<QualifiedMethod, Int>
 ) {
+    val uniqueStaticReferenceCount: Int get() = staticInvocations.size
     fun addToStaticReferenceCount(
         source: QualifiedMethod,
         target: QualifiedMethod

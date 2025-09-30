@@ -77,6 +77,8 @@ data class AggregateData(
             it.cyclomaticComplexity
         }.sortedByDescending {
             it.staticReferenceCount
+        }.sortedByDescending {
+            it.uniqueStaticReferenceCount
         }.flatMap { it.toStaticInvocationLines() }
     }
 
