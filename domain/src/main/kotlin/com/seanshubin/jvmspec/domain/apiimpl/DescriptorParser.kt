@@ -1,11 +1,14 @@
-package com.seanshubin.jvmspec.domain.aggregation
+package com.seanshubin.jvmspec.domain.apiimpl
+
+import com.seanshubin.jvmspec.domain.api.Signature
+import com.seanshubin.jvmspec.domain.api.SignatureType
 
 interface DescriptorParser {
     fun parseCharacter(c: Char): DescriptorParser
-    fun build(): SignatureParts
+    fun build(): Signature
 
     companion object {
-        fun build(descriptor: String): SignatureParts {
+        fun build(descriptor: String): Signature {
             return descriptor.fold(Start(descriptor, 0), ::nextCharacter).build()
         }
 
@@ -18,7 +21,7 @@ interface DescriptorParser {
                 }
             }
 
-            override fun build(): SignatureParts = throwMustBeInEndStateToBuild(descriptor, index)
+            override fun build(): Signature = throwMustBeInEndStateToBuild(descriptor, index)
         }
 
         class ParameterList(
@@ -43,7 +46,7 @@ interface DescriptorParser {
                 }
             }
 
-            override fun build(): SignatureParts {
+            override fun build(): Signature {
                 throwMustBeInEndStateToBuild(descriptor, index)
             }
         }
@@ -63,7 +66,7 @@ interface DescriptorParser {
                 }
             }
 
-            override fun build(): SignatureParts {
+            override fun build(): Signature {
                 throwMustBeInEndStateToBuild(descriptor, index)
             }
         }
@@ -89,7 +92,7 @@ interface DescriptorParser {
                 }
             }
 
-            override fun build(): SignatureParts {
+            override fun build(): Signature {
                 throwMustBeInEndStateToBuild(descriptor, index)
             }
         }
@@ -109,7 +112,7 @@ interface DescriptorParser {
                 }
             }
 
-            override fun build(): SignatureParts {
+            override fun build(): Signature {
                 throwMustBeInEndStateToBuild(descriptor, index)
             }
         }
@@ -124,8 +127,8 @@ interface DescriptorParser {
                 throwParseError(descriptor, index, c, javaClass.simpleName)
             }
 
-            override fun build(): SignatureParts {
-                return SignatureParts(parameters, returnType)
+            override fun build(): Signature {
+                return Signature(parameters, returnType)
             }
         }
 

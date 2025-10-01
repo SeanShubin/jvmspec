@@ -1,5 +1,7 @@
 package com.seanshubin.jvmspec.domain.aggregation
 
+import com.seanshubin.jvmspec.domain.api.SignatureType
+import com.seanshubin.jvmspec.domain.apiimpl.DescriptorParser
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

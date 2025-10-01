@@ -1,5 +1,7 @@
 package com.seanshubin.jvmspec.domain.aggregation
 
+import com.seanshubin.jvmspec.domain.apiimpl.DescriptorParser
+
 data class QualifiedMethod(
     val className: String,
     val methodName: String,
@@ -13,29 +15,6 @@ data class QualifiedMethod(
 
     fun id(): String = "$className:$methodName:$methodDescriptor"
     fun javaSignature(): String {
-        val signatureParts = DescriptorParser.build(methodDescriptor)
-        val returnType = signatureParts.returnType.toJavaClassName()
-        val signatureParameters = signatureParts.parameters
-        val parameterList = if (signatureParameters == null) {
-            ""
-        } else {
-            signatureParts.parameters.joinToString(", ", "(", ")") { it.toJavaClassName() }
-        }
-        val javaClassName = className.toJavaClassName()
-        return "$returnType $javaClassName.$methodName$parameterList"
-    }
-
-    private fun SignatureType.toJavaClassName(): String {
-        val namePart = name.toJavaClassName()
-        val arrayPart = "[]".repeat(dimensions)
-        return namePart + arrayPart
-    }
-
-    private fun String.toJavaClassName(): String {
-        return this.removeJavaLangPrefix().replace("/", ".")
-    }
-
-    private fun String.removeJavaLangPrefix(): String {
-        return if (this.startsWith("java/lang/")) this.substring("java/lang/".length) else this
+        return DescriptorParser.build(methodDescriptor).javaFormat(className, methodName)
     }
 }
