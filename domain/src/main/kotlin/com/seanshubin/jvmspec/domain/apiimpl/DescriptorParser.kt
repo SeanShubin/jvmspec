@@ -128,7 +128,7 @@ interface DescriptorParser {
             }
 
             override fun build(): Signature {
-                return Signature(parameters, returnType)
+                return Signature(descriptor, parameters, returnType)
             }
         }
 

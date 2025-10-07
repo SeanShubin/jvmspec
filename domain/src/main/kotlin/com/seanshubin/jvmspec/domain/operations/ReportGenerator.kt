@@ -2,7 +2,8 @@ package com.seanshubin.jvmspec.domain.operations
 
 import com.seanshubin.jvmspec.domain.aggregation.AggregateData
 import com.seanshubin.jvmspec.domain.aggregation.AggregatorImpl
-import com.seanshubin.jvmspec.domain.aggregation.QualifiedMethod
+import com.seanshubin.jvmspec.domain.api.ApiRef
+import com.seanshubin.jvmspec.domain.apiimpl.ApiClassImpl
 import com.seanshubin.jvmspec.domain.command.Command
 import com.seanshubin.jvmspec.domain.command.CreateDirectories
 import com.seanshubin.jvmspec.domain.data.ClassFile
@@ -38,8 +39,8 @@ class ReportGenerator(
                 result == MatchEnum.WHITELIST_ONLY
             }
             val acceptMethodKey = RegexUtil.createMatchFunctionFromList(methodWhitelist, methodBlacklist)
-            val acceptMethod = { qualifiedMethod: QualifiedMethod ->
-                acceptMethodKey(qualifiedMethod.id())
+            val acceptMethod = { method: ApiRef ->
+                acceptMethodKey(method.methodId())
             }
             val acceptClass = RegexUtil.createMatchFunctionFromList(classWhitelist, classBlacklist)
             val initialAggregateData = AggregateData.create(acceptMethod, acceptClass)
@@ -102,8 +103,9 @@ class ReportGenerator(
             val origin = OriginClassFile(inputFile)
             ClassFile.fromDataInput(origin, input)
         }
+        val apiClass = ApiClassImpl(javaFile)
         events.executeCommand(CreateDirectories(outputDir))
-        report.reportCommands(fileName, outputDir, javaFile).forEach { command ->
+        report.reportCommands(fileName, outputDir, apiClass).forEach { command ->
             events.executeCommand(command)
         }
     }

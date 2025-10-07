@@ -1,19 +1,21 @@
 package com.seanshubin.jvmspec.domain.aggregation
 
-import com.seanshubin.jvmspec.domain.data.ClassFile
+import com.seanshubin.jvmspec.domain.api.ApiClass
+import com.seanshubin.jvmspec.domain.api.ApiMethod
+import com.seanshubin.jvmspec.domain.api.ApiRef
 import com.seanshubin.jvmspec.domain.util.MatchEnum
 
 data class AggregateData(
     val classDataMap: Map<String, ClassData>,
-    val acceptMethod: (QualifiedMethod) -> MatchEnum,
+    val acceptMethod: (ApiRef) -> MatchEnum,
     val acceptClass: (String) -> MatchEnum,
-    val methods: Map<MatchEnum, Set<QualifiedMethod>>,
+    val methods: Map<MatchEnum, Set<ApiRef>>,
     val classes: Map<MatchEnum, Set<String>>,
     val mapClassNameOriginIds: Map<String, List<String>>
 ) {
-    fun classFile(classFile: ClassFile): AggregateData {
-        val originId = classFile.origin.id
-        val className = classFile.thisClassName()
+    fun classFile(classFile: ApiClass): AggregateData {
+        val originId = classFile.origin()
+        val className = classFile.className()
         val oldOriginIds = mapClassNameOriginIds[className] ?: emptyList()
         if (oldOriginIds.contains(originId)) throw RuntimeException("Duplicate origin $originId for $className")
         val newOriginIds = oldOriginIds + originId
@@ -22,41 +24,41 @@ data class AggregateData(
     }
 
     fun invokeStatic(
-        source: QualifiedMethod,
-        target: QualifiedMethod
+        source: ApiMethod,
+        target: ApiRef
     ): AggregateData {
         return incrementStaticReferenceCountIfOnBlacklist(source, target)
     }
 
     fun getStatic(
-        source: QualifiedMethod,
-        target: QualifiedMethod
+        source: ApiMethod,
+        target: ApiRef
     ): AggregateData {
         return incrementStaticReferenceCountIfOnBlacklist(source, target)
     }
 
 
     fun putStatic(
-        source: QualifiedMethod,
-        target: QualifiedMethod
+        source: ApiMethod,
+        target: ApiRef
     ): AggregateData {
         return incrementStaticReferenceCountIfOnBlacklist(source, target)
     }
 
     fun newInstance(
-        source: QualifiedMethod,
+        source: ApiMethod,
         targetClassName: String
     ): AggregateData {
         return incrementStaticReferenceCountIfOnBlacklist(source, targetClassName)
     }
 
     fun cyclomaticComplexity(
-        qualifiedMethod: QualifiedMethod,
+        source: ApiMethod,
         complexity: Int
     ): AggregateData {
-        val key = qualifiedMethod.classBaseName()
+        val key = source.className().classBaseName()
         return updateEntry(key) { classData ->
-            classData.addToCyclomaticComplexity(qualifiedMethod, complexity)
+            classData.addToCyclomaticComplexity(source, complexity)
         }
     }
 
@@ -79,6 +81,8 @@ data class AggregateData(
             it.staticReferenceCount
         }.sortedByDescending {
             it.uniqueStaticReferenceCount
+        }.sortedBy {
+            it.staticsAllowed()
         }.flatMap { it.toStaticInvocationLines() }
     }
 
@@ -102,7 +106,7 @@ data class AggregateData(
         return copy(classDataMap = newMap)
     }
 
-    private fun updateMethods(matchEnum: MatchEnum, qualifiedMethod: QualifiedMethod): AggregateData {
+    private fun updateMethods(matchEnum: MatchEnum, qualifiedMethod: ApiRef): AggregateData {
         val oldSet = methods[matchEnum] ?: emptySet()
         val newSet = oldSet + qualifiedMethod
         val newMap = methods + (matchEnum to newSet)
@@ -117,13 +121,13 @@ data class AggregateData(
     }
 
     private fun incrementStaticReferenceCountIfOnBlacklist(
-        source: QualifiedMethod,
-        target: QualifiedMethod
+        source: ApiMethod,
+        target: ApiRef
     ): AggregateData {
         val matchEnum = acceptMethod(target)
         val a = updateMethods(matchEnum, target)
         return if (matchEnum == MatchEnum.BLACKLIST_ONLY) {
-            val key = source.classBaseName()
+            val key = source.className().classBaseName()
             a.updateEntry(key) { classData ->
                 classData.addToStaticReferenceCount(source, target)
             }
@@ -132,11 +136,11 @@ data class AggregateData(
         }
     }
 
-    private fun incrementStaticReferenceCountIfOnBlacklist(source: QualifiedMethod, target: String): AggregateData {
+    private fun incrementStaticReferenceCountIfOnBlacklist(source: ApiMethod, target: String): AggregateData {
         val matchEnum = acceptClass(target)
         val a = updateClasses(matchEnum, target)
         return if (matchEnum == MatchEnum.BLACKLIST_ONLY) {
-            val key = source.classBaseName()
+            val key = source.className()
             a.updateEntry(key) { classData ->
                 classData.addToNewInstanceCount(source, target)
             }
@@ -147,7 +151,7 @@ data class AggregateData(
 
     fun summaryMethodNames(matchEnum: MatchEnum): List<String> {
         val set = methods[matchEnum] ?: emptySet()
-        return set.map { it.id() }.toList().sorted()
+        return set.map { it.methodId() }.toList().sorted()
     }
 
     fun summaryClassNames(matchEnum: MatchEnum): List<String> {
@@ -155,9 +159,16 @@ data class AggregateData(
         return set.toList().sorted()
     }
 
+    fun methodCategories(method: ApiMethod, categories: Set<String>): AggregateData {
+        val key = method.className().classBaseName()
+        return updateEntry(key) { classData ->
+            classData.updateMethodCategories(method, categories)
+        }
+    }
+
     companion object {
         fun create(
-            acceptMethod: (QualifiedMethod) -> MatchEnum,
+            acceptMethod: (ApiRef) -> MatchEnum,
             acceptClass: (String) -> MatchEnum
         ) = AggregateData(
             emptyMap(),
@@ -167,5 +178,11 @@ data class AggregateData(
             emptyMap(),
             emptyMap()
         )
+
+        fun String.classBaseName(): String {
+            val indexOfDollar = this.indexOf('$')
+            val key = if (indexOfDollar == -1) this else this.take(indexOfDollar)
+            return key
+        }
     }
 }

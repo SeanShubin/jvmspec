@@ -1,6 +1,7 @@
 package com.seanshubin.jvmspec.domain.apiimpl
 
 import com.seanshubin.jvmspec.domain.api.ApiCodeAttribute
+import com.seanshubin.jvmspec.domain.api.ApiInstruction
 import com.seanshubin.jvmspec.domain.data.AttributeCodeInfo
 import com.seanshubin.jvmspec.domain.data.ClassFile
 
@@ -17,5 +18,11 @@ class ApiCodeAttributeImpl(
 
     override fun opcodes(): List<String> {
         return attributeInfo.instructions.map { it.instruction.opcode.name.lowercase() }
+    }
+
+    override fun instructions(): List<ApiInstruction> {
+        return attributeInfo.instructions.indices.map { instructionIndex ->
+            ApiInstructionImpl(classFile, attributeInfo, instructionIndex)
+        }
     }
 }

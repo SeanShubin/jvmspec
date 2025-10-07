@@ -1,6 +1,7 @@
 package com.seanshubin.jvmspec.domain.api
 
 data class Signature(
+    val descriptor: String,
     val parameters: List<SignatureType>?,
     val returnType: SignatureType
 ) {

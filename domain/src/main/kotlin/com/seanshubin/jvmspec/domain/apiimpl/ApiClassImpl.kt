@@ -5,6 +5,10 @@ import com.seanshubin.jvmspec.domain.api.ApiMethod
 import com.seanshubin.jvmspec.domain.data.ClassFile
 
 class ApiClassImpl(private val classFile: ClassFile) : ApiClass {
+    override fun origin(): String {
+        return classFile.origin.id
+    }
+
     override fun className(): String {
         return classFile.constantPoolLookup.className(classFile.thisClass)
     }
@@ -13,5 +17,9 @@ class ApiClassImpl(private val classFile: ClassFile) : ApiClass {
         return classFile.methods.indices.map {
             ApiMethodImpl(classFile, it)
         }
+    }
+
+    override fun disassemblyLines(): List<String> {
+        return classFile.lines()
     }
 }

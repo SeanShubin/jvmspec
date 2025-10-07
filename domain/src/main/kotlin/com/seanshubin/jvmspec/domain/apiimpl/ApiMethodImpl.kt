@@ -9,6 +9,10 @@ import com.seanshubin.jvmspec.domain.data.ClassFile
 class ApiMethodImpl(private val classFile: ClassFile, private val methodIndex: Int) : ApiMethod {
     private val methodInfo = classFile.methods[methodIndex]
     private val constantPoolLookup = classFile.constantPoolLookup
+    override fun className(): String {
+        return classFile.thisClassName()
+    }
+
     override fun name(): String {
         val methodNameIndex = methodInfo.nameIndex
         val methodName = constantPoolLookup.lookupUtf8Value(methodNameIndex)
@@ -28,12 +32,14 @@ class ApiMethodImpl(private val classFile: ClassFile, private val methodIndex: I
         }
     }
 
-    override fun code(): ApiCodeAttribute {
+    override fun code(): ApiCodeAttribute? {
         val codeAttributes = attributes().filter { it.name() == "Code" }
-        if (codeAttributes.size == 1) {
-            return codeAttributes[0].asCodeAttribute()
+        return if (codeAttributes.isEmpty()) {
+            null
+        } else if (codeAttributes.size == 1) {
+            codeAttributes[0].asCodeAttribute()
         } else {
-            throw RuntimeException("Exactly one Code attribute expected, got ${codeAttributes.size}")
+            throw RuntimeException("Zero or one Code attributes expected, got ${codeAttributes.size}")
         }
     }
 }

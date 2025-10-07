@@ -28,13 +28,17 @@ object PrototypeApp {
             val methodName = method.name()
             val javaSignature = method.signature().javaFormatUnqualified(className, methodName)
             val code = method.code()
-            val complexity = code.complexity()
-            val opcodes = code.opcodes()
-            val categories = categoriesFor(methodName, opcodes)
-            val opcodeList = opcodes.joinToString(",", "(", ")")
-            println(javaSignature)
-            println("[complexity=$complexity, categories=$categories opcodes=$opcodeList]")
-            println()
+            if (code == null) {
+                println("no code for $javaSignature")
+            } else {
+                val complexity = code.complexity()
+                val opcodes = code.opcodes()
+                val categories = categoriesFor(methodName, opcodes)
+                val opcodeList = opcodes.joinToString(",", "(", ")")
+                println(javaSignature)
+                println("[complexity=$complexity, categories=$categories opcodes=$opcodeList]")
+                println()
+            }
         }
     }
 
@@ -57,7 +61,6 @@ object PrototypeApp {
         val opCodesAfterInvokeStatic = opCodesAfterLoad.drop(opCodesInvokeStatic.size)
         val opCodesReturn = opCodesAfterInvokeStatic.takeWhile { it.contains("return") }
         val opCodesAfterReturn = opCodesAfterInvokeStatic.drop(opCodesReturn.size)
-        if (opCodesLoad.isEmpty()) return false
         if (opCodesInvokeStatic.size != 1) return false
         if (opCodesReturn.size != 1) return false
         if (opCodesAfterReturn.isNotEmpty()) return false
