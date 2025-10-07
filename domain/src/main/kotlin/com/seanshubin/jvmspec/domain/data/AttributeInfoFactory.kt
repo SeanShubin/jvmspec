@@ -20,6 +20,6 @@ object AttributeInfoFactory {
 
     val factoryMap: Map<String, (AttributeInfo, ConstantPoolLookup, (DataInput, ConstantPoolLookup) -> AttributeInfo) -> AttributeInfo> =
         mapOf(
-        AttributeCodeInfo.NAME to AttributeCodeInfo::fromAttributeInfo
-    )
+            AttributeCodeInfo.NAME to AttributeCodeInfo::fromAttributeInfo
+        )
 }
