@@ -49,12 +49,17 @@ data class ClassData(
 
     fun toStaticInvocationLines(): List<String> {
         val header = listOf(toLine())
-        val ids = staticInvocations.toList().sortedByDescending { (_, quantity) ->
+        val staticHeader = listOf("  quantity, static invocation")
+        val staticInvocations = staticInvocations.toList().sortedByDescending { (_, quantity) ->
             quantity
         }.map { (method, quantity) ->
-            "  ($quantity) ${method.signature.javaFormat(method.className, method.name)}"
+            "    ($quantity) ${method.signature.javaFormat(method.className, method.name)}"
         }
-        return header + ids
+        val categoryHeader = listOf("  categories, method")
+        val methodCategoryLines = methodCategories.map { (methodId, categories) ->
+            "    $categories $methodId"
+        }
+        return header + staticHeader + staticInvocations + categoryHeader + methodCategoryLines
     }
 
     fun updateMethodCategories(method: ApiMethod, categories: Set<String>): ClassData {
