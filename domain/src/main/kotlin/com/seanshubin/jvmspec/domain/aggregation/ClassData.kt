@@ -9,7 +9,7 @@ data class ClassData(
     val cyclomaticComplexity: Int,
     val newInstanceCount: Int,
     val staticInvocations: Map<ApiRef, Int>,
-    val methodCategories: Map<String, Set<String>>
+    val methodCategories: Map<ApiRef, Set<String>>
 ) {
     fun staticsAllowed(): Boolean {
         val allCategories = methodCategories.values.toSet()
@@ -53,17 +53,17 @@ data class ClassData(
         val staticInvocations = staticInvocations.toList().sortedByDescending { (_, quantity) ->
             quantity
         }.map { (method, quantity) ->
-            "    ($quantity) ${method.signature.javaFormat(method.className, method.name)}"
+            "    ($quantity) ${method.javaFormat()}"
         }
         val categoryHeader = listOf("  categories, method")
-        val methodCategoryLines = methodCategories.map { (methodId, categories) ->
-            "    $categories $methodId"
+        val methodCategoryLines = methodCategories.map { (method, categories) ->
+            "    $categories ${method.javaFormat()}"
         }
         return header + staticHeader + staticInvocations + categoryHeader + methodCategoryLines
     }
 
     fun updateMethodCategories(method: ApiMethod, categories: Set<String>): ClassData {
-        val id = method.ref().methodId()
+        val id = method.ref()
         val oldCategories = methodCategories[id] ?: emptySet()
         val newCategories = oldCategories + categories
         val newMethodCategories = methodCategories + (id to newCategories)

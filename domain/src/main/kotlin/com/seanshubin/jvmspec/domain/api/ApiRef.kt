@@ -8,4 +8,8 @@ data class ApiRef(
     fun methodId(): String {
         return "$className:$name:${signature.descriptor}"
     }
+
+    fun javaFormat(): String {
+        return signature.javaFormat(className, name)
+    }
 }
