@@ -14,4 +14,5 @@ interface ApiClass {
     fun constants(): List<ApiConstant.Constant>
     fun accessFlags(): Set<AccessFlag>
     fun interfaces(): List<ApiConstant.Constant>
+    fun fields(): List<ApiField>
 }

@@ -4,7 +4,7 @@ import com.seanshubin.jvmspec.domain.api.ApiAttribute
 import com.seanshubin.jvmspec.domain.api.ApiCodeAttribute
 import com.seanshubin.jvmspec.domain.data.ClassFile
 
-class ApiMethodAttributeImpl(
+class ApiAttributeImpl(
     private val classFile: ClassFile,
     private val methodIndex: Int,
     private val attributeIndex: Int

@@ -2,6 +2,7 @@ package com.seanshubin.jvmspec.domain.apiimpl
 
 import com.seanshubin.jvmspec.domain.api.ApiClass
 import com.seanshubin.jvmspec.domain.api.ApiConstant
+import com.seanshubin.jvmspec.domain.api.ApiField
 import com.seanshubin.jvmspec.domain.api.ApiMethod
 import com.seanshubin.jvmspec.domain.data.ClassFile
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
@@ -54,6 +55,12 @@ class ApiClassImpl(private val classFile: ClassFile) : ApiClass {
         return classFile.interfaces.map {
             val offset = constantPoolIndexToOffsetMap.getValue(it.toInt())
             ApiConstantFactory.create(classFile, offset)
+        }
+    }
+
+    override fun fields(): List<ApiField> {
+        return classFile.fields.indices.map {
+            ApiFieldImpl(classFile, it)
         }
     }
 

@@ -1,7 +1,7 @@
 package com.seanshubin.jvmspec.domain.format
 
-import com.seanshubin.jvmspec.domain.api.ApiClass
-import com.seanshubin.jvmspec.domain.api.ApiConstant
+import com.seanshubin.jvmspec.domain.api.*
+import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 import com.seanshubin.jvmspec.domain.tree.Tree
 
 class JvmSpecFormatDetailed : JvmSpecFormat {
@@ -14,7 +14,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         val constantChildren = constants.map { constant ->
             tree(constant)
         }
-        val accessFlagsString = apiClass.accessFlags().joinToString(", ") { it.displayName }
+        val accessFlagsString = accessFlagsString(apiClass.accessFlags())
         val accessFlagsNode = Tree("access_flags: $accessFlagsString")
         val thisClassName = apiClass.thisClassName()
         val thisClassNode = Tree("this_class: $thisClassName")
@@ -23,6 +23,8 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         val constantsNode = Tree("constants(${constantChildren.size})", constantChildren)
         val interfaceChildren = apiClass.interfaces().map { tree(it) }
         val interfaceNode = Tree("interfaces(${interfaceChildren.size})", interfaceChildren)
+        val fieldChildren = apiClass.fields().mapIndexed { index, field -> tree(field, index) }
+        val fieldNode = Tree("fields(${fieldChildren.size})", fieldChildren)
 
         return listOf(
             originNode,
@@ -33,7 +35,8 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
             thisClassNode,
             superClassNode,
             constantsNode,
-            interfaceNode
+            interfaceNode,
+            fieldNode
         )
 //        val fieldsCount: UShort,
 //        val fields: List<FieldInfo>,
@@ -59,6 +62,37 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
             is ApiConstant.ReferenceKindValue -> Tree("${constant.name}(${constant.id})")
             is ApiConstant.IndexValue -> Tree("${constant.index}")
         }
+    }
+
+    private fun tree(field: ApiField, index: Int): Tree {
+        val formattedSignature = formatSignature(
+            field.className().replace("/", "."),
+            field.name(),
+            field.signature()
+        )
+        val children = listOf(
+            Tree("access flags = ${field.accessFlags()}"),
+            Tree("signature = $formattedSignature")
+        )
+        val parent = Tree("field[$index]", children)
+        return parent
+    }
+
+    private fun formatSignature(className: String, methodName: String, signature: Signature): String {
+        val formattedReturnType = formatSignatureType(signature.returnType)
+        val formattedArgumentList =
+            signature.parameters?.joinToString(", ", "(", ")", transform = ::formatSignatureType) ?: ""
+        return "$formattedReturnType $className.$methodName$formattedArgumentList"
+    }
+
+    private fun formatSignatureType(signatureType: SignatureType): String {
+        val name = signatureType.name.replace("/", ".")
+        val array = "[]".repeat(signatureType.dimensions)
+        return name + array
+    }
+
+    fun accessFlagsString(accessFlags: Set<AccessFlag>): String {
+        return accessFlags.joinToString(", ") { it.displayName }
     }
 
     private fun hexUpper(x: Int): String = "0x" + Integer.toHexString(x).uppercase()
