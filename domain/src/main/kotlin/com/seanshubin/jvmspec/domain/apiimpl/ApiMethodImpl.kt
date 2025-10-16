@@ -5,10 +5,15 @@ import com.seanshubin.jvmspec.domain.api.ApiCodeAttribute
 import com.seanshubin.jvmspec.domain.api.ApiMethod
 import com.seanshubin.jvmspec.domain.api.Signature
 import com.seanshubin.jvmspec.domain.data.ClassFile
+import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 
 class ApiMethodImpl(private val classFile: ClassFile, private val methodIndex: Int) : ApiMethod {
     private val methodInfo = classFile.methods[methodIndex]
     private val constantPoolLookup = classFile.constantPoolLookup
+    override fun accessFlags(): Set<AccessFlag> {
+        return methodInfo.accessFlags
+    }
+
     override fun className(): String {
         return classFile.thisClassName()
     }
