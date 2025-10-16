@@ -17,5 +17,6 @@ interface Aggregator {
     fun summaryMethodNames(matchEnum: MatchEnum): List<String>
     fun summaryClassNames(matchEnum: MatchEnum): List<String>
     fun summaryOrigin(): List<String>
+    fun summaryTotal(): List<String>
     fun methodCategories(method: ApiMethod, categories: Set<String>)
 }

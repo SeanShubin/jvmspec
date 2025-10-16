@@ -15,7 +15,7 @@ data class AggregateData(
 ) {
     fun classFile(classFile: ApiClass): AggregateData {
         val originId = classFile.origin()
-        val className = classFile.className()
+        val className = classFile.thisClassName()
         val oldOriginIds = mapClassNameOriginIds[className] ?: emptyList()
         if (oldOriginIds.contains(originId)) throw RuntimeException("Duplicate origin $originId for $className")
         val newOriginIds = oldOriginIds + originId
@@ -84,6 +84,24 @@ data class AggregateData(
         }.sortedBy {
             it.staticsAllowed()
         }.flatMap { it.toStaticInvocationLines() }
+    }
+
+    fun totals(): List<String> {
+        val violationCount = classDataMap.count { (name, classData) ->
+            !classData.staticsAllowed() && classData.staticReferenceCount > 0
+        }
+        val okCount = classDataMap.count { (name, classData) ->
+            classData.staticsAllowed() || classData.staticReferenceCount == 0
+        }
+        val totalCount = classDataMap.size
+        val percentage = violationCount.toDouble() * 100 / totalCount
+        val percentageFormatted = String.format("%.2f", percentage)
+        return listOf(
+            "violations: $violationCount",
+            "ok        : $okCount",
+            "total     : $totalCount",
+            "percentage: $percentageFormatted%"
+        )
     }
 
     fun summaryOrigin(): List<String> {

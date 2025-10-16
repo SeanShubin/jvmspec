@@ -1,5 +1,6 @@
 package com.seanshubin.jvmspec.domain.data
 
+import com.seanshubin.jvmspec.domain.primitive.ConstantPoolTag
 import java.io.DataInput
 
 data class ConstantPackageInfo(

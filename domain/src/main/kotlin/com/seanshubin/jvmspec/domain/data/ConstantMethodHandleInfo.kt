@@ -1,5 +1,7 @@
 package com.seanshubin.jvmspec.domain.data
 
+import com.seanshubin.jvmspec.domain.primitive.ConstantPoolTag
+import com.seanshubin.jvmspec.domain.primitive.ReferenceKind
 import java.io.DataInput
 
 data class ConstantMethodHandleInfo(

@@ -1,5 +1,6 @@
 package com.seanshubin.jvmspec.domain.data
 
+import com.seanshubin.jvmspec.domain.primitive.ConstantPoolTag
 import com.seanshubin.jvmspec.domain.util.DataFormat.toSanitizedString
 import java.io.DataInput
 

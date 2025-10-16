@@ -29,6 +29,7 @@ class ReportGenerator(
     private val clock: Clock,
     private val events: Events,
     private val disassembleReport: Report,
+    private val disassembleReport2: Report
 ) : Runnable {
     override fun run() {
         withTimer {
@@ -49,6 +50,7 @@ class ReportGenerator(
             val compositeReport: Report = CompositeReport(
                 listOf(
                     disassembleReport,
+                    disassembleReport2,
                     methodReport
                 )
             )
@@ -58,6 +60,7 @@ class ReportGenerator(
                 }
             }
             files.write(newFile(outputDir, "summary-static.txt"), aggregator.summaryDescendingStaticReferenceCount())
+            files.write(newFile(outputDir, "summary-total.txt"), aggregator.summaryTotal())
             files.write(
                 newFile(outputDir, "summary-complexity.txt"),
                 aggregator.summaryDescendingCyclomaticComplexity()

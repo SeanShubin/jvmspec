@@ -1,4 +1,4 @@
-package com.seanshubin.jvmspec.domain.data
+package com.seanshubin.jvmspec.domain.primitive
 
 enum class ConstantPoolTag(val id: UByte, val entriesTaken: Int) {
     UTF8(1u, 1),
@@ -19,6 +19,7 @@ enum class ConstantPoolTag(val id: UByte, val entriesTaken: Int) {
     MODULE(19u, 1),
     PACKAGE(20u, 1);
 
+    // TODO: remove
     fun line(): String {
         return "$name($id)"
     }

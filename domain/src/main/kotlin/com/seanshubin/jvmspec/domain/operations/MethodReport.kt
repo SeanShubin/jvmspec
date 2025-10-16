@@ -11,7 +11,7 @@ import java.nio.file.Path
 class MethodReport(private val aggregator: Aggregator) : Report {
     override fun reportCommands(baseFileName: String, outputDir: Path, classFile: ApiClass): List<Command> {
         aggregator.classFile(classFile)
-        val className = classFile.className()
+        val className = classFile.thisClassName()
         val methods = classFile.methods()
         val lines = mutableListOf<String>()
         val targetOpCodes = listOf(

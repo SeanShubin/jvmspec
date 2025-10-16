@@ -6,6 +6,8 @@ import com.seanshubin.jvmspec.domain.command.Environment
 import com.seanshubin.jvmspec.domain.command.EnvironmentImpl
 import com.seanshubin.jvmspec.domain.files.FilesContract
 import com.seanshubin.jvmspec.domain.files.FilesDelegate
+import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
+import com.seanshubin.jvmspec.domain.format.JvmSpecFormatDetailed
 import com.seanshubin.jvmspec.domain.operations.*
 import java.time.Clock
 
@@ -17,6 +19,8 @@ class DependenciesWithConfiguration(private val configuration: Configuration) {
     val notifications: Notifications = LineEmittingNotifications(emit, commandRunner)
     val clock: Clock = Clock.systemUTC()
     val disassembleReport: Report = DisassembleReport()
+    val formatDetailed: JvmSpecFormat = JvmSpecFormatDetailed()
+    val disassembleReport2: Report = DisassembleReport2(formatDetailed)
     val runner: Runnable = ReportGenerator(
         configuration.inputDir,
         configuration.outputDir,
@@ -29,6 +33,7 @@ class DependenciesWithConfiguration(private val configuration: Configuration) {
         files,
         clock,
         notifications,
-        disassembleReport
+        disassembleReport,
+        disassembleReport2
     )
 }

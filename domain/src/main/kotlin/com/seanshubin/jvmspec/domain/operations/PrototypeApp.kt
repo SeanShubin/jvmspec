@@ -23,7 +23,7 @@ object PrototypeApp {
     }
 
     fun display(apiClass: ApiClass) {
-        val className = apiClass.className()
+        val className = apiClass.thisClassName()
         apiClass.methods().forEach { method ->
             val methodName = method.name()
             val javaSignature = method.signature().javaFormatUnqualified(className, methodName)

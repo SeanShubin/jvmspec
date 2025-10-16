@@ -54,6 +54,10 @@ class AggregatorImpl(private val initialAggregateData: AggregateData) : Aggregat
         return aggregateData.summaryDescendingStaticReferenceCount()
     }
 
+    override fun summaryTotal(): List<String> {
+        return aggregateData.totals()
+    }
+
     override fun summaryMethodNames(matchEnum: MatchEnum): List<String> {
         return aggregateData.summaryMethodNames(matchEnum)
     }
