@@ -14,7 +14,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         val constantChildren = constants.map { constant ->
             tree(constant)
         }
-        val accessFlagsString = accessFlagsString(apiClass.accessFlags())
+        val accessFlagsString = formatAccessFlags(apiClass.accessFlags())
         val accessFlagsNode = Tree("access_flags: $accessFlagsString")
         val thisClassName = apiClass.thisClassName()
         val thisClassNode = Tree("this_class: $thisClassName")
@@ -70,12 +70,27 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
             field.name(),
             field.signature()
         )
+        val attributeChildren = field.attributes().mapIndexed { index, attribute -> tree(attribute, index) }
+        val attributeNode = Tree("attributes(${attributeChildren.size})", attributeChildren)
         val children = listOf(
-            Tree("access flags = ${field.accessFlags()}"),
-            Tree("signature = $formattedSignature")
+            Tree("access flags = ${formatAccessFlags(field.accessFlags())}"),
+            Tree("signature = $formattedSignature"),
+            attributeNode
         )
         val parent = Tree("field[$index]", children)
         return parent
+    }
+
+    private fun tree(attribute: ApiAttribute, index: Int): Tree {
+        val bytesNode = listOf(
+            Tree(attribute.bytes().toHexString()),
+            Tree(attribute.bytes().toSanitizedString())
+        )
+        val children = listOf(
+            Tree("name: ${attribute.name()}"),
+            Tree("bytes(${attribute.bytes().size})", bytesNode),
+        )
+        return Tree("attribute[$index]", children)
     }
 
     private fun formatSignature(className: String, methodName: String, signature: Signature): String {
@@ -91,7 +106,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         return name + array
     }
 
-    fun accessFlagsString(accessFlags: Set<AccessFlag>): String {
+    fun formatAccessFlags(accessFlags: Set<AccessFlag>): String {
         return accessFlags.joinToString(", ") { it.displayName }
     }
 
@@ -101,5 +116,10 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
 
     private fun ByteArray.toSanitizedString(): String =
         this.joinToString("") { if (it in 32..126) it.toInt().toChar().toString() else "." }
+    private fun List<Byte>.toSanitizedString(): String =
+        this.joinToString("") { if (it in 32..126) it.toInt().toChar().toString() else "." }
+
+    private fun List<Byte>.toHexString(): String = this.joinToString("", "0x") { it.toHex() }
+    private fun Byte.toHex(): String = String.format("%02X", this)
 
 }

@@ -34,7 +34,7 @@ class ApiFieldImpl(private val classFile: ClassFile, private val fieldIndex: Int
 
     override fun attributes(): List<ApiAttribute> {
         return fieldInfo.attributes.indices.map { attributeIndex ->
-            ApiAttributeImpl(classFile, fieldIndex, attributeIndex)
+            ApiFieldAttributeImpl(classFile, fieldIndex, attributeIndex)
         }
     }
 

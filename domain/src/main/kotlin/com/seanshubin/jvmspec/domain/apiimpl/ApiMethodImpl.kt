@@ -33,7 +33,7 @@ class ApiMethodImpl(private val classFile: ClassFile, private val methodIndex: I
 
     override fun attributes(): List<ApiAttribute> {
         return methodInfo.attributes.indices.map { attributeIndex ->
-            ApiAttributeImpl(classFile, methodIndex, attributeIndex)
+            ApiMethodAttributeImpl(classFile, methodIndex, attributeIndex)
         }
     }
 

@@ -4,7 +4,7 @@ import com.seanshubin.jvmspec.domain.api.ApiAttribute
 import com.seanshubin.jvmspec.domain.api.ApiCodeAttribute
 import com.seanshubin.jvmspec.domain.data.ClassFile
 
-class ApiAttributeImpl(
+class ApiMethodAttributeImpl(
     private val classFile: ClassFile,
     private val methodIndex: Int,
     private val attributeIndex: Int
@@ -15,6 +15,10 @@ class ApiAttributeImpl(
         val nameIndex = attributeInfo.attributeIndex
         val name = classFile.constantPoolLookup.lookupUtf8Value(nameIndex)
         return name
+    }
+
+    override fun bytes(): List<Byte> {
+        return attributeInfo.info
     }
 
     override fun asCodeAttribute(): ApiCodeAttribute {
