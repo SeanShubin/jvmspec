@@ -115,9 +115,9 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         this.toByteArray().toSanitizedString()
 
     private fun ByteArray.toSanitizedString(): String =
-        this.joinToString("") { if (it in 32..126) it.toInt().toChar().toString() else "." }
+        this.joinToString("") { if (it in 32..126) it.toInt().toChar().toString() else "?" }
     private fun List<Byte>.toSanitizedString(): String =
-        this.joinToString("") { if (it in 32..126) it.toInt().toChar().toString() else "." }
+        this.joinToString("") { if (it in 32..126) it.toInt().toChar().toString() else "?" }
 
     private fun List<Byte>.toHexString(): String = this.joinToString("", "0x") { it.toHex() }
     private fun Byte.toHex(): String = String.format("%02X", this)
