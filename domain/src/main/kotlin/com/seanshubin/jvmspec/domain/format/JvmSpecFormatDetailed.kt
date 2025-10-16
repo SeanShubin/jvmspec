@@ -23,9 +23,10 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         val constantsNode = Tree("constants(${constantChildren.size})", constantChildren)
         val interfaceChildren = apiClass.interfaces().map { tree(it) }
         val interfaceNode = Tree("interfaces(${interfaceChildren.size})", interfaceChildren)
-        val fieldChildren = apiClass.fields().mapIndexed { index, field -> tree(field, index) }
+        val fieldChildren = apiClass.fields().mapIndexed { index, field -> tree("field", field, index) }
         val fieldNode = Tree("fields(${fieldChildren.size})", fieldChildren)
-
+        val methodChildren = apiClass.methods().mapIndexed { index, method -> tree("method", method, index) }
+        val methodNode = Tree("methods(${methodChildren.size})", methodChildren)
         return listOf(
             originNode,
             magicNode,
@@ -36,10 +37,9 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
             superClassNode,
             constantsNode,
             interfaceNode,
-            fieldNode
+            fieldNode,
+            methodNode
         )
-//        val fieldsCount: UShort,
-//        val fields: List<FieldInfo>,
 //        val methodsCount: UShort,
 //        val methods: List<MethodInfo>,
 //        val attributesCount: UShort,
@@ -64,20 +64,20 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         }
     }
 
-    private fun tree(field: ApiField, index: Int): Tree {
+    private fun tree(caption: String, fieldOrMethod: ApiFieldOrMethod, index: Int): Tree {
         val formattedSignature = formatSignature(
-            field.className().replace("/", "."),
-            field.name(),
-            field.signature()
+            fieldOrMethod.className().replace("/", "."),
+            fieldOrMethod.name(),
+            fieldOrMethod.signature()
         )
-        val attributeChildren = field.attributes().mapIndexed { index, attribute -> tree(attribute, index) }
+        val attributeChildren = fieldOrMethod.attributes().mapIndexed { index, attribute -> tree(attribute, index) }
         val attributeNode = Tree("attributes(${attributeChildren.size})", attributeChildren)
         val children = listOf(
-            Tree("access flags = ${formatAccessFlags(field.accessFlags())}"),
+            Tree("access flags = ${formatAccessFlags(fieldOrMethod.accessFlags())}"),
             Tree("signature = $formattedSignature"),
             attributeNode
         )
-        val parent = Tree("field[$index]", children)
+        val parent = Tree("$caption[$index]", children)
         return parent
     }
 
