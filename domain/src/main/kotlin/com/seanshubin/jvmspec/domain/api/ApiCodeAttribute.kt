@@ -1,6 +1,6 @@
 package com.seanshubin.jvmspec.domain.api
 
-interface ApiCodeAttribute {
+interface ApiCodeAttribute : ApiAttribute {
     fun complexity(): Int
     fun opcodes(): List<String>
     fun instructions(): List<ApiInstruction>

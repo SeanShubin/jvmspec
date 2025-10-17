@@ -1,9 +1,6 @@
 package com.seanshubin.jvmspec.domain.apiimpl
 
-import com.seanshubin.jvmspec.domain.api.ApiClass
-import com.seanshubin.jvmspec.domain.api.ApiConstant
-import com.seanshubin.jvmspec.domain.api.ApiField
-import com.seanshubin.jvmspec.domain.api.ApiMethod
+import com.seanshubin.jvmspec.domain.api.*
 import com.seanshubin.jvmspec.domain.data.ClassFile
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 
@@ -66,5 +63,11 @@ class ApiClassImpl(private val classFile: ClassFile) : ApiClass {
 
     override fun accessFlags(): Set<AccessFlag> {
         return classFile.accessFlags
+    }
+
+    override fun attributes(): List<ApiAttribute> {
+        return classFile.attributes.indices.map {
+            ApiAttributeImpl(classFile, it)
+        }
     }
 }

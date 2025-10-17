@@ -3,13 +3,11 @@ package com.seanshubin.jvmspec.domain.apiimpl
 import com.seanshubin.jvmspec.domain.api.ApiAttribute
 import com.seanshubin.jvmspec.domain.data.ClassFile
 
-class ApiFieldAttributeImpl(
+class ApiAttributeImpl(
     private val classFile: ClassFile,
-    private val fieldIndex: Int,
     private val attributeIndex: Int
 ) : ApiAttribute {
-    private val fieldInfo = classFile.fields[fieldIndex]
-    private val attributeInfo = fieldInfo.attributes[attributeIndex]
+    private val attributeInfo = classFile.attributes[attributeIndex]
     override fun name(): String {
         val nameIndex = attributeInfo.attributeIndex
         val name = classFile.constantPoolLookup.lookupUtf8Value(nameIndex)

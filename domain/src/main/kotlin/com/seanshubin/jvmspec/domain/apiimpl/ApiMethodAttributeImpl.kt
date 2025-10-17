@@ -1,7 +1,6 @@
 package com.seanshubin.jvmspec.domain.apiimpl
 
 import com.seanshubin.jvmspec.domain.api.ApiAttribute
-import com.seanshubin.jvmspec.domain.api.ApiCodeAttribute
 import com.seanshubin.jvmspec.domain.data.ClassFile
 
 class ApiMethodAttributeImpl(
@@ -19,9 +18,5 @@ class ApiMethodAttributeImpl(
 
     override fun bytes(): List<Byte> {
         return attributeInfo.info
-    }
-
-    override fun asCodeAttribute(): ApiCodeAttribute {
-        return ApiCodeAttributeImpl(classFile, methodIndex, attributeIndex)
     }
 }

@@ -12,6 +12,15 @@ class ApiCodeAttributeImpl(
 ) : ApiCodeAttribute {
     private val methodInfo = classFile.methods[methodIndex]
     private val attributeInfo = methodInfo.attributes[attributeIndex] as AttributeCodeInfo
+    override fun name(): String {
+        val nameIndex = attributeInfo.attributeIndex
+        val name = classFile.constantPoolLookup.lookupUtf8Value(nameIndex)
+        return name
+    }
+
+    override fun bytes(): List<Byte> {
+        return attributeInfo.info
+    }
     override fun complexity(): Int {
         return attributeInfo.instructions.sumOf { it.instruction.cyclomaticComplexity() }
     }

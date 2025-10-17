@@ -6,7 +6,6 @@ interface ApiFieldOrMethod {
     fun className(): String
     fun name(): String
     fun signature(): Signature
-    fun code(): ApiCodeAttribute?
     fun attributes(): List<ApiAttribute>
     fun accessFlags(): Set<AccessFlag>
     fun ref(): ApiRef {

@@ -6,44 +6,55 @@ import com.seanshubin.jvmspec.domain.tree.Tree
 
 class JvmSpecFormatDetailed : JvmSpecFormat {
     override fun treeList(apiClass: ApiClass): List<Tree> {
-        val originNode = Tree("origin: ${apiClass.origin()}")
-        val magicNode = Tree("magic: ${hexUpper(apiClass.magic())}")
-        val minorVersionNode = Tree("minor version: ${apiClass.minorVersion()}")
-        val majorVersionNode = Tree("major version: ${apiClass.majorVersion()}")
-        val constants = apiClass.constants()
-        val constantChildren = constants.map { constant ->
+        return listOf(
+            Tree("origin: ${apiClass.origin()}"),
+            Tree("magic: ${hexUpper(apiClass.magic())}"),
+            Tree("minor version: ${apiClass.minorVersion()}"),
+            Tree("major version: ${apiClass.majorVersion()}"),
+            accessFlagsTree(apiClass.accessFlags()),
+            Tree("this_class: ${apiClass.thisClassName()}"),
+            Tree("super_class: ${apiClass.superClassName()}"),
+            constantsTree(apiClass.constants()),
+            interfacesTree(apiClass.interfaces()),
+            fieldsTree(apiClass.fields()),
+            methodsTree(apiClass.methods()),
+            attributesTree(apiClass.attributes())
+        )
+    }
+
+    private fun methodsTree(methods: List<ApiMethod>): Tree {
+        val children = methods.mapIndexed { index, method -> tree("method", method, index) }
+        val parent = Tree("methods(${children.size})", children)
+        return parent
+    }
+
+    private fun fieldsTree(methods: List<ApiField>): Tree {
+        val children = methods.mapIndexed { index, field -> tree("field", field, index) }
+        val parent = Tree("field(${children.size})", children)
+        return parent
+    }
+
+    private fun interfacesTree(interfaces: List<ApiConstant.Constant>): Tree {
+        val children = interfaces.map { constant ->
             tree(constant)
         }
-        val accessFlagsString = formatAccessFlags(apiClass.accessFlags())
-        val accessFlagsNode = Tree("access_flags: $accessFlagsString")
-        val thisClassName = apiClass.thisClassName()
-        val thisClassNode = Tree("this_class: $thisClassName")
-        val superClassName = apiClass.superClassName()
-        val superClassNode = Tree("super_class: $superClassName")
-        val constantsNode = Tree("constants(${constantChildren.size})", constantChildren)
-        val interfaceChildren = apiClass.interfaces().map { tree(it) }
-        val interfaceNode = Tree("interfaces(${interfaceChildren.size})", interfaceChildren)
-        val fieldChildren = apiClass.fields().mapIndexed { index, field -> tree("field", field, index) }
-        val fieldNode = Tree("fields(${fieldChildren.size})", fieldChildren)
-        val methodChildren = apiClass.methods().mapIndexed { index, method -> tree("method", method, index) }
-        val methodNode = Tree("methods(${methodChildren.size})", methodChildren)
-        return listOf(
-            originNode,
-            magicNode,
-            minorVersionNode,
-            majorVersionNode,
-            accessFlagsNode,
-            thisClassNode,
-            superClassNode,
-            constantsNode,
-            interfaceNode,
-            fieldNode,
-            methodNode
-        )
-//        val methodsCount: UShort,
-//        val methods: List<MethodInfo>,
-//        val attributesCount: UShort,
-//        val attributes: List<AttributeInfo>
+        val parent = Tree("interfaces(${children.size})", children)
+        return parent
+    }
+
+    private fun accessFlagsTree(accessFlags: Set<AccessFlag>): Tree {
+        val accessFlagList = accessFlags.map { it.displayName }.toList().sorted()
+        val accessFlagString = accessFlagList.joinToString(" ")
+        val accessFlagTree = Tree("access_flags: $accessFlagString")
+        return accessFlagTree
+    }
+
+    private fun constantsTree(constants: List<ApiConstant.Constant>): Tree {
+        val children = constants.map { constant ->
+            tree(constant)
+        }
+        val parent = Tree("constants(${children.size})", children)
+        return parent
     }
 
     private fun tree(constant: ApiConstant): Tree {
@@ -70,14 +81,18 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
             fieldOrMethod.name(),
             fieldOrMethod.signature()
         )
-        val attributeChildren = fieldOrMethod.attributes().mapIndexed { index, attribute -> tree(attribute, index) }
-        val attributeNode = Tree("attributes(${attributeChildren.size})", attributeChildren)
         val children = listOf(
             Tree("access flags = ${formatAccessFlags(fieldOrMethod.accessFlags())}"),
             Tree("signature = $formattedSignature"),
-            attributeNode
+            attributesTree(fieldOrMethod.attributes())
         )
         val parent = Tree("$caption[$index]", children)
+        return parent
+    }
+
+    private fun attributesTree(attributes: List<ApiAttribute>): Tree {
+        val children = attributes.mapIndexed { index, attribute -> tree(attribute, index) }
+        val parent = Tree("attributes(${children.size})", children)
         return parent
     }
 
@@ -116,6 +131,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
 
     private fun ByteArray.toSanitizedString(): String =
         this.joinToString("") { if (it in 32..126) it.toInt().toChar().toString() else "?" }
+
     private fun List<Byte>.toSanitizedString(): String =
         this.joinToString("") { if (it in 32..126) it.toInt().toChar().toString() else "?" }
 

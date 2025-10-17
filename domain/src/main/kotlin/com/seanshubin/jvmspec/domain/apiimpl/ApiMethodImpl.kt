@@ -33,16 +33,21 @@ class ApiMethodImpl(private val classFile: ClassFile, private val methodIndex: I
 
     override fun attributes(): List<ApiAttribute> {
         return methodInfo.attributes.indices.map { attributeIndex ->
-            ApiMethodAttributeImpl(classFile, methodIndex, attributeIndex)
+            val genericAttribute = ApiMethodAttributeImpl(classFile, methodIndex, attributeIndex)
+            if (genericAttribute.name() == "Code") {
+                ApiCodeAttributeImpl(classFile, methodIndex, attributeIndex)
+            } else {
+                genericAttribute
+            }
         }
     }
 
     override fun code(): ApiCodeAttribute? {
-        val codeAttributes = attributes().filter { it.name() == "Code" }
+        val codeAttributes = attributes().filterIsInstance<ApiCodeAttribute>()
         return if (codeAttributes.isEmpty()) {
             null
         } else if (codeAttributes.size == 1) {
-            codeAttributes[0].asCodeAttribute()
+            codeAttributes[0]
         } else {
             throw RuntimeException("Zero or one Code attributes expected, got ${codeAttributes.size}")
         }
