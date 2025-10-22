@@ -1,14 +1,19 @@
 package com.seanshubin.jvmspec.domain.operations
 
 import com.seanshubin.jvmspec.domain.aggregation.Aggregator
-import com.seanshubin.jvmspec.domain.api.ApiClass
-import com.seanshubin.jvmspec.domain.api.ApiMethod
+import com.seanshubin.jvmspec.domain.api.*
+import com.seanshubin.jvmspec.domain.apiimpl.DescriptorParser
 import com.seanshubin.jvmspec.domain.command.Command
 import com.seanshubin.jvmspec.domain.command.WriteLines
+import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
 import com.seanshubin.jvmspec.domain.util.StringListRuleMatcher
 import java.nio.file.Path
 
-class MethodReport(private val aggregator: Aggregator) : Report {
+class MethodReport(
+    private val aggregator: Aggregator,
+    private val format: JvmSpecFormat,
+    private val indent: (String) -> String
+) : Report {
     override fun reportCommands(baseFileName: String, outputDir: Path, classFile: ApiClass): List<Command> {
         aggregator.classFile(classFile)
         val className = classFile.thisClassName()
@@ -34,25 +39,25 @@ class MethodReport(private val aggregator: Aggregator) : Report {
                 lines.add("categories=$categories complexity=$cyclomaticComplexity $javaFormat")
                 aggregator.methodCategories(method, categories)
                 code.instructions().forEach { instruction ->
-                    val opCode = instruction.opcode()
-                    if (targetOpCodes.contains(opCode)) {
-                        val line = instruction.line()
-                        lines.add("  $line")
+                    val name = instruction.name()
+                    if (targetOpCodes.contains(name)) {
+                        val instructionLines = format.instructionTree(instruction).toLines(indent)
+                        lines.addAll(instructionLines)
                     }
-                    if (opCode == "invokestatic") {
-                        val target = instruction.arg1Ref()
+                    if (name == "invokestatic") {
+                        val target = getApiRef(instruction)
                         aggregator.invokeStatic(method, target)
                     }
-                    if (opCode == "getstatic") {
-                        val target = instruction.arg1Ref()
+                    if (name == "getstatic") {
+                        val target = getApiRef(instruction)
                         aggregator.getStatic(method, target)
                     }
-                    if (opCode == "putstatic") {
-                        val target = instruction.arg1Ref()
+                    if (name == "putstatic") {
+                        val target = getApiRef(instruction)
                         aggregator.putStatic(method, target)
                     }
-                    if (opCode == "new") {
-                        val target = instruction.arg1ClassName()
+                    if (name == "new") {
+                        val target = getClassName(instruction)
                         aggregator.newInstance(method, target)
                     }
                 }
@@ -66,6 +71,28 @@ class MethodReport(private val aggregator: Aggregator) : Report {
     }
 
     companion object {
+        fun getApiRef(instruction: ApiInstruction): ApiRef {
+            if (instruction.args().size != 1) {
+                throw RuntimeException("Expected exactly one argument for instruction ${instruction.name()}")
+            }
+            val arg = instruction.args()[0]
+            arg as ApiArgument.Constant
+            val constant = arg.value as ApiConstant.Constant
+            val (className, methodName, methodDescriptor) = ApiConstant.refToStrings(constant)
+            val signature = DescriptorParser.build(methodDescriptor)
+            return ApiRef(className, methodName, signature)
+        }
+
+        fun getClassName(instruction: ApiInstruction): String {
+            if (instruction.args().size != 1) {
+                throw RuntimeException("Expected exactly one argument for instruction ${instruction.name()}")
+            }
+            val arg = instruction.args()[0]
+            arg as ApiArgument.Constant
+            val constant = arg.value as ApiConstant.Constant
+            val className = ApiConstant.classToString(constant)
+            return className
+        }
         fun categoriesFor(method: ApiMethod, opcodes: List<String>): Set<String> {
             return categoryMap.flatMap { (predicate, category) ->
                 if (predicate(method, opcodes)) setOf(category) else emptySet()

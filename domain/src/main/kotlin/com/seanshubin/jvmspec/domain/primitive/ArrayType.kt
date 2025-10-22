@@ -1,4 +1,4 @@
-package com.seanshubin.jvmspec.domain.data
+package com.seanshubin.jvmspec.domain.primitive
 
 import com.seanshubin.jvmspec.domain.util.DataFormat.toHex
 

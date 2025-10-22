@@ -45,6 +45,7 @@ object InstructionFactory {
         InstructionLookupSwitch.OPERAND_TYPE to InstructionLookupSwitch::fromDataInput,
         InstructionTableSwitch.OPERAND_TYPE to InstructionTableSwitch::fromDataInput,
         InstructionConstantPoolIndexThenDimensions.OPERAND_TYPE to InstructionConstantPoolIndexThenDimensions::fromDataInput,
-        InstructionWide.OPERAND_TYPE to InstructionWide::fromDataInput
+        InstructionWide.OPERAND_TYPE to InstructionWide::fromDataInput,
+        InstructionBranchOffsetWide.OPERAND_TYPE to InstructionBranchOffsetWide::fromDataInput
     )
 }

@@ -8,6 +8,7 @@ class ApiClassImpl(private val classFile: ClassFile) : ApiClass {
     val constantPoolIndexToOffsetMap = classFile.constantPool.mapIndexed { offset, info ->
         info.index to offset
     }.toMap()
+
     override fun origin(): String {
         return classFile.origin.id
     }
@@ -29,7 +30,14 @@ class ApiClassImpl(private val classFile: ClassFile) : ApiClass {
     }
 
     override fun superClassName(): String {
-        return classFile.constantPoolLookup.className(classFile.superClass)
+        return if (classFile.superClass.toInt() == 0) {
+            when (val thisClassName = thisClassName()) {
+                "module-info", "java/lang/Object" -> "<no super-class for $thisClassName>"
+                else -> throw RuntimeException("No super class for $thisClassName")
+            }
+        } else {
+            classFile.constantPoolLookup.className(classFile.superClass)
+        }
     }
 
     override fun methods(): List<ApiMethod> {
@@ -44,14 +52,13 @@ class ApiClassImpl(private val classFile: ClassFile) : ApiClass {
 
     override fun constants(): List<ApiConstant.Constant> {
         return classFile.constantPool.indices.map {
-            ApiConstantFactory.create(classFile, it)
+            ApiConstantFactory.createByOffset(classFile, it)
         }
     }
 
     override fun interfaces(): List<ApiConstant.Constant> {
         return classFile.interfaces.map {
-            val offset = constantPoolIndexToOffsetMap.getValue(it.toInt())
-            ApiConstantFactory.create(classFile, offset)
+            ApiConstantFactory.createByIndex(classFile, it.toInt())
         }
     }
 

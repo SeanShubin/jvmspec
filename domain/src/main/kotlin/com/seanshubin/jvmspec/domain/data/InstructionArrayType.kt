@@ -1,5 +1,6 @@
 package com.seanshubin.jvmspec.domain.data
 
+import com.seanshubin.jvmspec.domain.primitive.ArrayType
 import java.io.DataInput
 
 class InstructionArrayType(

@@ -8,7 +8,7 @@ import java.nio.file.Path
 
 class DisassembleReport2(private val format: JvmSpecFormat) : Report {
     override fun reportCommands(baseFileName: String, outputDir: Path, classFile: ApiClass): List<Command> {
-        val treeList = format.treeList(classFile)
+        val treeList = format.classTreeList(classFile)
         val lines = treeList.flatMap { tree -> tree.toLines { line -> "  $line" } }
         val filePath = outputDir.resolve("$baseFileName-disassembled-api.txt")
         val generateReportCommand = WriteLines(filePath, lines)

@@ -9,6 +9,7 @@ import com.seanshubin.jvmspec.domain.command.CreateDirectories
 import com.seanshubin.jvmspec.domain.data.ClassFile
 import com.seanshubin.jvmspec.domain.data.OriginClassFile
 import com.seanshubin.jvmspec.domain.files.FilesContract
+import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
 import com.seanshubin.jvmspec.domain.util.MatchEnum
 import com.seanshubin.jvmspec.domain.util.RegexUtil
 import java.io.DataInputStream
@@ -29,7 +30,9 @@ class ReportGenerator(
     private val clock: Clock,
     private val events: Events,
     private val disassembleReport: Report,
-    private val disassembleReport2: Report
+    private val disassembleReport2: Report,
+    private val format: JvmSpecFormat,
+    private val indent: (String) -> String
 ) : Runnable {
     override fun run() {
         withTimer {
@@ -46,7 +49,7 @@ class ReportGenerator(
             val acceptClass = RegexUtil.createMatchFunctionFromList(classWhitelist, classBlacklist)
             val initialAggregateData = AggregateData.create(acceptMethod, acceptClass)
             val aggregator = AggregatorImpl(initialAggregateData)
-            val methodReport: Report = MethodReport(aggregator)
+            val methodReport: Report = MethodReport(aggregator, format, indent)
             val compositeReport: Report = CompositeReport(
                 listOf(
                     disassembleReport,
