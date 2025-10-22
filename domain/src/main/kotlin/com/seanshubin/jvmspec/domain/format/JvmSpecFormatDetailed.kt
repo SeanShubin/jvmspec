@@ -30,7 +30,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
 
     private fun fieldsTree(methods: List<ApiField>): Tree {
         val children = methods.mapIndexed { index, field -> constantTree("field", field, index) }
-        val parent = Tree("field(${children.size})", children)
+        val parent = Tree("fields(${children.size})", children)
         return parent
     }
 
@@ -43,8 +43,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     }
 
     private fun accessFlagsTree(accessFlags: Set<AccessFlag>): Tree {
-        val accessFlagList = accessFlags.map { it.displayName }.toList().sorted()
-        val accessFlagString = accessFlagList.joinToString(" ")
+        val accessFlagString = formatAccessFlags(accessFlags)
         val accessFlagTree = Tree("access_flags: $accessFlagString")
         return accessFlagTree
     }
@@ -114,17 +113,39 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     }
 
     private fun codeTree(codeAttribute: ApiCodeAttribute): Tree {
-        val children = codeAttribute.instructions().map { instruction ->
+        val instructionsChildren = codeAttribute.instructions().map { instruction ->
             instructionTree(instruction)
         }
-        val parent = Tree("instructions(${children.size})", children)
+        val attributesTree = attributesTree(codeAttribute.attributes())
+        val instructionsTree = Tree("instructions(${instructionsChildren.size})", instructionsChildren)
+        val exceptionTableTree = exceptionTableListTree(codeAttribute.exceptionTable())
+        return Tree("code", listOf(instructionsTree, exceptionTableTree, attributesTree))
+    }
+
+    private fun exceptionTableListTree(exceptions: List<ApiExceptionTable>): Tree {
+        val children = exceptions.map { exception ->
+            exceptionTableTree(exception)
+        }
+        val parent = Tree("exceptions(${children.size})", children)
         return parent
     }
 
-    override fun instructionTree(instruction: ApiInstruction): Tree {
-        val argsTreeList = argsTreeList(instruction.args())
-        val name = instruction.name()
-        val code = instruction.code()
+    private fun exceptionTableTree(exception: ApiExceptionTable): Tree {
+        exception.let {
+            val children = listOf(
+                Tree("start_pc: ${it.startProgramCounter}"),
+                Tree("end_pc: ${it.endProgramCounter}"),
+                Tree("handler_pc: ${it.handlerProgramCounter}"),
+                Tree("catch_type: ${it.catchType}")
+            )
+            return Tree("exception", children)
+        }
+    }
+
+    override fun instructionTree(apiInstruction: ApiInstruction): Tree {
+        val argsTreeList = argsTreeList(apiInstruction.args())
+        val name = apiInstruction.name()
+        val code = apiInstruction.code()
         val parent = Tree("$name(0x${code.toHexString().uppercase()})", argsTreeList)
         return parent
     }
@@ -186,7 +207,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     }
 
     fun formatAccessFlags(accessFlags: Set<AccessFlag>): String {
-        return accessFlags.joinToString(", ") { it.displayName }
+        return accessFlags.joinToString(", ", "[", "]") { it.displayName.uppercase() }
     }
 
     private fun hexUpper(x: Int): String = "0x" + Integer.toHexString(x).uppercase()

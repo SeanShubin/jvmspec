@@ -1,6 +1,8 @@
 package com.seanshubin.jvmspec.domain.apiimpl
 
+import com.seanshubin.jvmspec.domain.api.ApiAttribute
 import com.seanshubin.jvmspec.domain.api.ApiCodeAttribute
+import com.seanshubin.jvmspec.domain.api.ApiExceptionTable
 import com.seanshubin.jvmspec.domain.api.ApiInstruction
 import com.seanshubin.jvmspec.domain.data.AttributeCodeInfo
 import com.seanshubin.jvmspec.domain.data.ClassFile
@@ -32,6 +34,23 @@ class ApiCodeAttributeImpl(
     override fun instructions(): List<ApiInstruction> {
         return attributeInfo.instructions.indices.map { instructionIndex ->
             ApiInstructionImpl(classFile, attributeInfo, instructionIndex)
+        }
+    }
+
+    override fun exceptionTable(): List<ApiExceptionTable> {
+        return attributeInfo.exceptionTable.map {
+            ApiExceptionTable(
+                it.startProgramCounter,
+                it.endProgramCounter,
+                it.handlerProgramCounter,
+                it.catchType
+            )
+        }
+    }
+
+    override fun attributes(): List<ApiAttribute> {
+        return attributeInfo.attributes.indices.map {
+            ApiNestedCodeAttributeImpl(classFile, methodIndex, attributeIndex, it)
         }
     }
 }
