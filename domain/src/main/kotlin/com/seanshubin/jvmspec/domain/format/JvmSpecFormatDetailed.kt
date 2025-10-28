@@ -8,13 +8,13 @@ import java.util.*
 class JvmSpecFormatDetailed : JvmSpecFormat {
     override fun classTreeList(apiClass: ApiClass): List<Tree> {
         return listOf(
-            Tree("origin: ${apiClass.origin()}"),
-            Tree("magic: ${hexUpper(apiClass.magic())}"),
-            Tree("minor version: ${apiClass.minorVersion()}"),
-            Tree("major version: ${apiClass.majorVersion()}"),
+            Tree("origin: ${apiClass.origin}"),
+            Tree("magic: ${hexUpper(apiClass.magic)}"),
+            Tree("minor version: ${apiClass.minorVersion}"),
+            Tree("major version: ${apiClass.majorVersion}"),
             accessFlagsTree(apiClass.accessFlags()),
-            Tree("this_class: ${apiClass.thisClassName()}"),
-            Tree("super_class: ${apiClass.superClassName()}"),
+            Tree("this_class: ${apiClass.thisClassName}"),
+            Tree("super_class: ${apiClass.superClassName}"),
             constantsTree(apiClass.constants),
             interfacesTree(apiClass.interfaces()),
             fieldsTree(apiClass.fields()),

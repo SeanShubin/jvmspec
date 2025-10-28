@@ -16,7 +16,7 @@ class MethodReport(
 ) : Report {
     override fun reportCommands(baseFileName: String, outputDir: Path, classFile: ApiClass): List<Command> {
         aggregator.classFile(classFile)
-        val className = classFile.thisClassName()
+        val className = classFile.thisClassName
         val methods = classFile.methods()
         val lines = mutableListOf<String>()
         val targetOpCodes = listOf(

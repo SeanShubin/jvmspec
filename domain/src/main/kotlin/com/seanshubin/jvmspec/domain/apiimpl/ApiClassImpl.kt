@@ -6,36 +6,20 @@ import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 import java.util.*
 
 class ApiClassImpl(private val classFile: ClassFile) : ApiClass {
-    override fun origin(): String {
-        return classFile.origin.id
-    }
-
-    override fun magic(): Int {
-        return classFile.magic.toInt()
-    }
-
-    override fun minorVersion(): Int {
-        return classFile.minorVersion.toInt()
-    }
-
-    override fun majorVersion(): Int {
-        return classFile.majorVersion.toInt()
-    }
-
-    override fun thisClassName(): String {
-        return classFile.constantPoolLookup.className(classFile.thisClass)
-    }
-
-    override fun superClassName(): String {
-        return if (classFile.superClass.toInt() == 0) {
-            when (val thisClassName = thisClassName()) {
-                "module-info", "java/lang/Object" -> "<no super-class for $thisClassName>"
-                else -> throw RuntimeException("No super class for $thisClassName")
+    override val origin: String = classFile.origin.id
+    override val magic: Int = classFile.magic.toInt()
+    override val minorVersion: Int = classFile.minorVersion.toInt()
+    override val majorVersion: Int = classFile.majorVersion.toInt()
+    override val thisClassName: String = classFile.constantPoolLookup.className(classFile.thisClass)
+    override val superClassName: String =
+        if (classFile.superClass.toInt() == 0) {
+            when (thisClassName) {
+                "module-info", "java/lang/Object" -> "<no super class for $thisClassName>"
+                else -> throw RuntimeException("no super class for $thisClassName")
             }
         } else {
             classFile.constantPoolLookup.className(classFile.superClass)
         }
-    }
 
     override fun methods(): List<ApiMethod> {
         return classFile.methods.indices.map {

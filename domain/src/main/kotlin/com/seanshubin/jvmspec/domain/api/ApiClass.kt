@@ -4,12 +4,12 @@ import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 import java.util.*
 
 interface ApiClass {
-    fun origin(): String
-    fun magic(): Int
-    fun minorVersion(): Int
-    fun majorVersion(): Int
-    fun thisClassName(): String
-    fun superClassName(): String
+    val origin: String
+    val magic: Int
+    val minorVersion: Int
+    val majorVersion: Int
+    val thisClassName: String
+    val superClassName: String
     fun methods(): List<ApiMethod>
     fun disassemblyLines(): List<String>
     val constants: SortedMap<Int, ApiConstant.Constant>

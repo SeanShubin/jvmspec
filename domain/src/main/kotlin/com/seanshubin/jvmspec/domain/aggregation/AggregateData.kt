@@ -14,8 +14,8 @@ data class AggregateData(
     val mapClassNameOriginIds: Map<String, List<String>>
 ) {
     fun classFile(classFile: ApiClass): AggregateData {
-        val originId = classFile.origin()
-        val className = classFile.thisClassName()
+        val originId = classFile.origin
+        val className = classFile.thisClassName
         val oldOriginIds = mapClassNameOriginIds[className] ?: emptyList()
         if (oldOriginIds.contains(originId)) throw RuntimeException("Duplicate origin $originId for $className")
         val newOriginIds = oldOriginIds + originId
