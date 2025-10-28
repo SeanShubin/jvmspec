@@ -13,7 +13,7 @@ interface ApiClass {
     fun methods(): List<ApiMethod>
     fun disassemblyLines(): List<String>
     val constants: SortedMap<Int, ApiConstant.Constant>
-    fun accessFlags(): Set<AccessFlag>
+    val accessFlags: Set<AccessFlag>
     fun interfaces(): List<ApiConstant.Constant>
     fun fields(): List<ApiField>
     fun attributes(): List<ApiAttribute>

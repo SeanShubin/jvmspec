@@ -47,9 +47,7 @@ class ApiClassImpl(private val classFile: ClassFile) : ApiClass {
         }
     }
 
-    override fun accessFlags(): Set<AccessFlag> {
-        return classFile.accessFlags
-    }
+    override val accessFlags: Set<AccessFlag> = classFile.accessFlags
 
     override fun attributes(): List<ApiAttribute> {
         return classFile.attributes.indices.map {

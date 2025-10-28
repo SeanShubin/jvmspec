@@ -12,7 +12,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
             Tree("magic: ${hexUpper(apiClass.magic)}"),
             Tree("minor version: ${apiClass.minorVersion}"),
             Tree("major version: ${apiClass.majorVersion}"),
-            accessFlagsTree(apiClass.accessFlags()),
+            accessFlagsTree(apiClass.accessFlags),
             Tree("this_class: ${apiClass.thisClassName}"),
             Tree("super_class: ${apiClass.superClassName}"),
             constantsTree(apiClass.constants),
