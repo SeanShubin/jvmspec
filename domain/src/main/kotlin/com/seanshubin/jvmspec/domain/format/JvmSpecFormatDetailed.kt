@@ -23,13 +23,13 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     }
 
     private fun methodsTree(methods: List<ApiMethod>): Tree {
-        val children = methods.mapIndexed { index, method -> constantTree("method", method, index) }
+        val children = methods.mapIndexed { index, method -> fieldOrMethodTree("method", index, method) }
         val parent = Tree("methods(${children.size})", children)
         return parent
     }
 
     private fun fieldsTree(methods: List<ApiField>): Tree {
-        val children = methods.mapIndexed { index, field -> constantTree("field", field, index) }
+        val children = methods.mapIndexed { index, field -> fieldOrMethodTree("field", index, field) }
         val parent = Tree("fields(${children.size})", children)
         return parent
     }
@@ -74,7 +74,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         }
     }
 
-    private fun constantTree(caption: String, fieldOrMethod: ApiFieldOrMethod, index: Int): Tree {
+    private fun fieldOrMethodTree(caption: String, index: Int, fieldOrMethod: ApiFieldOrMethod): Tree {
         val formattedSignature = formatSignature(
             fieldOrMethod.className().replace("/", "."),
             fieldOrMethod.name(),
@@ -90,12 +90,12 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     }
 
     private fun attributesTree(attributes: List<ApiAttribute>): Tree {
-        val children = attributes.mapIndexed { index, attribute -> constantTree(attribute, index) }
+        val children = attributes.mapIndexed { index, attribute -> attributeTree(index, attribute) }
         val parent = Tree("attributes(${children.size})", children)
         return parent
     }
 
-    private fun constantTree(attribute: ApiAttribute, index: Int): Tree {
+    private fun attributeTree(index: Int, attribute: ApiAttribute): Tree {
         val bytesNode = listOf(
             Tree(attribute.bytes().toHexString()),
             Tree(attribute.bytes().toSanitizedString())
@@ -151,10 +151,10 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     }
 
     private fun argsTreeList(argList: List<ApiArgument>): List<Tree> {
-        return argList.mapIndexed { index, arg -> argsTree(arg, index) }
+        return argList.map(::argsTree)
     }
 
-    private fun argsTree(arg: ApiArgument, index: Int): Tree {
+    private fun argsTree(arg: ApiArgument): Tree {
         return when (arg) {
             is ApiArgument.Constant -> {
                 constantTree(arg.value)
