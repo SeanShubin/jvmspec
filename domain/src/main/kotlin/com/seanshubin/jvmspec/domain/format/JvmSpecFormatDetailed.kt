@@ -3,6 +3,7 @@ package com.seanshubin.jvmspec.domain.format
 import com.seanshubin.jvmspec.domain.api.*
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 import com.seanshubin.jvmspec.domain.tree.Tree
+import java.util.*
 
 class JvmSpecFormatDetailed : JvmSpecFormat {
     override fun classTreeList(apiClass: ApiClass): List<Tree> {
@@ -14,7 +15,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
             accessFlagsTree(apiClass.accessFlags()),
             Tree("this_class: ${apiClass.thisClassName()}"),
             Tree("super_class: ${apiClass.superClassName()}"),
-            constantsTree(apiClass.constants()),
+            constantsTree(apiClass.constants),
             interfacesTree(apiClass.interfaces()),
             fieldsTree(apiClass.fields()),
             methodsTree(apiClass.methods()),
@@ -48,8 +49,8 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         return accessFlagTree
     }
 
-    private fun constantsTree(constants: List<ApiConstant.Constant>): Tree {
-        val children = constants.map { constant ->
+    private fun constantsTree(constants: SortedMap<Int, ApiConstant.Constant>): Tree {
+        val children = constants.map { (index, constant) ->
             constantTree(constant)
         }
         val parent = Tree("constants(${children.size})", children)

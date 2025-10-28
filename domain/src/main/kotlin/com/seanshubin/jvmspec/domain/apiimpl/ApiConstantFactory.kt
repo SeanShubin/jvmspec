@@ -5,12 +5,6 @@ import com.seanshubin.jvmspec.domain.data.*
 import com.seanshubin.jvmspec.domain.primitive.ConstantPoolTag
 
 object ApiConstantFactory {
-    fun createByOffset(classFile: ClassFile, offset: Int): ApiConstant.Constant {
-        val constantsByIndex: Map<Int, ConstantInfo> = classFile.constantPool.associateBy { it.index }
-        val constantInfo = classFile.constantPool[offset]
-        return createConstantMap.getValue(constantInfo.tag).invoke(constantsByIndex, constantInfo)
-    }
-
     fun createByIndex(classFile: ClassFile, index: Int): ApiConstant.Constant {
         val constantsByIndex: Map<Int, ConstantInfo> = classFile.constantPool.associateBy { it.index }
         val constantInfo = constantsByIndex.getValue(index)

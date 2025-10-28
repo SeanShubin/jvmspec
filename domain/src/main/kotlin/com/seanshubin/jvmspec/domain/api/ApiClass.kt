@@ -1,6 +1,7 @@
 package com.seanshubin.jvmspec.domain.api
 
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
+import java.util.*
 
 interface ApiClass {
     fun origin(): String
@@ -11,7 +12,7 @@ interface ApiClass {
     fun superClassName(): String
     fun methods(): List<ApiMethod>
     fun disassemblyLines(): List<String>
-    fun constants(): List<ApiConstant.Constant>
+    val constants: SortedMap<Int, ApiConstant.Constant>
     fun accessFlags(): Set<AccessFlag>
     fun interfaces(): List<ApiConstant.Constant>
     fun fields(): List<ApiField>

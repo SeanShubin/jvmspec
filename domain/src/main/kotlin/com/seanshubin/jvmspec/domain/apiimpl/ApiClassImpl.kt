@@ -3,12 +3,9 @@ package com.seanshubin.jvmspec.domain.apiimpl
 import com.seanshubin.jvmspec.domain.api.*
 import com.seanshubin.jvmspec.domain.data.ClassFile
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
+import java.util.*
 
 class ApiClassImpl(private val classFile: ClassFile) : ApiClass {
-    val constantPoolIndexToOffsetMap = classFile.constantPool.mapIndexed { offset, info ->
-        info.index to offset
-    }.toMap()
-
     override fun origin(): String {
         return classFile.origin.id
     }
@@ -50,15 +47,13 @@ class ApiClassImpl(private val classFile: ClassFile) : ApiClass {
         return classFile.lines()
     }
 
-    override fun constants(): List<ApiConstant.Constant> {
-        return classFile.constantPool.indices.map {
-            ApiConstantFactory.createByOffset(classFile, it)
-        }
-    }
+    override val constants: SortedMap<Int, ApiConstant.Constant> = classFile.constantPool.associate {
+        it.index to ApiConstantFactory.createByIndex(classFile, it.index)
+    }.toSortedMap()
 
     override fun interfaces(): List<ApiConstant.Constant> {
         return classFile.interfaces.map {
-            ApiConstantFactory.createByIndex(classFile, it.toInt())
+            constants.getValue(it.toInt())
         }
     }
 
