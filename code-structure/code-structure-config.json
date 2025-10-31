@@ -10,7 +10,7 @@
   "outputDir": "generated/code-structure",
   "useObservationsCache": false,
   "includeJvmDynamicInvocations": false,
-  "sourcePrefix": "https://github.com/SeanShubin/jvmspec/blob/master/domain/src/main/",
+  "sourcePrefix": "https://github.com/SeanShubin/jvmspec/blob/master/",
   "sourceFileRegexPatterns": {
     "include": [
       ".*/src/main/kotlin/.*\\.kt"
