@@ -1,16 +1,11 @@
 package com.seanshubin.jvmspec.domain.data
 
-import com.seanshubin.jvmspec.domain.util.DataFormat.toDecHex
 import java.io.DataInput
 
 class InstructionBranchOffset(
     override val opcode: OpCode,
     val branchOffset: Short
 ) : Instruction {
-    override fun line(constantPoolLookup: ConstantPoolLookup): String {
-        return "${opcode.line} ${branchOffset.toDecHex()}"
-    }
-
     override fun cyclomaticComplexity(): Int = 1
 
     companion object {

@@ -1,43 +1,37 @@
 package com.seanshubin.jvmspec.domain.apiimpl
 
-import com.seanshubin.jvmspec.domain.api.ApiAttribute
-import com.seanshubin.jvmspec.domain.api.ApiCodeAttribute
-import com.seanshubin.jvmspec.domain.api.ApiMethod
-import com.seanshubin.jvmspec.domain.api.Signature
-import com.seanshubin.jvmspec.domain.data.ClassFile
+import com.seanshubin.jvmspec.domain.api.*
+import com.seanshubin.jvmspec.domain.data.AttributeCodeInfo
+import com.seanshubin.jvmspec.domain.data.MethodInfo
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 
-class ApiMethodImpl(private val classFile: ClassFile, private val methodIndex: Int) : ApiMethod {
-    private val methodInfo = classFile.methods[methodIndex]
-    private val constantPoolLookup = classFile.constantPoolLookup
+class ApiMethodImpl(
+    private val apiClass: ApiClass,
+    private val methodInfo: MethodInfo
+) : ApiMethod {
     override fun accessFlags(): Set<AccessFlag> {
         return methodInfo.accessFlags
     }
 
     override fun className(): String {
-        return classFile.thisClassName()
+        return apiClass.thisClassName
     }
 
     override fun name(): String {
         val methodNameIndex = methodInfo.nameIndex
-        val methodName = constantPoolLookup.lookupUtf8Value(methodNameIndex)
-        return methodName
+        return apiClass.lookupUtf8(methodNameIndex)
     }
 
     override fun signature(): Signature {
         val methodDescriptorIndex = methodInfo.descriptorIndex
-        val methodDescriptor = constantPoolLookup.lookupUtf8Value(methodDescriptorIndex)
-        val signature = DescriptorParser.build(methodDescriptor)
-        return signature
+        return apiClass.lookupSignature(methodDescriptorIndex)
     }
 
     override fun attributes(): List<ApiAttribute> {
-        return methodInfo.attributes.indices.map { attributeIndex ->
-            val genericAttribute = ApiMethodAttributeImpl(classFile, methodIndex, attributeIndex)
-            if (genericAttribute.name() == "Code") {
-                ApiCodeAttributeImpl(classFile, methodIndex, attributeIndex)
-            } else {
-                genericAttribute
+        return methodInfo.attributes.map { attribute ->
+            when (attribute) {
+                is AttributeCodeInfo -> ApiCodeAttributeImpl(apiClass, attribute)
+                else -> ApiAttributeImpl(apiClass, attribute)
             }
         }
     }

@@ -1,15 +1,14 @@
 package com.seanshubin.jvmspec.domain.apiimpl
 
 import com.seanshubin.jvmspec.domain.api.ApiArgument
+import com.seanshubin.jvmspec.domain.api.ApiClass
 import com.seanshubin.jvmspec.domain.api.ApiInstruction
 import com.seanshubin.jvmspec.domain.data.*
 
 data class ApiInstructionImpl(
-    val classFile: ClassFile,
-    val attributeCodeInfo: AttributeCodeInfo,
-    val instructionIndex: Int
+    val apiClass: ApiClass,
+    val instructionAndBytes: InstructionAndBytes
 ) : ApiInstruction {
-    private val instructionAndBytes = attributeCodeInfo.instructions[instructionIndex]
     private val instruction = instructionAndBytes.instruction
     private val opcode = instruction.opcode
     private val operandType = opcode.operandType
@@ -45,12 +44,12 @@ data class ApiInstructionImpl(
 
     private fun constantPoolIndexArgs(): List<ApiArgument> {
         instruction as InstructionConstantPoolIndex
-        return listOf(constantPoolIndexToArg(instruction.constantPoolIndex.toInt()))
+        return listOf(constantPoolIndexToArg(instruction.constantPoolIndex))
     }
 
     private fun constantPoolByteSizedIndexArgs(): List<ApiArgument> {
         instruction as InstructionConstantPoolByteSizedIndex
-        return listOf(constantPoolIndexToArg(instruction.constantPoolIndex.toInt()))
+        return listOf(constantPoolIndexToArg(instruction.constantPoolIndex.toUShort()))
     }
 
     private fun localVariableIndexArgs(): List<ApiArgument> {
@@ -60,7 +59,7 @@ data class ApiInstructionImpl(
 
     private fun constantPoolIndexThenTwoZerosArgs(): List<ApiArgument> {
         instruction as InstructionConstantPoolIndexThenTwoZeroes
-        return listOf(constantPoolIndexToArg(instruction.constantPoolIndex.toInt()))
+        return listOf(constantPoolIndexToArg(instruction.constantPoolIndex))
     }
 
     private fun byteArgs(): List<ApiArgument> {
@@ -88,7 +87,7 @@ data class ApiInstructionImpl(
 
     private fun constantPoolIndexThenCountThenZeroArgs(): List<ApiArgument> {
         instruction as InstructionConstantPoolIndexThenCountThenZero
-        val constant = constantPoolIndexToArg(instruction.constantPoolIndex.toInt())
+        val constant = constantPoolIndexToArg(instruction.constantPoolIndex)
         return listOf(
             constant,
             ApiArgument.IntValue(instruction.count)
@@ -106,7 +105,7 @@ data class ApiInstructionImpl(
     private fun constantPoolIndexThenDimensionsArgs(): List<ApiArgument> {
         instruction as InstructionConstantPoolIndexThenDimensions
         return listOf(
-            constantPoolIndexToArg(instruction.classIndex.toInt()),
+            constantPoolIndexToArg(instruction.classIndex),
             ApiArgument.IntValue(instruction.dimensions)
         )
     }
@@ -158,8 +157,8 @@ data class ApiInstructionImpl(
         )
     }
 
-    private fun constantPoolIndexToArg(constantPoolIndex: Int): ApiArgument {
-        val constant = ApiConstantFactory.createByIndex(classFile, constantPoolIndex)
+    private fun constantPoolIndexToArg(constantPoolIndex: UShort): ApiArgument {
+        val constant = apiClass.constants.getValue(constantPoolIndex)
         return ApiArgument.Constant(constant)
     }
 }

@@ -5,10 +5,9 @@ import com.seanshubin.jvmspec.domain.data.*
 import com.seanshubin.jvmspec.domain.primitive.ConstantPoolTag
 
 object ApiConstantFactory {
-    fun createByIndex(classFile: ClassFile, index: Int): ApiConstant.Constant {
-        val constantsByIndex: Map<Int, ConstantInfo> = classFile.constantPool.associateBy { it.index }
-        val constantInfo = constantsByIndex.getValue(index)
-        return createConstantMap.getValue(constantInfo.tag).invoke(constantsByIndex, constantInfo)
+    fun createByIndex(constantPoolMap: Map<UShort, ConstantInfo>, index: UShort): ApiConstant.Constant {
+        val constantInfo = constantPoolMap.getValue(index)
+        return createConstantMap.getValue(constantInfo.tag).invoke(constantPoolMap, constantInfo)
     }
 
     val createConstantMap = mapOf(
@@ -30,191 +29,194 @@ object ApiConstantFactory {
         ConstantPoolTag.PACKAGE to ::createPackage
     )
 
-    fun createUtf8(constantsByIndex: Map<Int, ConstantInfo>, constantInfo: ConstantInfo): ApiConstant.Constant {
+    fun createUtf8(constantPoolMap: Map<UShort, ConstantInfo>, constantInfo: ConstantInfo): ApiConstant.Constant {
         constantInfo as ConstantUtf8Info
         val value = ApiConstant.StringValue(constantInfo.utf8Value)
         return ApiConstant.Constant(
             constantInfo.index,
-            constantInfo.tag.id.toInt(),
+            constantInfo.tag.id,
             constantInfo.tag.name,
             listOf(value)
         )
     }
 
-    fun createClass(constantsByIndex: Map<Int, ConstantInfo>, classConstantInfo: ConstantInfo): ApiConstant.Constant {
+    fun createClass(constantPoolMap: Map<UShort, ConstantInfo>, classConstantInfo: ConstantInfo): ApiConstant.Constant {
         classConstantInfo as ConstantClassInfo
         val nameIndex = classConstantInfo.nameIndex
-        val nameConstantInfo = constantsByIndex.getValue(nameIndex.toInt())
-        val name = createUtf8(constantsByIndex, nameConstantInfo)
+        val nameConstantInfo = constantPoolMap.getValue(nameIndex)
+        val name = createUtf8(constantPoolMap, nameConstantInfo)
         return ApiConstant.Constant(
             classConstantInfo.index,
-            classConstantInfo.tag.id.toInt(),
+            classConstantInfo.tag.id,
             classConstantInfo.tag.name,
             listOf(name)
         )
     }
 
     fun createNameAndType(
-        constantsByIndex: Map<Int, ConstantInfo>,
+        constantPoolMap: Map<UShort, ConstantInfo>,
         nameAndTypeInfo: ConstantInfo
     ): ApiConstant.Constant {
         nameAndTypeInfo as ConstantNameAndTypeInfo
         val nameIndex = nameAndTypeInfo.nameIndex
-        val nameConstantInfo = constantsByIndex.getValue(nameIndex.toInt())
-        val name = createUtf8(constantsByIndex, nameConstantInfo)
+        val nameConstantInfo = constantPoolMap.getValue(nameIndex)
+        val name = createUtf8(constantPoolMap, nameConstantInfo)
         val descriptorIndex = nameAndTypeInfo.descriptorIndex
-        val descriptorConstantInfo = constantsByIndex.getValue(descriptorIndex.toInt())
-        val descriptor = createUtf8(constantsByIndex, descriptorConstantInfo)
+        val descriptorConstantInfo = constantPoolMap.getValue(descriptorIndex)
+        val descriptor = createUtf8(constantPoolMap, descriptorConstantInfo)
         return ApiConstant.Constant(
             nameAndTypeInfo.index,
-            nameAndTypeInfo.tag.id.toInt(),
+            nameAndTypeInfo.tag.id,
             nameAndTypeInfo.tag.name,
             listOf(name, descriptor)
         )
     }
 
-    fun createRef(constantsByIndex: Map<Int, ConstantInfo>, refInfo: ConstantInfo): ApiConstant.Constant {
+    fun createRef(constantPoolMap: Map<UShort, ConstantInfo>, refInfo: ConstantInfo): ApiConstant.Constant {
         refInfo as ConstantRefInfo
         val classIndex = refInfo.classIndex
-        val classConstantInfo = constantsByIndex.getValue(classIndex.toInt())
-        val className = createClass(constantsByIndex, classConstantInfo)
+        val classConstantInfo = constantPoolMap.getValue(classIndex)
+        val className = createClass(constantPoolMap, classConstantInfo)
         val nameAndTypeIndex = refInfo.nameAndTypeIndex
-        val nameAndTypeInfo = constantsByIndex.getValue(nameAndTypeIndex.toInt())
-        val nameAndType = createNameAndType(constantsByIndex, nameAndTypeInfo)
+        val nameAndTypeInfo = constantPoolMap.getValue(nameAndTypeIndex)
+        val nameAndType = createNameAndType(constantPoolMap, nameAndTypeInfo)
         return ApiConstant.Constant(
             refInfo.index,
-            refInfo.tag.id.toInt(),
+            refInfo.tag.id,
             refInfo.tag.name,
             listOf(className, nameAndType)
         )
     }
 
-    fun createString(constantsByIndex: Map<Int, ConstantInfo>, stringInfo: ConstantInfo): ApiConstant.Constant {
+    fun createString(constantPoolMap: Map<UShort, ConstantInfo>, stringInfo: ConstantInfo): ApiConstant.Constant {
         stringInfo as ConstantStringInfo
         val stringIndex = stringInfo.stringIndex
-        val stringConstantInfo = constantsByIndex.getValue(stringIndex.toInt())
-        val string = createUtf8(constantsByIndex, stringConstantInfo)
+        val stringConstantInfo = constantPoolMap.getValue(stringIndex)
+        val string = createUtf8(constantPoolMap, stringConstantInfo)
         return ApiConstant.Constant(
             stringInfo.index,
-            stringInfo.tag.id.toInt(),
+            stringInfo.tag.id,
             stringInfo.tag.name,
             listOf(string)
         )
     }
 
-    fun createInteger(constantsByIndex: Map<Int, ConstantInfo>, integerInfo: ConstantInfo): ApiConstant.Constant {
+    fun createInteger(constantPoolMap: Map<UShort, ConstantInfo>, integerInfo: ConstantInfo): ApiConstant.Constant {
         integerInfo as ConstantIntegerInfo
         val integerValue = ApiConstant.IntegerValue(integerInfo.intValue)
         return ApiConstant.Constant(
             integerInfo.index,
-            integerInfo.tag.id.toInt(),
+            integerInfo.tag.id,
             integerInfo.tag.name,
             listOf(integerValue)
         )
     }
 
     fun createMethodHandle(
-        constantsByIndex: Map<Int, ConstantInfo>,
+        constantPoolMap: Map<UShort, ConstantInfo>,
         methodHandleInfo: ConstantInfo
     ): ApiConstant.Constant {
         methodHandleInfo as ConstantMethodHandleInfo
         val referenceKind = methodHandleInfo.referenceKind
-        val referenceKindValue = ApiConstant.ReferenceKindValue(referenceKind.code.toInt(), referenceKind.name)
+        val referenceKindValue = ApiConstant.ReferenceKindValue(referenceKind.code, referenceKind.name)
         val refIndex = methodHandleInfo.referenceIndex
-        val refConstantInfo = constantsByIndex.getValue(refIndex.toInt())
-        val ref = createRef(constantsByIndex, refConstantInfo)
+        val refConstantInfo = constantPoolMap.getValue(refIndex)
+        val ref = createRef(constantPoolMap, refConstantInfo)
         return ApiConstant.Constant(
             methodHandleInfo.index,
-            methodHandleInfo.tag.id.toInt(),
+            methodHandleInfo.tag.id,
             methodHandleInfo.tag.name,
             listOf(referenceKindValue, ref)
         )
     }
 
     fun createInvokeDynamic(
-        constantsByIndex: Map<Int, ConstantInfo>,
+        constantPoolMap: Map<UShort, ConstantInfo>,
         invokeDynamicInfo: ConstantInfo
     ): ApiConstant.Constant {
         invokeDynamicInfo as ConstantInvokeDynamicInfo
         val bootstrapMethodAttrIndex = invokeDynamicInfo.bootstrapMethodAttrIndex
-        val bootstrapMethodAttr = ApiConstant.IndexValue(bootstrapMethodAttrIndex.toInt())
+        val bootstrapMethodAttr = ApiConstant.IndexValue(bootstrapMethodAttrIndex)
         val nameAndTypeIndex = invokeDynamicInfo.nameAndTypeIndex
-        val nameAndType = createNameAndType(constantsByIndex, constantsByIndex.getValue(nameAndTypeIndex.toInt()))
+        val nameAndType = createNameAndType(constantPoolMap, constantPoolMap.getValue(nameAndTypeIndex))
         return ApiConstant.Constant(
             invokeDynamicInfo.index,
-            invokeDynamicInfo.tag.id.toInt(),
+            invokeDynamicInfo.tag.id,
             invokeDynamicInfo.tag.name,
             listOf(bootstrapMethodAttr, nameAndType)
         )
     }
 
-    fun createLong(constantsByIndex: Map<Int, ConstantInfo>, longInfo: ConstantInfo): ApiConstant.Constant {
+    fun createLong(constantPoolMap: Map<UShort, ConstantInfo>, longInfo: ConstantInfo): ApiConstant.Constant {
         longInfo as ConstantLongInfo
         val longValue = ApiConstant.LongValue(longInfo.longValue)
         return ApiConstant.Constant(
             longInfo.index,
-            longInfo.tag.id.toInt(),
+            longInfo.tag.id,
             longInfo.tag.name,
             listOf(longValue)
         )
     }
 
-    fun createMethodType(constantsByIndex: Map<Int, ConstantInfo>, methodTypeInfo: ConstantInfo): ApiConstant.Constant {
+    fun createMethodType(
+        constantPoolMap: Map<UShort, ConstantInfo>,
+        methodTypeInfo: ConstantInfo
+    ): ApiConstant.Constant {
         methodTypeInfo as ConstantMethodTypeInfo
         val descriptorIndex = methodTypeInfo.descriptorIndex
-        val descriptorConstantInfo = constantsByIndex.getValue(descriptorIndex.toInt())
-        val descriptor = createUtf8(constantsByIndex, descriptorConstantInfo)
+        val descriptorConstantInfo = constantPoolMap.getValue(descriptorIndex)
+        val descriptor = createUtf8(constantPoolMap, descriptorConstantInfo)
         return ApiConstant.Constant(
             methodTypeInfo.index,
-            methodTypeInfo.tag.id.toInt(),
+            methodTypeInfo.tag.id,
             methodTypeInfo.tag.name,
             listOf(descriptor)
         )
     }
 
-    fun createModule(constantsByIndex: Map<Int, ConstantInfo>, moduleInfo: ConstantInfo): ApiConstant.Constant {
+    fun createModule(constantPoolMap: Map<UShort, ConstantInfo>, moduleInfo: ConstantInfo): ApiConstant.Constant {
         moduleInfo as ConstantModuleInfo
         val nameIndex = moduleInfo.nameIndex
-        val nameConstantInfo = constantsByIndex.getValue(nameIndex.toInt())
-        val name = createUtf8(constantsByIndex, nameConstantInfo)
+        val nameConstantInfo = constantPoolMap.getValue(nameIndex)
+        val name = createUtf8(constantPoolMap, nameConstantInfo)
         return ApiConstant.Constant(
             moduleInfo.index,
-            moduleInfo.tag.id.toInt(),
+            moduleInfo.tag.id,
             moduleInfo.tag.name,
             listOf(name)
         )
     }
 
-    fun createPackage(constantsByIndex: Map<Int, ConstantInfo>, packageInfo: ConstantInfo): ApiConstant.Constant {
+    fun createPackage(constantPoolMap: Map<UShort, ConstantInfo>, packageInfo: ConstantInfo): ApiConstant.Constant {
         packageInfo as ConstantPackageInfo
         val nameIndex = packageInfo.nameIndex
-        val nameConstantInfo = constantsByIndex.getValue(nameIndex.toInt())
-        val name = createUtf8(constantsByIndex, nameConstantInfo)
+        val nameConstantInfo = constantPoolMap.getValue(nameIndex)
+        val name = createUtf8(constantPoolMap, nameConstantInfo)
         return ApiConstant.Constant(
             packageInfo.index,
-            packageInfo.tag.id.toInt(),
+            packageInfo.tag.id,
             packageInfo.tag.name,
             listOf(name)
         )
     }
 
-    fun createDouble(constantsByIndex: Map<Int, ConstantInfo>, doubleInfo: ConstantInfo): ApiConstant.Constant {
+    fun createDouble(constantPoolMap: Map<UShort, ConstantInfo>, doubleInfo: ConstantInfo): ApiConstant.Constant {
         doubleInfo as ConstantDoubleInfo
         val doubleValue = ApiConstant.DoubleValue(doubleInfo.doubleValue)
         return ApiConstant.Constant(
             doubleInfo.index,
-            doubleInfo.tag.id.toInt(),
+            doubleInfo.tag.id,
             doubleInfo.tag.name,
             listOf(doubleValue)
         )
     }
 
-    fun createFloat(constantsByIndex: Map<Int, ConstantInfo>, floatInfo: ConstantInfo): ApiConstant.Constant {
+    fun createFloat(constantPoolMap: Map<UShort, ConstantInfo>, floatInfo: ConstantInfo): ApiConstant.Constant {
         floatInfo as ConstantFloatInfo
         val floatValue = ApiConstant.FloatValue(floatInfo.floatValue)
         return ApiConstant.Constant(
             floatInfo.index,
-            floatInfo.tag.id.toInt(),
+            floatInfo.tag.id,
             floatInfo.tag.name,
             listOf(floatValue)
         )

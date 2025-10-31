@@ -4,7 +4,7 @@ import com.seanshubin.jvmspec.domain.primitive.ConstantPoolTag
 import java.io.DataInput
 
 object ConstantInfoFactory {
-    fun fromDataInput(index: Int, input: DataInput): ConstantInfo {
+    fun fromDataInput(index: UShort, input: DataInput): ConstantInfo {
         val tagByte = input.readUnsignedByte().toUByte()
         val tag = ConstantPoolTag.fromId(tagByte)
         val factory = factoryMap[tag]
@@ -12,7 +12,7 @@ object ConstantInfoFactory {
         return factory(tag, index, input)
     }
 
-    val factoryMap: Map<ConstantPoolTag, (ConstantPoolTag, Int, DataInput) -> ConstantInfo> = mapOf(
+    val factoryMap: Map<ConstantPoolTag, (ConstantPoolTag, UShort, DataInput) -> ConstantInfo> = mapOf(
         ConstantUtf8Info.TAG to ConstantUtf8Info::fromDataInput,
         ConstantIntegerInfo.TAG to ConstantIntegerInfo::fromDataInput,
         ConstantFloatInfo.TAG to ConstantFloatInfo::fromDataInput,

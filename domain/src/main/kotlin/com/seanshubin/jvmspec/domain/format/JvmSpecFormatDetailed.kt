@@ -49,7 +49,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         return accessFlagTree
     }
 
-    private fun constantsTree(constants: SortedMap<Int, ApiConstant.Constant>): Tree {
+    private fun constantsTree(constants: SortedMap<UShort, ApiConstant.Constant>): Tree {
         val children = constants.map { (index, constant) ->
             constantTree(constant)
         }

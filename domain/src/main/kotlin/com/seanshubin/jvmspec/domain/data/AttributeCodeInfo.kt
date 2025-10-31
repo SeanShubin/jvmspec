@@ -1,6 +1,5 @@
 package com.seanshubin.jvmspec.domain.data
 
-import com.seanshubin.jvmspec.domain.util.DataFormat.indent
 import com.seanshubin.jvmspec.domain.util.DataInputExtensions.readByteList
 import java.io.ByteArrayInputStream
 import java.io.DataInput
@@ -20,34 +19,12 @@ data class AttributeCodeInfo(
     val attributesCount: UShort,
     val attributes: List<AttributeInfo>
 ) : AttributeInfo {
-    override fun lines(index: Int, constantPoolLookup: ConstantPoolLookup): List<String> {
-        val header = listOf("Attribute[$index]")
-        val content = listOf(
-            "attributeName=${constantPoolLookup.line(attributeIndex)}",
-            "attributeLength=$attributeLength",
-            "maxStack=$maxStack",
-            "maxLocals=$maxLocals",
-            "codeLength=$codeLength",
-            "instructions:",
-            *instructions.map { it.line(constantPoolLookup) }.map(indent).toTypedArray(),
-            "exceptionTableLength=$exceptionTableLength",
-            *exceptionTable.flatMapIndexed { index, exceptionTable ->
-                exceptionTable.lines(index)
-            }.toTypedArray(),
-            "attributesCount=$attributesCount",
-            *attributes.flatMapIndexed { index, attribute ->
-                attribute.lines(index, constantPoolLookup)
-            }.map(indent).toTypedArray()
-        ).map(indent)
-        return header + content
-    }
-
     companion object {
         const val NAME = "Code"
         fun fromAttributeInfo(
             attributeInfo: AttributeInfo,
-            constantPoolLookup: ConstantPoolLookup,
-            attributeInfoFromDataInput: (DataInput, ConstantPoolLookup) -> AttributeInfo
+            constantPoolMap: Map<UShort, ConstantInfo>,
+            attributeInfoFromDataInput: (DataInput, Map<UShort, ConstantInfo>) -> AttributeInfo
         ): AttributeCodeInfo {
             val input = DataInputStream(ByteArrayInputStream(attributeInfo.info.toByteArray()))
             val maxStack = input.readUnsignedShort().toUShort()
@@ -61,7 +38,7 @@ data class AttributeCodeInfo(
             }
             val attributesCount = input.readUnsignedShort().toUShort()
             val attributes = (0 until attributesCount.toInt()).map {
-                attributeInfoFromDataInput(input, constantPoolLookup)
+                attributeInfoFromDataInput(input, constantPoolMap)
             }
             return AttributeCodeInfo(
                 attributeInfo.attributeIndex,

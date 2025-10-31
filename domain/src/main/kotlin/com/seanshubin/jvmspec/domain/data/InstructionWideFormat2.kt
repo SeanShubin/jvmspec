@@ -1,6 +1,5 @@
 package com.seanshubin.jvmspec.domain.data
 
-import com.seanshubin.jvmspec.domain.util.DataFormat.toDecHex
 import java.io.DataInput
 
 class InstructionWideFormat2(
@@ -9,10 +8,6 @@ class InstructionWideFormat2(
     val localVariableIndex: UShort,
     val constant: Short
 ) : Instruction {
-    override fun line(constantPoolLookup: ConstantPoolLookup): String {
-        return "${opcode.line} ${modifiedOpCode.line} ${localVariableIndex.toDecHex()} ${constant.toDecHex()}"
-    }
-
     override fun cyclomaticComplexity(): Int = 0
 
     companion object {

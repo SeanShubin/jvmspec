@@ -18,9 +18,8 @@ class DependenciesWithConfiguration(private val configuration: Configuration) {
     val commandRunner: CommandRunner = CommandRunnerImpl(environment)
     val notifications: Notifications = LineEmittingNotifications(emit, commandRunner)
     val clock: Clock = Clock.systemUTC()
-    val disassembleReport: Report = DisassembleReport()
     val format: JvmSpecFormat = JvmSpecFormatDetailed()
-    val disassembleReport2: Report = DisassembleReport2(format)
+    val disassembleReport: Report = DisassembleReport(format)
     val indent: (String) -> String = { it.padStart(it.length + 2) }
     val runner: Runnable = ReportGenerator(
         configuration.inputDir,
@@ -35,7 +34,6 @@ class DependenciesWithConfiguration(private val configuration: Configuration) {
         clock,
         notifications,
         disassembleReport,
-        disassembleReport2,
         format,
         indent
     )

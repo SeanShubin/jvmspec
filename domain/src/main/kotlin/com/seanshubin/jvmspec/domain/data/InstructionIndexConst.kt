@@ -1,6 +1,5 @@
 package com.seanshubin.jvmspec.domain.data
 
-import com.seanshubin.jvmspec.domain.util.DataFormat.toDecHex
 import java.io.DataInput
 
 class InstructionIndexConst(
@@ -8,10 +7,6 @@ class InstructionIndexConst(
     val index: Int,
     val const: Byte
 ) : Instruction {
-    override fun line(constantPoolLookup: ConstantPoolLookup): String {
-        return "${opcode.line} ${index.toDecHex()} ${const.toDecHex()}"
-    }
-
     override fun cyclomaticComplexity(): Int = 0
 
     companion object {

@@ -1,17 +1,16 @@
 package com.seanshubin.jvmspec.domain.apiimpl
 
 import com.seanshubin.jvmspec.domain.api.ApiAttribute
-import com.seanshubin.jvmspec.domain.data.ClassFile
+import com.seanshubin.jvmspec.domain.api.ApiClass
+import com.seanshubin.jvmspec.domain.data.AttributeInfo
 
 class ApiAttributeImpl(
-    private val classFile: ClassFile,
-    private val attributeIndex: Int
+    private val apiClass: ApiClass,
+    private val attributeInfo: AttributeInfo
 ) : ApiAttribute {
-    private val attributeInfo = classFile.attributes[attributeIndex]
     override fun name(): String {
         val nameIndex = attributeInfo.attributeIndex
-        val name = classFile.constantPoolLookup.lookupUtf8Value(nameIndex)
-        return name
+        return apiClass.lookupUtf8(nameIndex)
     }
 
     override fun bytes(): List<Byte> {

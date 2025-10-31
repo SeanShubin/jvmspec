@@ -5,20 +5,14 @@ import java.io.DataInput
 
 data class ConstantDoubleInfo(
     override val tag: ConstantPoolTag,
-    override val index: Int,
+    override val index: UShort,
     val doubleValue: Double
 ) : ConstantInfo {
-    override fun line(): String {
-        return "[$index] ${tag.line()} $doubleValue"
-    }
-
-    override fun annotatedLine(constantPoolLookup: ConstantPoolLookup): String = line()
-
     override val entriesTaken: Int get() = 2
 
     companion object {
         val TAG: ConstantPoolTag = ConstantPoolTag.DOUBLE
-        fun fromDataInput(tag: ConstantPoolTag, index: Int, input: DataInput): ConstantDoubleInfo {
+        fun fromDataInput(tag: ConstantPoolTag, index: UShort, input: DataInput): ConstantDoubleInfo {
             val value = input.readDouble()
             return ConstantDoubleInfo(tag, index, value)
         }

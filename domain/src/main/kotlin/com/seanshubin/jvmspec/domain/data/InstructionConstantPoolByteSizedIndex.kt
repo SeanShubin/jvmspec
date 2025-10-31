@@ -6,10 +6,6 @@ class InstructionConstantPoolByteSizedIndex(
     override val opcode: OpCode,
     val constantPoolIndex: UByte
 ) : Instruction {
-    override fun line(constantPoolLookup: ConstantPoolLookup): String {
-        return "${opcode.line} ${constantPoolLookup.line(constantPoolIndex.toUShort())}"
-    }
-
     override fun cyclomaticComplexity(): Int = 0
 
     companion object {

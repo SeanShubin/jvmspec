@@ -7,10 +7,6 @@ class InstructionArrayType(
     override val opcode: OpCode,
     val arrayType: ArrayType
 ) : Instruction {
-    override fun line(constantPoolLookup: ConstantPoolLookup): String {
-        return "${opcode.line} ${arrayType.line()}"
-    }
-
     override fun cyclomaticComplexity(): Int = 0
 
     companion object {

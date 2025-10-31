@@ -4,7 +4,7 @@ import com.seanshubin.jvmspec.domain.util.DataInputExtensions.readByteList
 import java.io.DataInput
 
 object AttributeInfoFactory {
-    fun fromDataInput(input: DataInput, constantPoolLookup: ConstantPoolLookup): AttributeInfo {
+    fun fromDataInput(input: DataInput, constantPoolMap: Map<UShort, ConstantInfo>): AttributeInfo {
         val attributeNameIndex = input.readUnsignedShort().toUShort()
         val attributeLength = input.readInt()
         val info = input.readByteList(attributeLength)
@@ -13,12 +13,12 @@ object AttributeInfoFactory {
             attributeLength,
             info
         )
-        val attributeName = constantPoolLookup.lookupUtf8Value(attributeNameIndex)
-        val factory = factoryMap[attributeName]
-        return if (factory == null) unrecognizedInfo else factory(unrecognizedInfo, constantPoolLookup, ::fromDataInput)
+        val attributeNameConstant = constantPoolMap.getValue(attributeNameIndex) as ConstantUtf8Info
+        val factory = factoryMap[attributeNameConstant.utf8Value]
+        return if (factory == null) unrecognizedInfo else factory(unrecognizedInfo, constantPoolMap, ::fromDataInput)
     }
 
-    val factoryMap: Map<String, (AttributeInfo, ConstantPoolLookup, (DataInput, ConstantPoolLookup) -> AttributeInfo) -> AttributeInfo> =
+    val factoryMap: Map<String, (AttributeInfo, Map<UShort, ConstantInfo>, (DataInput, Map<UShort, ConstantInfo>) -> AttributeInfo) -> AttributeInfo> =
         mapOf(
             AttributeCodeInfo.NAME to AttributeCodeInfo::fromAttributeInfo
         )

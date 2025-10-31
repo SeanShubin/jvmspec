@@ -6,11 +6,15 @@ import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 import java.util.*
 
 class ApiClassImpl(private val classFile: ClassFile) : ApiClass {
+    override val constants: SortedMap<UShort, ApiConstant.Constant> = classFile.constantPool.associate {
+        it.index to ApiConstantFactory.createByIndex(classFile.constantPoolMap, it.index)
+    }.toSortedMap()
+
     override val origin: String = classFile.origin.id
     override val magic: Int = classFile.magic.toInt()
     override val minorVersion: Int = classFile.minorVersion.toInt()
     override val majorVersion: Int = classFile.majorVersion.toInt()
-    override val thisClassName: String = classFile.constantPoolLookup.className(classFile.thisClass)
+    override val thisClassName: String = lookupClassName(classFile.thisClass)
     override val superClassName: String =
         if (classFile.superClass.toInt() == 0) {
             when (thisClassName) {
@@ -18,40 +22,32 @@ class ApiClassImpl(private val classFile: ClassFile) : ApiClass {
                 else -> throw RuntimeException("no super class for $thisClassName")
             }
         } else {
-            classFile.constantPoolLookup.className(classFile.superClass)
+            lookupClassName(classFile.superClass)
         }
 
     override fun methods(): List<ApiMethod> {
-        return classFile.methods.indices.map {
-            ApiMethodImpl(classFile, it)
+        return classFile.methods.map {
+            ApiMethodImpl(this, it)
         }
     }
 
-    override fun disassemblyLines(): List<String> {
-        return classFile.lines()
-    }
-
-    override val constants: SortedMap<Int, ApiConstant.Constant> = classFile.constantPool.associate {
-        it.index to ApiConstantFactory.createByIndex(classFile, it.index)
-    }.toSortedMap()
-
     override fun interfaces(): List<ApiConstant.Constant> {
         return classFile.interfaces.map {
-            constants.getValue(it.toInt())
+            constants.getValue(it)
         }
     }
 
     override fun fields(): List<ApiField> {
-        return classFile.fields.indices.map {
-            ApiFieldImpl(classFile, it)
+        return classFile.fields.map {
+            ApiFieldImpl(this, it)
         }
     }
 
     override val accessFlags: Set<AccessFlag> = classFile.accessFlags
 
     override fun attributes(): List<ApiAttribute> {
-        return classFile.attributes.indices.map {
-            ApiAttributeImpl(classFile, it)
+        return classFile.attributes.map {
+            ApiAttributeImpl(this, it)
         }
     }
 }

@@ -30,7 +30,6 @@ class ReportGenerator(
     private val clock: Clock,
     private val events: Events,
     private val disassembleReport: Report,
-    private val disassembleReport2: Report,
     private val format: JvmSpecFormat,
     private val indent: (String) -> String
 ) : Runnable {
@@ -53,7 +52,6 @@ class ReportGenerator(
             val compositeReport: Report = CompositeReport(
                 listOf(
                     disassembleReport,
-                    disassembleReport2,
                     methodReport
                 )
             )

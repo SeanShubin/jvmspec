@@ -1,7 +1,6 @@
 package com.seanshubin.jvmspec.domain.data
 
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
-import com.seanshubin.jvmspec.domain.util.DataFormat.indent
 import java.io.DataInput
 
 data class MethodInfo(
@@ -11,29 +10,15 @@ data class MethodInfo(
     val attributesCount: UShort,
     val attributes: List<AttributeInfo>
 ) {
-    fun lines(index: Int, constantPoolLookup: ConstantPoolLookup): List<String> {
-        val header = listOf("Method[$index]")
-        val content = listOf(
-            "accessFlags=$accessFlags",
-            "name=${constantPoolLookup.line(nameIndex)}",
-            "descriptor=${constantPoolLookup.line(descriptorIndex)}",
-            "attributesCount=$attributesCount",
-            *attributes.flatMapIndexed { index, attribute ->
-                attribute.lines(index, constantPoolLookup)
-            }.toTypedArray()
-        ).map(indent)
-        return header + content
-    }
-
     companion object {
-        fun fromDataInput(input: DataInput, constantPoolLookup: ConstantPoolLookup): MethodInfo {
+        fun fromDataInput(input: DataInput, constantPoolMap: Map<UShort, ConstantInfo>): MethodInfo {
             val accessFlagsMask = input.readUnsignedShort().toUShort()
             val accessFlags = AccessFlag.fromMask(accessFlagsMask)
             val nameIndex = input.readUnsignedShort().toUShort()
             val descriptorIndex = input.readUnsignedShort().toUShort()
             val attributesCount = input.readUnsignedShort().toUShort()
             val attributes =
-                List(attributesCount.toInt()) { AttributeInfoFactory.fromDataInput(input, constantPoolLookup) }
+                List(attributesCount.toInt()) { AttributeInfoFactory.fromDataInput(input, constantPoolMap) }
             return MethodInfo(accessFlags, nameIndex, descriptorIndex, attributesCount, attributes)
         }
     }

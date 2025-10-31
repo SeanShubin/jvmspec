@@ -6,25 +6,16 @@ import java.io.DataInput
 
 data class ConstantMethodHandleInfo(
     override val tag: ConstantPoolTag,
-    override val index: Int,
+    override val index: UShort,
     val referenceKind: ReferenceKind,
     val referenceIndex: UShort
 ) : ConstantInfo {
-    override fun line(): String {
-        return "[$index] ${tag.line()} ${referenceKind.line()} $referenceIndex"
-    }
-
-    override fun annotatedLine(constantPoolLookup: ConstantPoolLookup): String {
-        val referenceLine = constantPoolLookup.referenceIndexLine(referenceIndex)
-        return "[$index] ${tag.line()} ${referenceKind.line()} $referenceLine"
-    }
-
     override val entriesTaken: Int get() = 1
 
     companion object {
         val TAG: ConstantPoolTag = ConstantPoolTag.METHOD_HANDLE
 
-        fun fromDataInput(tag: ConstantPoolTag, index: Int, input: DataInput): ConstantMethodHandleInfo {
+        fun fromDataInput(tag: ConstantPoolTag, index: UShort, input: DataInput): ConstantMethodHandleInfo {
             val referenceKindUByte = input.readUnsignedByte().toUByte()
             val referenceKind = ReferenceKind.fromCode(referenceKindUByte)
             val referenceIndex = input.readUnsignedShort().toUShort()

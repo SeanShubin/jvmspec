@@ -6,10 +6,6 @@ class InstructionConstantPoolIndexThenTwoZeroes(
     override val opcode: OpCode,
     val constantPoolIndex: UShort
 ) : Instruction {
-    override fun line(constantPoolLookup: ConstantPoolLookup): String {
-        return "${opcode.line} ${constantPoolLookup.line(constantPoolIndex)} 0 0"
-    }
-
     override fun cyclomaticComplexity(): Int = 0
 
     companion object {

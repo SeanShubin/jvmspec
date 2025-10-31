@@ -1,7 +1,5 @@
 package com.seanshubin.jvmspec.domain.data
 
-import com.seanshubin.jvmspec.domain.util.DataFormat.toDecHex
-import com.seanshubin.jvmspec.domain.util.DataFormat.toHex
 import java.io.DataInput
 
 class InstructionLookupSwitch(
@@ -11,11 +9,6 @@ class InstructionLookupSwitch(
     val nPairs: Int,
     val pairs: List<MatchOffset>,
 ) : Instruction {
-    override fun line(constantPoolLookup: ConstantPoolLookup): String {
-        val pairsString = pairs.joinToString(" ") { (match, offset) -> "${match.toDecHex()}:${offset.toDecHex()}" }
-        return "${opcode.line} padding(0x${padding.toHex()}) ${default.toDecHex()} ${nPairs.toDecHex()} $pairsString"
-    }
-
     override fun cyclomaticComplexity(): Int = pairs.size
 
     companion object {

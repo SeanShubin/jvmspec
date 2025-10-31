@@ -93,6 +93,7 @@ class MethodReport(
             val className = ApiConstant.classToString(constant)
             return className
         }
+
         fun categoriesFor(method: ApiMethod, opcodes: List<String>): Set<String> {
             return categoryMap.flatMap { (predicate, category) ->
                 if (predicate(method, opcodes)) setOf(category) else emptySet()

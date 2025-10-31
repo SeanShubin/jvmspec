@@ -1,6 +1,5 @@
 package com.seanshubin.jvmspec.domain.data
 
-import com.seanshubin.jvmspec.domain.util.DataFormat.toDecHex
 import java.io.DataInput
 
 class InstructionConstantPoolIndexThenDimensions(
@@ -8,10 +7,6 @@ class InstructionConstantPoolIndexThenDimensions(
     val classIndex: UShort,
     val dimensions: Int
 ) : Instruction {
-    override fun line(constantPoolLookup: ConstantPoolLookup): String {
-        return "${opcode.line} ${constantPoolLookup.line(classIndex)} ${dimensions.toDecHex()}"
-    }
-
     override fun cyclomaticComplexity(): Int = 0
 
     companion object {

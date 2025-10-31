@@ -6,10 +6,6 @@ class InstructionBranchOffsetWide(
     override val opcode: OpCode,
     val offset: Int,
 ) : Instruction {
-    override fun line(constantPoolLookup: ConstantPoolLookup): String {
-        return "${opcode.line} $offset"
-    }
-
     override fun cyclomaticComplexity(): Int = 1
 
     companion object {
