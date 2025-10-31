@@ -1,15 +1,15 @@
 package com.seanshubin.jvmspec.domain.aggregation
 
-import com.seanshubin.jvmspec.domain.api.ApiMethod
-import com.seanshubin.jvmspec.domain.api.ApiRef
+import com.seanshubin.jvmspec.domain.jvm.JvmMethod
+import com.seanshubin.jvmspec.domain.jvm.JvmRef
 
 data class ClassData(
     val classBaseName: String,
     val staticReferenceCount: Int,
     val cyclomaticComplexity: Int,
     val newInstanceCount: Int,
-    val staticInvocations: Map<ApiRef, Int>,
-    val methodCategories: Map<ApiRef, Set<String>>
+    val staticInvocations: Map<JvmRef, Int>,
+    val methodCategories: Map<JvmRef, Set<String>>
 ) {
     fun staticsAllowed(): Boolean {
         val allCategories = methodCategories.values.toSet()
@@ -24,8 +24,8 @@ data class ClassData(
 
     val uniqueStaticReferenceCount: Int get() = staticInvocations.size
     fun addToStaticReferenceCount(
-        source: ApiMethod,
-        target: ApiRef
+        source: JvmMethod,
+        target: JvmRef
     ): ClassData =
         copy(
             staticReferenceCount = staticReferenceCount + 1,
@@ -33,13 +33,13 @@ data class ClassData(
         )
 
     fun addToNewInstanceCount(
-        source: ApiMethod,
+        source: JvmMethod,
         target: String
     ): ClassData =
         copy(newInstanceCount = newInstanceCount + 1)
 
     fun addToCyclomaticComplexity(
-        source: ApiMethod,
+        source: JvmMethod,
         complexity: Int
     ): ClassData =
         copy(cyclomaticComplexity = cyclomaticComplexity + complexity)
@@ -62,7 +62,7 @@ data class ClassData(
         return header + staticHeader + staticInvocations + categoryHeader + methodCategoryLines
     }
 
-    fun updateMethodCategories(method: ApiMethod, categories: Set<String>): ClassData {
+    fun updateMethodCategories(method: JvmMethod, categories: Set<String>): ClassData {
         val id = method.ref()
         val oldCategories = methodCategories[id] ?: emptySet()
         val newCategories = oldCategories + categories

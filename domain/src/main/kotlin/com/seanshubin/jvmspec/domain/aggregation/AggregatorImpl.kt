@@ -1,46 +1,46 @@
 package com.seanshubin.jvmspec.domain.aggregation
 
-import com.seanshubin.jvmspec.domain.api.ApiClass
-import com.seanshubin.jvmspec.domain.api.ApiMethod
-import com.seanshubin.jvmspec.domain.api.ApiRef
+import com.seanshubin.jvmspec.domain.jvm.JvmClass
+import com.seanshubin.jvmspec.domain.jvm.JvmMethod
+import com.seanshubin.jvmspec.domain.jvm.JvmRef
 import com.seanshubin.jvmspec.domain.util.MatchEnum
 
 class AggregatorImpl(private val initialAggregateData: AggregateData) : Aggregator {
     private var aggregateData: AggregateData = initialAggregateData
-    override fun classFile(classFile: ApiClass) {
+    override fun classFile(classFile: JvmClass) {
         aggregateData = aggregateData.classFile(classFile)
     }
 
     override fun invokeStatic(
-        source: ApiMethod,
-        target: ApiRef
+        source: JvmMethod,
+        target: JvmRef
     ) {
         aggregateData = aggregateData.invokeStatic(source, target)
     }
 
     override fun getStatic(
-        source: ApiMethod,
-        target: ApiRef
+        source: JvmMethod,
+        target: JvmRef
     ) {
         aggregateData = aggregateData.getStatic(source, target)
     }
 
     override fun putStatic(
-        source: ApiMethod,
-        target: ApiRef
+        source: JvmMethod,
+        target: JvmRef
     ) {
         aggregateData = aggregateData.putStatic(source, target)
     }
 
     override fun newInstance(
-        source: ApiMethod,
+        source: JvmMethod,
         targetClassName: String
     ) {
         aggregateData = aggregateData.newInstance(source, targetClassName)
     }
 
     override fun cyclomaticComplexity(
-        source: ApiMethod,
+        source: JvmMethod,
         complexity: Int
     ) {
         aggregateData = aggregateData.cyclomaticComplexity(source, complexity)
@@ -71,7 +71,7 @@ class AggregatorImpl(private val initialAggregateData: AggregateData) : Aggregat
     }
 
     override fun methodCategories(
-        method: ApiMethod,
+        method: JvmMethod,
         categories: Set<String>
     ) {
         aggregateData = aggregateData.methodCategories(method, categories)

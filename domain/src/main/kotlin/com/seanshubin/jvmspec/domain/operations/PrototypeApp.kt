@@ -1,9 +1,9 @@
 package com.seanshubin.jvmspec.domain.operations
 
-import com.seanshubin.jvmspec.domain.api.ApiClass
-import com.seanshubin.jvmspec.domain.apiimpl.ApiClassImpl
 import com.seanshubin.jvmspec.domain.data.ClassFile
 import com.seanshubin.jvmspec.domain.data.OriginClassFile
+import com.seanshubin.jvmspec.domain.jvm.JvmClass
+import com.seanshubin.jvmspec.domain.jvmimpl.JvmClassImpl
 import java.io.DataInputStream
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -18,13 +18,13 @@ object PrototypeApp {
             val origin = OriginClassFile(file)
             ClassFile.fromDataInput(origin, input)
         }
-        val api = ApiClassImpl(classFile)
-        display(api)
+        val jvmClass = JvmClassImpl(classFile)
+        display(jvmClass)
     }
 
-    fun display(apiClass: ApiClass) {
-        val className = apiClass.thisClassName
-        apiClass.methods().forEach { method ->
+    fun display(jvmClass: JvmClass) {
+        val className = jvmClass.thisClassName
+        jvmClass.methods().forEach { method ->
             val methodName = method.name()
             val javaSignature = method.signature().javaFormatUnqualified(className, methodName)
             val code = method.code()

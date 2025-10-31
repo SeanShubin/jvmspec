@@ -1,4 +1,4 @@
-package com.seanshubin.jvmspec.domain.api
+package com.seanshubin.jvmspec.domain.jvm
 
 data class Signature(
     val descriptor: String,

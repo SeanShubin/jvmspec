@@ -1,13 +1,13 @@
-package com.seanshubin.jvmspec.domain.apiimpl
+package com.seanshubin.jvmspec.domain.jvmimpl
 
-import com.seanshubin.jvmspec.domain.api.*
 import com.seanshubin.jvmspec.domain.data.ClassFile
+import com.seanshubin.jvmspec.domain.jvm.*
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 import java.util.*
 
-class ApiClassImpl(private val classFile: ClassFile) : ApiClass {
-    override val constants: SortedMap<UShort, ApiConstant.Constant> = classFile.constantPool.associate {
-        it.index to ApiConstantFactory.createByIndex(classFile.constantPoolMap, it.index)
+class JvmClassImpl(private val classFile: ClassFile) : JvmClass {
+    override val constants: SortedMap<UShort, JvmConstant.Constant> = classFile.constantPool.associate {
+        it.index to JvmConstantFactory.createByIndex(classFile.constantPoolMap, it.index)
     }.toSortedMap()
 
     override val origin: String = classFile.origin.id
@@ -25,29 +25,29 @@ class ApiClassImpl(private val classFile: ClassFile) : ApiClass {
             lookupClassName(classFile.superClass)
         }
 
-    override fun methods(): List<ApiMethod> {
+    override fun methods(): List<JvmMethod> {
         return classFile.methods.map {
-            ApiMethodImpl(this, it)
+            JvmMethodImpl(this, it)
         }
     }
 
-    override fun interfaces(): List<ApiConstant.Constant> {
+    override fun interfaces(): List<JvmConstant.Constant> {
         return classFile.interfaces.map {
             constants.getValue(it)
         }
     }
 
-    override fun fields(): List<ApiField> {
+    override fun fields(): List<JvmField> {
         return classFile.fields.map {
-            ApiFieldImpl(this, it)
+            JvmFieldImpl(this, it)
         }
     }
 
     override val accessFlags: Set<AccessFlag> = classFile.accessFlags
 
-    override fun attributes(): List<ApiAttribute> {
+    override fun attributes(): List<JvmAttribute> {
         return classFile.attributes.map {
-            ApiAttributeImpl(this, it)
+            JvmAttributeImpl(this, it)
         }
     }
 }

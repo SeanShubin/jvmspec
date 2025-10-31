@@ -1,19 +1,19 @@
 package com.seanshubin.jvmspec.domain.aggregation
 
-import com.seanshubin.jvmspec.domain.api.ApiClass
-import com.seanshubin.jvmspec.domain.api.ApiMethod
-import com.seanshubin.jvmspec.domain.api.ApiRef
+import com.seanshubin.jvmspec.domain.jvm.JvmClass
+import com.seanshubin.jvmspec.domain.jvm.JvmMethod
+import com.seanshubin.jvmspec.domain.jvm.JvmRef
 import com.seanshubin.jvmspec.domain.util.MatchEnum
 
 data class AggregateData(
     val classDataMap: Map<String, ClassData>,
-    val acceptMethod: (ApiRef) -> MatchEnum,
+    val acceptMethod: (JvmRef) -> MatchEnum,
     val acceptClass: (String) -> MatchEnum,
-    val methods: Map<MatchEnum, Set<ApiRef>>,
+    val methods: Map<MatchEnum, Set<JvmRef>>,
     val classes: Map<MatchEnum, Set<String>>,
     val mapClassNameOriginIds: Map<String, List<String>>
 ) {
-    fun classFile(classFile: ApiClass): AggregateData {
+    fun classFile(classFile: JvmClass): AggregateData {
         val originId = classFile.origin
         val className = classFile.thisClassName
         val oldOriginIds = mapClassNameOriginIds[className] ?: emptyList()
@@ -24,36 +24,36 @@ data class AggregateData(
     }
 
     fun invokeStatic(
-        source: ApiMethod,
-        target: ApiRef
+        source: JvmMethod,
+        target: JvmRef
     ): AggregateData {
         return incrementStaticReferenceCountIfOnBlacklist(source, target)
     }
 
     fun getStatic(
-        source: ApiMethod,
-        target: ApiRef
+        source: JvmMethod,
+        target: JvmRef
     ): AggregateData {
         return incrementStaticReferenceCountIfOnBlacklist(source, target)
     }
 
 
     fun putStatic(
-        source: ApiMethod,
-        target: ApiRef
+        source: JvmMethod,
+        target: JvmRef
     ): AggregateData {
         return incrementStaticReferenceCountIfOnBlacklist(source, target)
     }
 
     fun newInstance(
-        source: ApiMethod,
+        source: JvmMethod,
         targetClassName: String
     ): AggregateData {
         return incrementStaticReferenceCountIfOnBlacklist(source, targetClassName)
     }
 
     fun cyclomaticComplexity(
-        source: ApiMethod,
+        source: JvmMethod,
         complexity: Int
     ): AggregateData {
         val key = source.className().classBaseName()
@@ -124,7 +124,7 @@ data class AggregateData(
         return copy(classDataMap = newMap)
     }
 
-    private fun updateMethods(matchEnum: MatchEnum, qualifiedMethod: ApiRef): AggregateData {
+    private fun updateMethods(matchEnum: MatchEnum, qualifiedMethod: JvmRef): AggregateData {
         val oldSet = methods[matchEnum] ?: emptySet()
         val newSet = oldSet + qualifiedMethod
         val newMap = methods + (matchEnum to newSet)
@@ -139,8 +139,8 @@ data class AggregateData(
     }
 
     private fun incrementStaticReferenceCountIfOnBlacklist(
-        source: ApiMethod,
-        target: ApiRef
+        source: JvmMethod,
+        target: JvmRef
     ): AggregateData {
         val matchEnum = acceptMethod(target)
         val a = updateMethods(matchEnum, target)
@@ -154,7 +154,7 @@ data class AggregateData(
         }
     }
 
-    private fun incrementStaticReferenceCountIfOnBlacklist(source: ApiMethod, target: String): AggregateData {
+    private fun incrementStaticReferenceCountIfOnBlacklist(source: JvmMethod, target: String): AggregateData {
         val matchEnum = acceptClass(target)
         val a = updateClasses(matchEnum, target)
         return if (matchEnum == MatchEnum.BLACKLIST_ONLY) {
@@ -177,7 +177,7 @@ data class AggregateData(
         return set.toList().sorted()
     }
 
-    fun methodCategories(method: ApiMethod, categories: Set<String>): AggregateData {
+    fun methodCategories(method: JvmMethod, categories: Set<String>): AggregateData {
         val key = method.className().classBaseName()
         return updateEntry(key) { classData ->
             classData.updateMethodCategories(method, categories)
@@ -186,7 +186,7 @@ data class AggregateData(
 
     companion object {
         fun create(
-            acceptMethod: (ApiRef) -> MatchEnum,
+            acceptMethod: (JvmRef) -> MatchEnum,
             acceptClass: (String) -> MatchEnum
         ) = AggregateData(
             emptyMap(),

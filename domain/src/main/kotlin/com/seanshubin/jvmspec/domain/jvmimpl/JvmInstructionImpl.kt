@@ -1,14 +1,14 @@
-package com.seanshubin.jvmspec.domain.apiimpl
+package com.seanshubin.jvmspec.domain.jvmimpl
 
-import com.seanshubin.jvmspec.domain.api.ApiArgument
-import com.seanshubin.jvmspec.domain.api.ApiClass
-import com.seanshubin.jvmspec.domain.api.ApiInstruction
 import com.seanshubin.jvmspec.domain.data.*
+import com.seanshubin.jvmspec.domain.jvm.JvmArgument
+import com.seanshubin.jvmspec.domain.jvm.JvmClass
+import com.seanshubin.jvmspec.domain.jvm.JvmInstruction
 
-data class ApiInstructionImpl(
-    val apiClass: ApiClass,
+data class JvmInstructionImpl(
+    val jvmClass: JvmClass,
     val instructionAndBytes: InstructionAndBytes
-) : ApiInstruction {
+) : JvmInstruction {
     private val instruction = instructionAndBytes.instruction
     private val opcode = instruction.opcode
     private val operandType = opcode.operandType
@@ -21,7 +21,7 @@ data class ApiInstructionImpl(
         return opcode.ubyte
     }
 
-    override fun args(): List<ApiArgument> {
+    override fun args(): List<JvmArgument> {
         return when (operandType) {
             OperandType.NONE -> emptyList()
             OperandType.LOCAL_VARIABLE_INDEX -> localVariableIndexArgs()
@@ -42,88 +42,88 @@ data class ApiInstructionImpl(
         }
     }
 
-    private fun constantPoolIndexArgs(): List<ApiArgument> {
+    private fun constantPoolIndexArgs(): List<JvmArgument> {
         instruction as InstructionConstantPoolIndex
         return listOf(constantPoolIndexToArg(instruction.constantPoolIndex))
     }
 
-    private fun constantPoolByteSizedIndexArgs(): List<ApiArgument> {
+    private fun constantPoolByteSizedIndexArgs(): List<JvmArgument> {
         instruction as InstructionConstantPoolByteSizedIndex
         return listOf(constantPoolIndexToArg(instruction.constantPoolIndex.toUShort()))
     }
 
-    private fun localVariableIndexArgs(): List<ApiArgument> {
+    private fun localVariableIndexArgs(): List<JvmArgument> {
         instruction as InstructionLocalVariableIndex
-        return listOf(ApiArgument.IntValue(instruction.localVariableIndex))
+        return listOf(JvmArgument.IntValue(instruction.localVariableIndex))
     }
 
-    private fun constantPoolIndexThenTwoZerosArgs(): List<ApiArgument> {
+    private fun constantPoolIndexThenTwoZerosArgs(): List<JvmArgument> {
         instruction as InstructionConstantPoolIndexThenTwoZeroes
         return listOf(constantPoolIndexToArg(instruction.constantPoolIndex))
     }
 
-    private fun byteArgs(): List<ApiArgument> {
+    private fun byteArgs(): List<JvmArgument> {
         instruction as InstructionByte
-        return listOf(ApiArgument.IntValue(instruction.value.toInt()))
+        return listOf(JvmArgument.IntValue(instruction.value.toInt()))
     }
 
-    private fun branchOffsetArgs(): List<ApiArgument> {
+    private fun branchOffsetArgs(): List<JvmArgument> {
         instruction as InstructionBranchOffset
-        return listOf(ApiArgument.IntValue(instruction.branchOffset.toInt()))
+        return listOf(JvmArgument.IntValue(instruction.branchOffset.toInt()))
     }
 
-    private fun branchOffsetWideArgs(): List<ApiArgument> {
+    private fun branchOffsetWideArgs(): List<JvmArgument> {
         instruction as InstructionBranchOffsetWide
-        return listOf(ApiArgument.IntValue(instruction.offset))
+        return listOf(JvmArgument.IntValue(instruction.offset))
     }
 
-    private fun indexConstArgs(): List<ApiArgument> {
+    private fun indexConstArgs(): List<JvmArgument> {
         instruction as InstructionIndexConst
         return listOf(
-            ApiArgument.IntValue(instruction.index),
-            ApiArgument.IntValue(instruction.const.toInt())
+            JvmArgument.IntValue(instruction.index),
+            JvmArgument.IntValue(instruction.const.toInt())
         )
     }
 
-    private fun constantPoolIndexThenCountThenZeroArgs(): List<ApiArgument> {
+    private fun constantPoolIndexThenCountThenZeroArgs(): List<JvmArgument> {
         instruction as InstructionConstantPoolIndexThenCountThenZero
         val constant = constantPoolIndexToArg(instruction.constantPoolIndex)
         return listOf(
             constant,
-            ApiArgument.IntValue(instruction.count)
+            JvmArgument.IntValue(instruction.count)
         )
     }
 
-    private fun lookupSwitchArgs(): List<ApiArgument> {
+    private fun lookupSwitchArgs(): List<JvmArgument> {
         instruction as InstructionLookupSwitch
         val pairs = instruction.pairs.map { (first, second) ->
             first to second
         }
-        return listOf(ApiArgument.LookupSwitch(instruction.default, pairs))
+        return listOf(JvmArgument.LookupSwitch(instruction.default, pairs))
     }
 
-    private fun constantPoolIndexThenDimensionsArgs(): List<ApiArgument> {
+    private fun constantPoolIndexThenDimensionsArgs(): List<JvmArgument> {
         instruction as InstructionConstantPoolIndexThenDimensions
         return listOf(
             constantPoolIndexToArg(instruction.classIndex),
-            ApiArgument.IntValue(instruction.dimensions)
+            JvmArgument.IntValue(instruction.dimensions)
         )
     }
 
-    private fun arrayTypeArgs(): List<ApiArgument> {
+    private fun arrayTypeArgs(): List<JvmArgument> {
         instruction as InstructionArrayType
-        return listOf(ApiArgument.ArrayTypeValue(instruction.arrayType))
+        return listOf(JvmArgument.ArrayTypeValue(instruction.arrayType))
     }
 
-    private fun shortArgs(): List<ApiArgument> {
+    private fun shortArgs(): List<JvmArgument> {
         instruction as InstructionShort
-        return listOf(ApiArgument.IntValue(instruction.value.toInt()))
+        return listOf(JvmArgument.IntValue(instruction.value.toInt()))
     }
 
-    private fun tableSwitchArgs(): List<ApiArgument> {
+    private fun tableSwitchArgs(): List<JvmArgument> {
         instruction as InstructionTableSwitch
         return listOf(
-            ApiArgument.TableSwitch(
+            JvmArgument.TableSwitch(
                 instruction.default,
                 instruction.low,
                 instruction.high,
@@ -132,7 +132,7 @@ data class ApiInstructionImpl(
         )
     }
 
-    private fun wideArgs(): List<ApiArgument> {
+    private fun wideArgs(): List<JvmArgument> {
         return when (instruction) {
             is InstructionWideFormat1 -> wideArgs1()
             is InstructionWideFormat2 -> wideArgs2()
@@ -140,25 +140,25 @@ data class ApiInstructionImpl(
         }
     }
 
-    private fun wideArgs1(): List<ApiArgument> {
+    private fun wideArgs1(): List<JvmArgument> {
         instruction as InstructionWideFormat1
         return listOf(
-            ApiArgument.OpCodeValue(instruction.opcode.name, instruction.opcode.ubyte),
-            ApiArgument.IntValue(instruction.localVariableIndex.toInt())
+            JvmArgument.OpCodeValue(instruction.opcode.name, instruction.opcode.ubyte),
+            JvmArgument.IntValue(instruction.localVariableIndex.toInt())
         )
     }
 
-    private fun wideArgs2(): List<ApiArgument> {
+    private fun wideArgs2(): List<JvmArgument> {
         instruction as InstructionWideFormat2
         return listOf(
-            ApiArgument.OpCodeValue(instruction.opcode.name, instruction.opcode.ubyte),
-            ApiArgument.IntValue(instruction.localVariableIndex.toInt()),
-            ApiArgument.IntValue(instruction.constant.toInt())
+            JvmArgument.OpCodeValue(instruction.opcode.name, instruction.opcode.ubyte),
+            JvmArgument.IntValue(instruction.localVariableIndex.toInt()),
+            JvmArgument.IntValue(instruction.constant.toInt())
         )
     }
 
-    private fun constantPoolIndexToArg(constantPoolIndex: UShort): ApiArgument {
-        val constant = apiClass.constants.getValue(constantPoolIndex)
-        return ApiArgument.Constant(constant)
+    private fun constantPoolIndexToArg(constantPoolIndex: UShort): JvmArgument {
+        val constant = jvmClass.constants.getValue(constantPoolIndex)
+        return JvmArgument.Constant(constant)
     }
 }

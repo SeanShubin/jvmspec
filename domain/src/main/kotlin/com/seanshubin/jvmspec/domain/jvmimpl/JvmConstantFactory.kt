@@ -1,11 +1,11 @@
-package com.seanshubin.jvmspec.domain.apiimpl
+package com.seanshubin.jvmspec.domain.jvmimpl
 
-import com.seanshubin.jvmspec.domain.api.ApiConstant
 import com.seanshubin.jvmspec.domain.data.*
+import com.seanshubin.jvmspec.domain.jvm.JvmConstant
 import com.seanshubin.jvmspec.domain.primitive.ConstantPoolTag
 
-object ApiConstantFactory {
-    fun createByIndex(constantPoolMap: Map<UShort, ConstantInfo>, index: UShort): ApiConstant.Constant {
+object JvmConstantFactory {
+    fun createByIndex(constantPoolMap: Map<UShort, ConstantInfo>, index: UShort): JvmConstant.Constant {
         val constantInfo = constantPoolMap.getValue(index)
         return createConstantMap.getValue(constantInfo.tag).invoke(constantPoolMap, constantInfo)
     }
@@ -29,10 +29,10 @@ object ApiConstantFactory {
         ConstantPoolTag.PACKAGE to ::createPackage
     )
 
-    fun createUtf8(constantPoolMap: Map<UShort, ConstantInfo>, constantInfo: ConstantInfo): ApiConstant.Constant {
+    fun createUtf8(constantPoolMap: Map<UShort, ConstantInfo>, constantInfo: ConstantInfo): JvmConstant.Constant {
         constantInfo as ConstantUtf8Info
-        val value = ApiConstant.StringValue(constantInfo.utf8Value)
-        return ApiConstant.Constant(
+        val value = JvmConstant.StringValue(constantInfo.utf8Value)
+        return JvmConstant.Constant(
             constantInfo.index,
             constantInfo.tag.id,
             constantInfo.tag.name,
@@ -40,12 +40,12 @@ object ApiConstantFactory {
         )
     }
 
-    fun createClass(constantPoolMap: Map<UShort, ConstantInfo>, classConstantInfo: ConstantInfo): ApiConstant.Constant {
+    fun createClass(constantPoolMap: Map<UShort, ConstantInfo>, classConstantInfo: ConstantInfo): JvmConstant.Constant {
         classConstantInfo as ConstantClassInfo
         val nameIndex = classConstantInfo.nameIndex
         val nameConstantInfo = constantPoolMap.getValue(nameIndex)
         val name = createUtf8(constantPoolMap, nameConstantInfo)
-        return ApiConstant.Constant(
+        return JvmConstant.Constant(
             classConstantInfo.index,
             classConstantInfo.tag.id,
             classConstantInfo.tag.name,
@@ -56,7 +56,7 @@ object ApiConstantFactory {
     fun createNameAndType(
         constantPoolMap: Map<UShort, ConstantInfo>,
         nameAndTypeInfo: ConstantInfo
-    ): ApiConstant.Constant {
+    ): JvmConstant.Constant {
         nameAndTypeInfo as ConstantNameAndTypeInfo
         val nameIndex = nameAndTypeInfo.nameIndex
         val nameConstantInfo = constantPoolMap.getValue(nameIndex)
@@ -64,7 +64,7 @@ object ApiConstantFactory {
         val descriptorIndex = nameAndTypeInfo.descriptorIndex
         val descriptorConstantInfo = constantPoolMap.getValue(descriptorIndex)
         val descriptor = createUtf8(constantPoolMap, descriptorConstantInfo)
-        return ApiConstant.Constant(
+        return JvmConstant.Constant(
             nameAndTypeInfo.index,
             nameAndTypeInfo.tag.id,
             nameAndTypeInfo.tag.name,
@@ -72,7 +72,7 @@ object ApiConstantFactory {
         )
     }
 
-    fun createRef(constantPoolMap: Map<UShort, ConstantInfo>, refInfo: ConstantInfo): ApiConstant.Constant {
+    fun createRef(constantPoolMap: Map<UShort, ConstantInfo>, refInfo: ConstantInfo): JvmConstant.Constant {
         refInfo as ConstantRefInfo
         val classIndex = refInfo.classIndex
         val classConstantInfo = constantPoolMap.getValue(classIndex)
@@ -80,7 +80,7 @@ object ApiConstantFactory {
         val nameAndTypeIndex = refInfo.nameAndTypeIndex
         val nameAndTypeInfo = constantPoolMap.getValue(nameAndTypeIndex)
         val nameAndType = createNameAndType(constantPoolMap, nameAndTypeInfo)
-        return ApiConstant.Constant(
+        return JvmConstant.Constant(
             refInfo.index,
             refInfo.tag.id,
             refInfo.tag.name,
@@ -88,12 +88,12 @@ object ApiConstantFactory {
         )
     }
 
-    fun createString(constantPoolMap: Map<UShort, ConstantInfo>, stringInfo: ConstantInfo): ApiConstant.Constant {
+    fun createString(constantPoolMap: Map<UShort, ConstantInfo>, stringInfo: ConstantInfo): JvmConstant.Constant {
         stringInfo as ConstantStringInfo
         val stringIndex = stringInfo.stringIndex
         val stringConstantInfo = constantPoolMap.getValue(stringIndex)
         val string = createUtf8(constantPoolMap, stringConstantInfo)
-        return ApiConstant.Constant(
+        return JvmConstant.Constant(
             stringInfo.index,
             stringInfo.tag.id,
             stringInfo.tag.name,
@@ -101,10 +101,10 @@ object ApiConstantFactory {
         )
     }
 
-    fun createInteger(constantPoolMap: Map<UShort, ConstantInfo>, integerInfo: ConstantInfo): ApiConstant.Constant {
+    fun createInteger(constantPoolMap: Map<UShort, ConstantInfo>, integerInfo: ConstantInfo): JvmConstant.Constant {
         integerInfo as ConstantIntegerInfo
-        val integerValue = ApiConstant.IntegerValue(integerInfo.intValue)
-        return ApiConstant.Constant(
+        val integerValue = JvmConstant.IntegerValue(integerInfo.intValue)
+        return JvmConstant.Constant(
             integerInfo.index,
             integerInfo.tag.id,
             integerInfo.tag.name,
@@ -115,14 +115,14 @@ object ApiConstantFactory {
     fun createMethodHandle(
         constantPoolMap: Map<UShort, ConstantInfo>,
         methodHandleInfo: ConstantInfo
-    ): ApiConstant.Constant {
+    ): JvmConstant.Constant {
         methodHandleInfo as ConstantMethodHandleInfo
         val referenceKind = methodHandleInfo.referenceKind
-        val referenceKindValue = ApiConstant.ReferenceKindValue(referenceKind.code, referenceKind.name)
+        val referenceKindValue = JvmConstant.ReferenceKindValue(referenceKind.code, referenceKind.name)
         val refIndex = methodHandleInfo.referenceIndex
         val refConstantInfo = constantPoolMap.getValue(refIndex)
         val ref = createRef(constantPoolMap, refConstantInfo)
-        return ApiConstant.Constant(
+        return JvmConstant.Constant(
             methodHandleInfo.index,
             methodHandleInfo.tag.id,
             methodHandleInfo.tag.name,
@@ -133,13 +133,13 @@ object ApiConstantFactory {
     fun createInvokeDynamic(
         constantPoolMap: Map<UShort, ConstantInfo>,
         invokeDynamicInfo: ConstantInfo
-    ): ApiConstant.Constant {
+    ): JvmConstant.Constant {
         invokeDynamicInfo as ConstantInvokeDynamicInfo
         val bootstrapMethodAttrIndex = invokeDynamicInfo.bootstrapMethodAttrIndex
-        val bootstrapMethodAttr = ApiConstant.IndexValue(bootstrapMethodAttrIndex)
+        val bootstrapMethodAttr = JvmConstant.IndexValue(bootstrapMethodAttrIndex)
         val nameAndTypeIndex = invokeDynamicInfo.nameAndTypeIndex
         val nameAndType = createNameAndType(constantPoolMap, constantPoolMap.getValue(nameAndTypeIndex))
-        return ApiConstant.Constant(
+        return JvmConstant.Constant(
             invokeDynamicInfo.index,
             invokeDynamicInfo.tag.id,
             invokeDynamicInfo.tag.name,
@@ -147,10 +147,10 @@ object ApiConstantFactory {
         )
     }
 
-    fun createLong(constantPoolMap: Map<UShort, ConstantInfo>, longInfo: ConstantInfo): ApiConstant.Constant {
+    fun createLong(constantPoolMap: Map<UShort, ConstantInfo>, longInfo: ConstantInfo): JvmConstant.Constant {
         longInfo as ConstantLongInfo
-        val longValue = ApiConstant.LongValue(longInfo.longValue)
-        return ApiConstant.Constant(
+        val longValue = JvmConstant.LongValue(longInfo.longValue)
+        return JvmConstant.Constant(
             longInfo.index,
             longInfo.tag.id,
             longInfo.tag.name,
@@ -161,12 +161,12 @@ object ApiConstantFactory {
     fun createMethodType(
         constantPoolMap: Map<UShort, ConstantInfo>,
         methodTypeInfo: ConstantInfo
-    ): ApiConstant.Constant {
+    ): JvmConstant.Constant {
         methodTypeInfo as ConstantMethodTypeInfo
         val descriptorIndex = methodTypeInfo.descriptorIndex
         val descriptorConstantInfo = constantPoolMap.getValue(descriptorIndex)
         val descriptor = createUtf8(constantPoolMap, descriptorConstantInfo)
-        return ApiConstant.Constant(
+        return JvmConstant.Constant(
             methodTypeInfo.index,
             methodTypeInfo.tag.id,
             methodTypeInfo.tag.name,
@@ -174,12 +174,12 @@ object ApiConstantFactory {
         )
     }
 
-    fun createModule(constantPoolMap: Map<UShort, ConstantInfo>, moduleInfo: ConstantInfo): ApiConstant.Constant {
+    fun createModule(constantPoolMap: Map<UShort, ConstantInfo>, moduleInfo: ConstantInfo): JvmConstant.Constant {
         moduleInfo as ConstantModuleInfo
         val nameIndex = moduleInfo.nameIndex
         val nameConstantInfo = constantPoolMap.getValue(nameIndex)
         val name = createUtf8(constantPoolMap, nameConstantInfo)
-        return ApiConstant.Constant(
+        return JvmConstant.Constant(
             moduleInfo.index,
             moduleInfo.tag.id,
             moduleInfo.tag.name,
@@ -187,12 +187,12 @@ object ApiConstantFactory {
         )
     }
 
-    fun createPackage(constantPoolMap: Map<UShort, ConstantInfo>, packageInfo: ConstantInfo): ApiConstant.Constant {
+    fun createPackage(constantPoolMap: Map<UShort, ConstantInfo>, packageInfo: ConstantInfo): JvmConstant.Constant {
         packageInfo as ConstantPackageInfo
         val nameIndex = packageInfo.nameIndex
         val nameConstantInfo = constantPoolMap.getValue(nameIndex)
         val name = createUtf8(constantPoolMap, nameConstantInfo)
-        return ApiConstant.Constant(
+        return JvmConstant.Constant(
             packageInfo.index,
             packageInfo.tag.id,
             packageInfo.tag.name,
@@ -200,10 +200,10 @@ object ApiConstantFactory {
         )
     }
 
-    fun createDouble(constantPoolMap: Map<UShort, ConstantInfo>, doubleInfo: ConstantInfo): ApiConstant.Constant {
+    fun createDouble(constantPoolMap: Map<UShort, ConstantInfo>, doubleInfo: ConstantInfo): JvmConstant.Constant {
         doubleInfo as ConstantDoubleInfo
-        val doubleValue = ApiConstant.DoubleValue(doubleInfo.doubleValue)
-        return ApiConstant.Constant(
+        val doubleValue = JvmConstant.DoubleValue(doubleInfo.doubleValue)
+        return JvmConstant.Constant(
             doubleInfo.index,
             doubleInfo.tag.id,
             doubleInfo.tag.name,
@@ -211,10 +211,10 @@ object ApiConstantFactory {
         )
     }
 
-    fun createFloat(constantPoolMap: Map<UShort, ConstantInfo>, floatInfo: ConstantInfo): ApiConstant.Constant {
+    fun createFloat(constantPoolMap: Map<UShort, ConstantInfo>, floatInfo: ConstantInfo): JvmConstant.Constant {
         floatInfo as ConstantFloatInfo
-        val floatValue = ApiConstant.FloatValue(floatInfo.floatValue)
-        return ApiConstant.Constant(
+        val floatValue = JvmConstant.FloatValue(floatInfo.floatValue)
+        return JvmConstant.Constant(
             floatInfo.index,
             floatInfo.tag.id,
             floatInfo.tag.name,

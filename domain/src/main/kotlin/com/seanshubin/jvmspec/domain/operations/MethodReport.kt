@@ -1,11 +1,11 @@
 package com.seanshubin.jvmspec.domain.operations
 
 import com.seanshubin.jvmspec.domain.aggregation.Aggregator
-import com.seanshubin.jvmspec.domain.api.*
-import com.seanshubin.jvmspec.domain.apiimpl.DescriptorParser
 import com.seanshubin.jvmspec.domain.command.Command
 import com.seanshubin.jvmspec.domain.command.WriteLines
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
+import com.seanshubin.jvmspec.domain.jvm.*
+import com.seanshubin.jvmspec.domain.jvmimpl.DescriptorParser
 import com.seanshubin.jvmspec.domain.util.StringListRuleMatcher
 import java.nio.file.Path
 
@@ -14,7 +14,7 @@ class MethodReport(
     private val format: JvmSpecFormat,
     private val indent: (String) -> String
 ) : Report {
-    override fun reportCommands(baseFileName: String, outputDir: Path, classFile: ApiClass): List<Command> {
+    override fun reportCommands(baseFileName: String, outputDir: Path, classFile: JvmClass): List<Command> {
         aggregator.classFile(classFile)
         val className = classFile.thisClassName
         val methods = classFile.methods()
@@ -45,15 +45,15 @@ class MethodReport(
                         lines.addAll(instructionLines)
                     }
                     if (name == "invokestatic") {
-                        val target = getApiRef(instruction)
+                        val target = getRef(instruction)
                         aggregator.invokeStatic(method, target)
                     }
                     if (name == "getstatic") {
-                        val target = getApiRef(instruction)
+                        val target = getRef(instruction)
                         aggregator.getStatic(method, target)
                     }
                     if (name == "putstatic") {
-                        val target = getApiRef(instruction)
+                        val target = getRef(instruction)
                         aggregator.putStatic(method, target)
                     }
                     if (name == "new") {
@@ -71,30 +71,30 @@ class MethodReport(
     }
 
     companion object {
-        fun getApiRef(instruction: ApiInstruction): ApiRef {
+        fun getRef(instruction: JvmInstruction): JvmRef {
             if (instruction.args().size != 1) {
                 throw RuntimeException("Expected exactly one argument for instruction ${instruction.name()}")
             }
             val arg = instruction.args()[0]
-            arg as ApiArgument.Constant
-            val constant = arg.value as ApiConstant.Constant
-            val (className, methodName, methodDescriptor) = ApiConstant.refToStrings(constant)
+            arg as JvmArgument.Constant
+            val constant = arg.value as JvmConstant.Constant
+            val (className, methodName, methodDescriptor) = JvmConstant.refToStrings(constant)
             val signature = DescriptorParser.build(methodDescriptor)
-            return ApiRef(className, methodName, signature)
+            return JvmRef(className, methodName, signature)
         }
 
-        fun getClassName(instruction: ApiInstruction): String {
+        fun getClassName(instruction: JvmInstruction): String {
             if (instruction.args().size != 1) {
                 throw RuntimeException("Expected exactly one argument for instruction ${instruction.name()}")
             }
             val arg = instruction.args()[0]
-            arg as ApiArgument.Constant
-            val constant = arg.value as ApiConstant.Constant
-            val className = ApiConstant.classToString(constant)
+            arg as JvmArgument.Constant
+            val constant = arg.value as JvmConstant.Constant
+            val className = JvmConstant.classToString(constant)
             return className
         }
 
-        fun categoriesFor(method: ApiMethod, opcodes: List<String>): Set<String> {
+        fun categoriesFor(method: JvmMethod, opcodes: List<String>): Set<String> {
             return categoryMap.flatMap { (predicate, category) ->
                 if (predicate(method, opcodes)) setOf(category) else emptySet()
             }.toSet()
@@ -112,7 +112,7 @@ class MethodReport(
             ::isSingletonStaticInitializer to "singleton-static-initializer"
         )
 
-        fun isStaticPassThrough(method: ApiMethod, opcodes: List<String>): Boolean {
+        fun isStaticPassThrough(method: JvmMethod, opcodes: List<String>): Boolean {
             val ruleMatcher = StringListRuleMatcher(opcodes)
             ruleMatcher.expectZeroOrMore { it.contains("load") }
             ruleMatcher.expectExactly(1) { it == "invokestatic" }
@@ -121,7 +121,7 @@ class MethodReport(
             return ruleMatcher.rulesMatched
         }
 
-        fun isDelegatePassThrough(method: ApiMethod, opcodes: List<String>): Boolean {
+        fun isDelegatePassThrough(method: JvmMethod, opcodes: List<String>): Boolean {
             val ruleMatcher = StringListRuleMatcher(opcodes)
             ruleMatcher.expectZeroOrMore { it.contains("load") }
             ruleMatcher.expectExactly(1) { it == "getfield" }
@@ -132,7 +132,7 @@ class MethodReport(
             return ruleMatcher.rulesMatched
         }
 
-        fun isCatchRethrow(method: ApiMethod, opcodes: List<String>): Boolean {
+        fun isCatchRethrow(method: JvmMethod, opcodes: List<String>): Boolean {
             val ruleMatcher = StringListRuleMatcher(opcodes)
             ruleMatcher.expectExactly(1) { it.contains("load") }
             ruleMatcher.expectExactly(1) { it == "getfield" }
@@ -152,7 +152,7 @@ class MethodReport(
             return ruleMatcher.rulesMatched
         }
 
-        fun isCatchRethrowPassThrough(method: ApiMethod, opcodes: List<String>): Boolean {
+        fun isCatchRethrowPassThrough(method: JvmMethod, opcodes: List<String>): Boolean {
             val ruleMatcher = StringListRuleMatcher(opcodes)
             ruleMatcher.expectZeroOrMore { it.contains("load") }
             ruleMatcher.expectExactly(1) { it == "invokestatic" }
@@ -170,7 +170,7 @@ class MethodReport(
             return ruleMatcher.rulesMatched
         }
 
-        fun isDefaultConstructor(method: ApiMethod, opcodes: List<String>): Boolean {
+        fun isDefaultConstructor(method: JvmMethod, opcodes: List<String>): Boolean {
             if (method.name() != "<init>") return false
             val ruleMatcher = StringListRuleMatcher(opcodes)
             ruleMatcher.expectExactly(1) { it.contains("load") }
@@ -180,7 +180,7 @@ class MethodReport(
             return ruleMatcher.rulesMatched
         }
 
-        fun isDefaultConstructorDelegate(method: ApiMethod, opcodes: List<String>): Boolean {
+        fun isDefaultConstructorDelegate(method: JvmMethod, opcodes: List<String>): Boolean {
             if (method.name() != "<init>") return false
             val ruleMatcher = StringListRuleMatcher(opcodes)
             ruleMatcher.expectExactly(1) { it.contains("load") }
@@ -192,7 +192,7 @@ class MethodReport(
             return ruleMatcher.rulesMatched
         }
 
-        fun isSingletonGetter(method: ApiMethod, opcodes: List<String>): Boolean {
+        fun isSingletonGetter(method: JvmMethod, opcodes: List<String>): Boolean {
             val ruleMatcher = StringListRuleMatcher(opcodes)
             ruleMatcher.expectExactly(1) { it == "getstatic" }
             ruleMatcher.expectExactly(1) { it == "ifnonnull" }
@@ -206,7 +206,7 @@ class MethodReport(
             return ruleMatcher.rulesMatched
         }
 
-        fun isSingletonStaticInitializer(method: ApiMethod, opcodes: List<String>): Boolean {
+        fun isSingletonStaticInitializer(method: JvmMethod, opcodes: List<String>): Boolean {
             val ruleMatcher = StringListRuleMatcher(opcodes)
             ruleMatcher.expectExactly(1) { it == "new" }
             ruleMatcher.expectExactly(1) { it == "dup" }
@@ -217,7 +217,7 @@ class MethodReport(
             return ruleMatcher.rulesMatched
         }
 
-        fun isSingletonGetterDelegate(method: ApiMethod, opcodes: List<String>): Boolean {
+        fun isSingletonGetterDelegate(method: JvmMethod, opcodes: List<String>): Boolean {
             val ruleMatcher = StringListRuleMatcher(opcodes)
             ruleMatcher.expectExactly(1) { it == "getstatic" }
             ruleMatcher.expectExactly(1) { it == "ifnonnull" }

@@ -1,6 +1,6 @@
-package com.seanshubin.jvmspec.domain.api
+package com.seanshubin.jvmspec.domain.jvm
 
-import com.seanshubin.jvmspec.domain.apiimpl.DescriptorParser
+import com.seanshubin.jvmspec.domain.jvmimpl.DescriptorParser
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

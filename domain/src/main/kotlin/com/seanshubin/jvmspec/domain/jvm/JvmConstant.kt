@@ -1,18 +1,18 @@
-package com.seanshubin.jvmspec.domain.api
+package com.seanshubin.jvmspec.domain.jvm
 
 import com.seanshubin.jvmspec.domain.primitive.ConstantPoolTag
 
-sealed interface ApiConstant {
-    data class Constant(val index: UShort, val tagId: UByte, val tagName: String, val parts: List<ApiConstant>) :
-        ApiConstant
+sealed interface JvmConstant {
+    data class Constant(val index: UShort, val tagId: UByte, val tagName: String, val parts: List<JvmConstant>) :
+        JvmConstant
 
-    data class StringValue(val s: String) : ApiConstant
-    data class IntegerValue(val i: Int) : ApiConstant
-    data class FloatValue(val f: Float) : ApiConstant
-    data class LongValue(val l: Long) : ApiConstant
-    data class DoubleValue(val d: Double) : ApiConstant
-    data class ReferenceKindValue(val id: UByte, val name: String) : ApiConstant
-    data class IndexValue(val index: UShort) : ApiConstant
+    data class StringValue(val s: String) : JvmConstant
+    data class IntegerValue(val i: Int) : JvmConstant
+    data class FloatValue(val f: Float) : JvmConstant
+    data class LongValue(val l: Long) : JvmConstant
+    data class DoubleValue(val d: Double) : JvmConstant
+    data class ReferenceKindValue(val id: UByte, val name: String) : JvmConstant
+    data class IndexValue(val index: UShort) : JvmConstant
     companion object {
         fun utf8ToString(constant: Constant): String {
             require(constant.tagName == ConstantPoolTag.UTF8.name)

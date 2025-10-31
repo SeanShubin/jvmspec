@@ -2,14 +2,14 @@ package com.seanshubin.jvmspec.domain.operations
 
 import com.seanshubin.jvmspec.domain.aggregation.AggregateData
 import com.seanshubin.jvmspec.domain.aggregation.AggregatorImpl
-import com.seanshubin.jvmspec.domain.api.ApiRef
-import com.seanshubin.jvmspec.domain.apiimpl.ApiClassImpl
 import com.seanshubin.jvmspec.domain.command.Command
 import com.seanshubin.jvmspec.domain.command.CreateDirectories
 import com.seanshubin.jvmspec.domain.data.ClassFile
 import com.seanshubin.jvmspec.domain.data.OriginClassFile
 import com.seanshubin.jvmspec.domain.files.FilesContract
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
+import com.seanshubin.jvmspec.domain.jvm.JvmRef
+import com.seanshubin.jvmspec.domain.jvmimpl.JvmClassImpl
 import com.seanshubin.jvmspec.domain.util.MatchEnum
 import com.seanshubin.jvmspec.domain.util.RegexUtil
 import java.io.DataInputStream
@@ -42,7 +42,7 @@ class ReportGenerator(
                 result == MatchEnum.WHITELIST_ONLY
             }
             val acceptMethodKey = RegexUtil.createMatchFunctionFromList(methodWhitelist, methodBlacklist)
-            val acceptMethod = { method: ApiRef ->
+            val acceptMethod = { method: JvmRef ->
                 acceptMethodKey(method.methodId())
             }
             val acceptClass = RegexUtil.createMatchFunctionFromList(classWhitelist, classBlacklist)
@@ -107,9 +107,9 @@ class ReportGenerator(
             val origin = OriginClassFile(inputFile)
             ClassFile.fromDataInput(origin, input)
         }
-        val apiClass = ApiClassImpl(javaFile)
+        val jvmClass = JvmClassImpl(javaFile)
         events.executeCommand(CreateDirectories(outputDir))
-        report.reportCommands(fileName, outputDir, apiClass).forEach { command ->
+        report.reportCommands(fileName, outputDir, jvmClass).forEach { command ->
             events.executeCommand(command)
         }
     }

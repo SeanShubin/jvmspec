@@ -1,15 +1,15 @@
-package com.seanshubin.jvmspec.domain.apiimpl
+package com.seanshubin.jvmspec.domain.jvmimpl
 
-import com.seanshubin.jvmspec.domain.api.*
 import com.seanshubin.jvmspec.domain.data.AttributeCodeInfo
+import com.seanshubin.jvmspec.domain.jvm.*
 
-class ApiCodeAttributeImpl(
-    private val apiClass: ApiClass,
+class JvmCodeAttributeImpl(
+    private val jvmClass: JvmClass,
     private val attributeCodeInfo: AttributeCodeInfo
-) : ApiCodeAttribute {
+) : JvmCodeAttribute {
     override fun name(): String {
         val nameIndex = attributeCodeInfo.attributeIndex
-        val name = apiClass.lookupUtf8(nameIndex)
+        val name = jvmClass.lookupUtf8(nameIndex)
         return name
     }
 
@@ -25,15 +25,15 @@ class ApiCodeAttributeImpl(
         return attributeCodeInfo.instructions.map { it.instruction.opcode.name.lowercase() }
     }
 
-    override fun instructions(): List<ApiInstruction> {
+    override fun instructions(): List<JvmInstruction> {
         return attributeCodeInfo.instructions.map {
-            ApiInstructionImpl(apiClass, it)
+            JvmInstructionImpl(jvmClass, it)
         }
     }
 
-    override fun exceptionTable(): List<ApiExceptionTable> {
+    override fun exceptionTable(): List<JvmExceptionTable> {
         return attributeCodeInfo.exceptionTable.map {
-            ApiExceptionTable(
+            JvmExceptionTable(
                 it.startProgramCounter,
                 it.endProgramCounter,
                 it.handlerProgramCounter,
@@ -42,9 +42,9 @@ class ApiCodeAttributeImpl(
         }
     }
 
-    override fun attributes(): List<ApiAttribute> {
+    override fun attributes(): List<JvmAttribute> {
         return attributeCodeInfo.attributes.map {
-            ApiAttributeImpl(apiClass, it)
+            JvmAttributeImpl(jvmClass, it)
         }
     }
 }

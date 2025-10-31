@@ -1,7 +1,7 @@
-package com.seanshubin.jvmspec.domain.apiimpl
+package com.seanshubin.jvmspec.domain.jvmimpl
 
-import com.seanshubin.jvmspec.domain.api.Signature
-import com.seanshubin.jvmspec.domain.api.SignatureType
+import com.seanshubin.jvmspec.domain.jvm.Signature
+import com.seanshubin.jvmspec.domain.jvm.SignatureType
 
 interface DescriptorParser {
     fun parseCharacter(c: Char): DescriptorParser

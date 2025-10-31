@@ -1,41 +1,41 @@
 package com.seanshubin.jvmspec.domain.format
 
-import com.seanshubin.jvmspec.domain.api.*
+import com.seanshubin.jvmspec.domain.jvm.*
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 import com.seanshubin.jvmspec.domain.tree.Tree
 import java.util.*
 
 class JvmSpecFormatDetailed : JvmSpecFormat {
-    override fun classTreeList(apiClass: ApiClass): List<Tree> {
+    override fun classTreeList(jvmClass: JvmClass): List<Tree> {
         return listOf(
-            Tree("origin: ${apiClass.origin}"),
-            Tree("magic: ${hexUpper(apiClass.magic)}"),
-            Tree("minor version: ${apiClass.minorVersion}"),
-            Tree("major version: ${apiClass.majorVersion}"),
-            accessFlagsTree(apiClass.accessFlags),
-            Tree("this_class: ${apiClass.thisClassName}"),
-            Tree("super_class: ${apiClass.superClassName}"),
-            constantsTree(apiClass.constants),
-            interfacesTree(apiClass.interfaces()),
-            fieldsTree(apiClass.fields()),
-            methodsTree(apiClass.methods()),
-            attributesTree(apiClass.attributes())
+            Tree("origin: ${jvmClass.origin}"),
+            Tree("magic: ${hexUpper(jvmClass.magic)}"),
+            Tree("minor version: ${jvmClass.minorVersion}"),
+            Tree("major version: ${jvmClass.majorVersion}"),
+            accessFlagsTree(jvmClass.accessFlags),
+            Tree("this_class: ${jvmClass.thisClassName}"),
+            Tree("super_class: ${jvmClass.superClassName}"),
+            constantsTree(jvmClass.constants),
+            interfacesTree(jvmClass.interfaces()),
+            fieldsTree(jvmClass.fields()),
+            methodsTree(jvmClass.methods()),
+            attributesTree(jvmClass.attributes())
         )
     }
 
-    private fun methodsTree(methods: List<ApiMethod>): Tree {
+    private fun methodsTree(methods: List<JvmMethod>): Tree {
         val children = methods.mapIndexed { index, method -> fieldOrMethodTree("method", index, method) }
         val parent = Tree("methods(${children.size})", children)
         return parent
     }
 
-    private fun fieldsTree(methods: List<ApiField>): Tree {
+    private fun fieldsTree(methods: List<JvmField>): Tree {
         val children = methods.mapIndexed { index, field -> fieldOrMethodTree("field", index, field) }
         val parent = Tree("fields(${children.size})", children)
         return parent
     }
 
-    private fun interfacesTree(interfaces: List<ApiConstant.Constant>): Tree {
+    private fun interfacesTree(interfaces: List<JvmConstant.Constant>): Tree {
         val children = interfaces.map { constant ->
             constantTree(constant)
         }
@@ -49,7 +49,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         return accessFlagTree
     }
 
-    private fun constantsTree(constants: SortedMap<UShort, ApiConstant.Constant>): Tree {
+    private fun constantsTree(constants: SortedMap<UShort, JvmConstant.Constant>): Tree {
         val children = constants.map { (index, constant) ->
             constantTree(constant)
         }
@@ -57,25 +57,25 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         return parent
     }
 
-    private fun constantTree(constant: ApiConstant): Tree {
+    private fun constantTree(constant: JvmConstant): Tree {
         return when (constant) {
-            is ApiConstant.Constant -> {
+            is JvmConstant.Constant -> {
                 val parent = "[${constant.index}] ${constant.tagName}(${constant.tagId})"
                 val children = constant.parts.map { part -> constantTree(part) }
                 Tree(parent, children)
             }
 
-            is ApiConstant.StringValue -> Tree(constant.s.toSanitizedString())
-            is ApiConstant.IntegerValue -> Tree("${constant.i}")
-            is ApiConstant.FloatValue -> Tree("${constant.f}")
-            is ApiConstant.LongValue -> Tree("${constant.l}")
-            is ApiConstant.DoubleValue -> Tree("${constant.d}")
-            is ApiConstant.ReferenceKindValue -> Tree("${constant.name}(${constant.id})")
-            is ApiConstant.IndexValue -> Tree("${constant.index}")
+            is JvmConstant.StringValue -> Tree(constant.s.toSanitizedString())
+            is JvmConstant.IntegerValue -> Tree("${constant.i}")
+            is JvmConstant.FloatValue -> Tree("${constant.f}")
+            is JvmConstant.LongValue -> Tree("${constant.l}")
+            is JvmConstant.DoubleValue -> Tree("${constant.d}")
+            is JvmConstant.ReferenceKindValue -> Tree("${constant.name}(${constant.id})")
+            is JvmConstant.IndexValue -> Tree("${constant.index}")
         }
     }
 
-    private fun fieldOrMethodTree(caption: String, index: Int, fieldOrMethod: ApiFieldOrMethod): Tree {
+    private fun fieldOrMethodTree(caption: String, index: Int, fieldOrMethod: JvmFieldOrMethod): Tree {
         val formattedSignature = formatSignature(
             fieldOrMethod.className().replace("/", "."),
             fieldOrMethod.name(),
@@ -90,13 +90,13 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         return parent
     }
 
-    private fun attributesTree(attributes: List<ApiAttribute>): Tree {
+    private fun attributesTree(attributes: List<JvmAttribute>): Tree {
         val children = attributes.mapIndexed { index, attribute -> attributeTree(index, attribute) }
         val parent = Tree("attributes(${children.size})", children)
         return parent
     }
 
-    private fun attributeTree(index: Int, attribute: ApiAttribute): Tree {
+    private fun attributeTree(index: Int, attribute: JvmAttribute): Tree {
         val bytesNode = listOf(
             Tree(attribute.bytes().toHexString()),
             Tree(attribute.bytes().toSanitizedString())
@@ -105,7 +105,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
             Tree("name: ${attribute.name()}"),
             Tree("bytes(${attribute.bytes().size})", bytesNode),
         )
-        val codeList = if (attribute is ApiCodeAttribute) {
+        val codeList = if (attribute is JvmCodeAttribute) {
             listOf(codeTree(attribute))
         } else {
             emptyList()
@@ -113,7 +113,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         return Tree("attribute[$index]", children + codeList)
     }
 
-    private fun codeTree(codeAttribute: ApiCodeAttribute): Tree {
+    private fun codeTree(codeAttribute: JvmCodeAttribute): Tree {
         val instructionsChildren = codeAttribute.instructions().map { instruction ->
             instructionTree(instruction)
         }
@@ -123,7 +123,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         return Tree("code", listOf(instructionsTree, exceptionTableTree, attributesTree))
     }
 
-    private fun exceptionTableListTree(exceptions: List<ApiExceptionTable>): Tree {
+    private fun exceptionTableListTree(exceptions: List<JvmExceptionTable>): Tree {
         val children = exceptions.map { exception ->
             exceptionTableTree(exception)
         }
@@ -131,7 +131,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         return parent
     }
 
-    private fun exceptionTableTree(exception: ApiExceptionTable): Tree {
+    private fun exceptionTableTree(exception: JvmExceptionTable): Tree {
         exception.let {
             val children = listOf(
                 Tree("start_pc: ${it.startProgramCounter}"),
@@ -143,33 +143,33 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         }
     }
 
-    override fun instructionTree(apiInstruction: ApiInstruction): Tree {
-        val argsTreeList = argsTreeList(apiInstruction.args())
-        val name = apiInstruction.name()
-        val code = apiInstruction.code()
+    override fun instructionTree(jvmInstruction: JvmInstruction): Tree {
+        val argsTreeList = argsTreeList(jvmInstruction.args())
+        val name = jvmInstruction.name()
+        val code = jvmInstruction.code()
         val parent = Tree("$name(0x${code.toHexString().uppercase()})", argsTreeList)
         return parent
     }
 
-    private fun argsTreeList(argList: List<ApiArgument>): List<Tree> {
+    private fun argsTreeList(argList: List<JvmArgument>): List<Tree> {
         return argList.map(::argsTree)
     }
 
-    private fun argsTree(arg: ApiArgument): Tree {
+    private fun argsTree(arg: JvmArgument): Tree {
         return when (arg) {
-            is ApiArgument.Constant -> {
+            is JvmArgument.Constant -> {
                 constantTree(arg.value)
             }
 
-            is ApiArgument.IntValue -> {
+            is JvmArgument.IntValue -> {
                 Tree(arg.value.toString())
             }
 
-            is ApiArgument.ArrayTypeValue -> {
+            is JvmArgument.ArrayTypeValue -> {
                 Tree("${arg.value.name}(${arg.value.code})")
             }
 
-            is ApiArgument.LookupSwitch -> {
+            is JvmArgument.LookupSwitch -> {
                 val default = Tree(arg.default.toString())
                 val pairs = arg.lookup.map { (match, offset) ->
                     Tree("$match:$offset")
@@ -178,7 +178,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
                 Tree("switch", children)
             }
 
-            is ApiArgument.TableSwitch -> {
+            is JvmArgument.TableSwitch -> {
                 val defaultTree = Tree("default", listOf(Tree(arg.default.toString())))
                 val lowTree = Tree("low", listOf(Tree(arg.low.toString())))
                 val highTree = Tree("high", listOf(Tree(arg.high.toString())))
@@ -188,7 +188,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
                 Tree("switch", children)
             }
 
-            is ApiArgument.OpCodeValue -> {
+            is JvmArgument.OpCodeValue -> {
                 return Tree("${arg.name}(${arg.code.toHexString().uppercase()})")
             }
         }

@@ -1,16 +1,16 @@
-package com.seanshubin.jvmspec.domain.apiimpl
+package com.seanshubin.jvmspec.domain.jvmimpl
 
-import com.seanshubin.jvmspec.domain.api.ApiAttribute
-import com.seanshubin.jvmspec.domain.api.ApiClass
 import com.seanshubin.jvmspec.domain.data.AttributeInfo
+import com.seanshubin.jvmspec.domain.jvm.JvmAttribute
+import com.seanshubin.jvmspec.domain.jvm.JvmClass
 
-class ApiAttributeImpl(
-    private val apiClass: ApiClass,
+class JvmAttributeImpl(
+    private val jvmClass: JvmClass,
     private val attributeInfo: AttributeInfo
-) : ApiAttribute {
+) : JvmAttribute {
     override fun name(): String {
         val nameIndex = attributeInfo.attributeIndex
-        return apiClass.lookupUtf8(nameIndex)
+        return jvmClass.lookupUtf8(nameIndex)
     }
 
     override fun bytes(): List<Byte> {

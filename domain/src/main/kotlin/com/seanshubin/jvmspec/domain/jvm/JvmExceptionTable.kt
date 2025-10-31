@@ -1,6 +1,6 @@
-package com.seanshubin.jvmspec.domain.api
+package com.seanshubin.jvmspec.domain.jvm
 
-data class ApiExceptionTable(
+data class JvmExceptionTable(
     val startProgramCounter: UShort,
     val endProgramCounter: UShort,
     val handlerProgramCounter: UShort,
