@@ -32,7 +32,7 @@ object PrototypeApp {
                 println("no code for $javaSignature")
             } else {
                 val complexity = code.complexity()
-                val opcodes = code.opcodes()
+                val opcodes = code.instructions().map { it.name() }
                 val categories = categoriesFor(methodName, opcodes)
                 val opcodeList = opcodes.joinToString(",", "(", ")")
                 println(javaSignature)

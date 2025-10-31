@@ -35,7 +35,7 @@ class MethodReport(
             } else {
                 val cyclomaticComplexity = code.complexity()
                 aggregator.cyclomaticComplexity(method, cyclomaticComplexity)
-                val categories = categoriesFor(method, code.opcodes())
+                val categories = categoriesFor(method, code.instructions().map { it.name().lowercase() })
                 lines.add("categories=$categories complexity=$cyclomaticComplexity $javaFormat")
                 aggregator.methodCategories(method, categories)
                 code.instructions().forEach { instruction ->

@@ -21,10 +21,6 @@ class JvmCodeAttributeImpl(
         return attributeCodeInfo.instructions.sumOf { it.instruction.cyclomaticComplexity() }
     }
 
-    override fun opcodes(): List<String> {
-        return attributeCodeInfo.instructions.map { it.instruction.opcode.name.lowercase() }
-    }
-
     override fun instructions(): List<JvmInstruction> {
         return attributeCodeInfo.instructions.map {
             JvmInstructionImpl(jvmClass, it)
