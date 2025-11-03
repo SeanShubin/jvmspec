@@ -34,8 +34,7 @@ object JvmConstantFactory {
         val value = JvmConstant.StringValue(constantInfo.utf8Value)
         return JvmConstant.Constant(
             constantInfo.index,
-            constantInfo.tag.id,
-            constantInfo.tag.name,
+            constantInfo.tag,
             listOf(value)
         )
     }
@@ -47,8 +46,7 @@ object JvmConstantFactory {
         val name = createUtf8(constantPoolMap, nameConstantInfo)
         return JvmConstant.Constant(
             classConstantInfo.index,
-            classConstantInfo.tag.id,
-            classConstantInfo.tag.name,
+            classConstantInfo.tag,
             listOf(name)
         )
     }
@@ -66,8 +64,7 @@ object JvmConstantFactory {
         val descriptor = createUtf8(constantPoolMap, descriptorConstantInfo)
         return JvmConstant.Constant(
             nameAndTypeInfo.index,
-            nameAndTypeInfo.tag.id,
-            nameAndTypeInfo.tag.name,
+            nameAndTypeInfo.tag,
             listOf(name, descriptor)
         )
     }
@@ -82,8 +79,7 @@ object JvmConstantFactory {
         val nameAndType = createNameAndType(constantPoolMap, nameAndTypeInfo)
         return JvmConstant.Constant(
             refInfo.index,
-            refInfo.tag.id,
-            refInfo.tag.name,
+            refInfo.tag,
             listOf(className, nameAndType)
         )
     }
@@ -95,8 +91,7 @@ object JvmConstantFactory {
         val string = createUtf8(constantPoolMap, stringConstantInfo)
         return JvmConstant.Constant(
             stringInfo.index,
-            stringInfo.tag.id,
-            stringInfo.tag.name,
+            stringInfo.tag,
             listOf(string)
         )
     }
@@ -106,8 +101,7 @@ object JvmConstantFactory {
         val integerValue = JvmConstant.IntegerValue(integerInfo.intValue)
         return JvmConstant.Constant(
             integerInfo.index,
-            integerInfo.tag.id,
-            integerInfo.tag.name,
+            integerInfo.tag,
             listOf(integerValue)
         )
     }
@@ -124,8 +118,7 @@ object JvmConstantFactory {
         val ref = createRef(constantPoolMap, refConstantInfo)
         return JvmConstant.Constant(
             methodHandleInfo.index,
-            methodHandleInfo.tag.id,
-            methodHandleInfo.tag.name,
+            methodHandleInfo.tag,
             listOf(referenceKindValue, ref)
         )
     }
@@ -141,8 +134,7 @@ object JvmConstantFactory {
         val nameAndType = createNameAndType(constantPoolMap, constantPoolMap.getValue(nameAndTypeIndex))
         return JvmConstant.Constant(
             invokeDynamicInfo.index,
-            invokeDynamicInfo.tag.id,
-            invokeDynamicInfo.tag.name,
+            invokeDynamicInfo.tag,
             listOf(bootstrapMethodAttr, nameAndType)
         )
     }
@@ -152,8 +144,7 @@ object JvmConstantFactory {
         val longValue = JvmConstant.LongValue(longInfo.longValue)
         return JvmConstant.Constant(
             longInfo.index,
-            longInfo.tag.id,
-            longInfo.tag.name,
+            longInfo.tag,
             listOf(longValue)
         )
     }
@@ -168,8 +159,7 @@ object JvmConstantFactory {
         val descriptor = createUtf8(constantPoolMap, descriptorConstantInfo)
         return JvmConstant.Constant(
             methodTypeInfo.index,
-            methodTypeInfo.tag.id,
-            methodTypeInfo.tag.name,
+            methodTypeInfo.tag,
             listOf(descriptor)
         )
     }
@@ -181,8 +171,7 @@ object JvmConstantFactory {
         val name = createUtf8(constantPoolMap, nameConstantInfo)
         return JvmConstant.Constant(
             moduleInfo.index,
-            moduleInfo.tag.id,
-            moduleInfo.tag.name,
+            moduleInfo.tag,
             listOf(name)
         )
     }
@@ -194,8 +183,7 @@ object JvmConstantFactory {
         val name = createUtf8(constantPoolMap, nameConstantInfo)
         return JvmConstant.Constant(
             packageInfo.index,
-            packageInfo.tag.id,
-            packageInfo.tag.name,
+            packageInfo.tag,
             listOf(name)
         )
     }
@@ -205,8 +193,7 @@ object JvmConstantFactory {
         val doubleValue = JvmConstant.DoubleValue(doubleInfo.doubleValue)
         return JvmConstant.Constant(
             doubleInfo.index,
-            doubleInfo.tag.id,
-            doubleInfo.tag.name,
+            doubleInfo.tag,
             listOf(doubleValue)
         )
     }
@@ -216,8 +203,7 @@ object JvmConstantFactory {
         val floatValue = JvmConstant.FloatValue(floatInfo.floatValue)
         return JvmConstant.Constant(
             floatInfo.index,
-            floatInfo.tag.id,
-            floatInfo.tag.name,
+            floatInfo.tag,
             listOf(floatValue)
         )
     }

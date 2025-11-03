@@ -2,6 +2,7 @@ package com.seanshubin.jvmspec.domain.format
 
 import com.seanshubin.jvmspec.domain.jvm.*
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
+import com.seanshubin.jvmspec.domain.primitive.ConstantPoolTag
 import com.seanshubin.jvmspec.domain.tree.Tree
 import java.util.*
 
@@ -60,7 +61,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     private fun constantTree(constant: JvmConstant): Tree {
         return when (constant) {
             is JvmConstant.Constant -> {
-                val parent = "[${constant.index.formatDecimalHex()}] ${constant.tagName}(${constant.tagId})"
+                val parent = "[${constant.index.formatDecimalHex()}] ${constant.tag.formatNameId()}"
                 val children = constant.parts.map { part -> constantTree(part) }
                 Tree(parent, children)
             }
@@ -231,5 +232,8 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         val decimal = this.toInt()
         val hex = Integer.toHexString(decimal).uppercase()
         return "$decimal(0x$hex)"
+    }
+    private fun ConstantPoolTag.formatNameId(): String {
+        return "${name}_$id"
     }
 }
