@@ -21,6 +21,10 @@ data class JvmInstructionImpl(
         return opcode.ubyte
     }
 
+    override fun bytes(): List<Byte> {
+        return instructionAndBytes.bytes
+    }
+
     override fun args(): List<JvmArgument> {
         return when (operandType) {
             OperandType.NONE -> emptyList()

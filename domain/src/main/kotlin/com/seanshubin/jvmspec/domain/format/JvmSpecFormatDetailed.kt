@@ -147,7 +147,10 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         val argsTreeList = argsTreeList(jvmInstruction.args())
         val name = jvmInstruction.name()
         val code = jvmInstruction.code()
-        val parent = Tree("$name(0x${code.toHexString().uppercase()})", argsTreeList)
+        val bytes = jvmInstruction.bytes()
+        val bytesAsHex = bytes.toHexString()
+        val children = listOf(Tree(bytesAsHex)) + argsTreeList
+        val parent = Tree("$name(0x${code.toHexString().uppercase()})", children)
         return parent
     }
 
@@ -170,11 +173,12 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
             }
 
             is JvmArgument.LookupSwitch -> {
-                val default = Tree(arg.default.toString())
+                val default = Tree("default: ${arg.default.toString()}")
                 val pairs = arg.lookup.map { (match, offset) ->
                     Tree("$match:$offset")
                 }
-                val children = listOf(default) + pairs
+                val pairsTree = Tree("pairs(${pairs.size})", pairs)
+                val children = listOf(default) + pairsTree
                 Tree("switch", children)
             }
 
