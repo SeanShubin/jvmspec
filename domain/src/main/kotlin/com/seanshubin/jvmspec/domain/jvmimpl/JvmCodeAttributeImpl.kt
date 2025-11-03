@@ -5,8 +5,11 @@ import com.seanshubin.jvmspec.domain.jvm.*
 
 class JvmCodeAttributeImpl(
     private val jvmClass: JvmClass,
-    private val attributeCodeInfo: AttributeCodeInfo
+    private val attributeCodeInfo: AttributeCodeInfo,
 ) : JvmCodeAttribute {
+    override val maxStack: UShort = attributeCodeInfo.maxStack
+    override val maxLocals: UShort = attributeCodeInfo.maxLocals
+    override val codeLength: Int = attributeCodeInfo.codeLength
     override fun name(): String {
         val nameIndex = attributeCodeInfo.attributeIndex
         val name = jvmClass.lookupUtf8(nameIndex)

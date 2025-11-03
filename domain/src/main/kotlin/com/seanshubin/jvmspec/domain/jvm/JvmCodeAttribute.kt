@@ -5,4 +5,7 @@ interface JvmCodeAttribute : JvmAttribute {
     fun instructions(): List<JvmInstruction>
     fun exceptionTable(): List<JvmExceptionTable>
     fun attributes(): List<JvmAttribute>
+    val maxStack: UShort
+    val maxLocals: UShort
+    val codeLength: Int
 }

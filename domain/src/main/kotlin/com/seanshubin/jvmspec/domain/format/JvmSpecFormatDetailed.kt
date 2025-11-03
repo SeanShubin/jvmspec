@@ -118,10 +118,18 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         val instructionsChildren = codeAttribute.instructions().map { instruction ->
             instructionTree(instruction)
         }
+        val maxStackTree = Tree("maxStack: ${codeAttribute.maxStack.formatDecimalHex()}")
+        val maxLocalsTree = Tree("maxLocals: ${codeAttribute.maxLocals.formatDecimalHex()}")
+        val codeLengthTree = Tree("codeLength: ${codeAttribute.codeLength.formatDecimalHex()}")
         val attributesTree = attributesTree(codeAttribute.attributes())
         val instructionsTree = Tree("instructions(${instructionsChildren.size})", instructionsChildren)
         val exceptionTableTree = exceptionTableListTree(codeAttribute.exceptionTable())
-        return Tree("code", listOf(instructionsTree, exceptionTableTree, attributesTree))
+        return Tree(
+            "code", listOf(
+                maxStackTree, maxLocalsTree, codeLengthTree,
+                instructionsTree, exceptionTableTree, attributesTree
+            )
+        )
     }
 
     private fun exceptionTableListTree(exceptions: List<JvmExceptionTable>): Tree {
@@ -230,6 +238,11 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     private fun Byte.toHex(): String = String.format("%02X", this)
     private fun UShort.formatDecimalHex(): String {
         val decimal = this.toInt()
+        val hex = Integer.toHexString(decimal).uppercase()
+        return "$decimal(0x$hex)"
+    }
+    private fun Int.formatDecimalHex(): String {
+        val decimal = this
         val hex = Integer.toHexString(decimal).uppercase()
         return "$decimal(0x$hex)"
     }
