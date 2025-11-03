@@ -60,7 +60,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     private fun constantTree(constant: JvmConstant): Tree {
         return when (constant) {
             is JvmConstant.Constant -> {
-                val parent = "[${constant.index}] ${constant.tagName}(${constant.tagId})"
+                val parent = "[${constant.index.formatDecimalHex()}] ${constant.tagName}(${constant.tagId})"
                 val children = constant.parts.map { part -> constantTree(part) }
                 Tree(parent, children)
             }
@@ -227,5 +227,9 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
 
     private fun List<Byte>.toHexString(): String = this.joinToString("", "0x") { it.toHex() }
     private fun Byte.toHex(): String = String.format("%02X", this)
-
+    private fun UShort.formatDecimalHex(): String {
+        val decimal = this.toInt()
+        val hex = Integer.toHexString(decimal).uppercase()
+        return "$decimal(0x$hex)"
+    }
 }
