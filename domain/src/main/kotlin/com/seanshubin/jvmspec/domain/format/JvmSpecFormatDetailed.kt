@@ -238,12 +238,12 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     private fun Byte.toHex(): String = String.format("%02X", this)
     private fun UShort.formatDecimalHex(): String {
         val decimal = this.toInt()
-        val hex = Integer.toHexString(decimal).uppercase()
+        val hex = String.format("%04X", decimal)
         return "$decimal(0x$hex)"
     }
     private fun Int.formatDecimalHex(): String {
         val decimal = this
-        val hex = Integer.toHexString(decimal).uppercase()
+        val hex = String.format("%08X", decimal)
         return "$decimal(0x$hex)"
     }
     private fun ConstantPoolTag.formatNameId(): String {
