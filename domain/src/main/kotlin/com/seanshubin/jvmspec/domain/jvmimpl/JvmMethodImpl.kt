@@ -3,10 +3,7 @@ package com.seanshubin.jvmspec.domain.jvmimpl
 import com.seanshubin.jvmspec.domain.data.AttributeCodeInfo
 import com.seanshubin.jvmspec.domain.data.MethodInfo
 import com.seanshubin.jvmspec.domain.descriptor.Signature
-import com.seanshubin.jvmspec.domain.jvm.JvmAttribute
-import com.seanshubin.jvmspec.domain.jvm.JvmClass
-import com.seanshubin.jvmspec.domain.jvm.JvmCodeAttribute
-import com.seanshubin.jvmspec.domain.jvm.JvmMethod
+import com.seanshubin.jvmspec.domain.jvm.*
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 
 class JvmMethodImpl(
@@ -56,6 +53,10 @@ class JvmMethodImpl(
         } else {
             throw RuntimeException("Zero or one Code attributes expected, got ${codeAttributes.size}")
         }
+    }
+
+    override fun instructions(): List<JvmInstruction> {
+        return code()?.instructions() ?: emptyList()
     }
 
     override fun complexity(): Int {

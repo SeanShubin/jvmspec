@@ -5,4 +5,6 @@ interface JvmMethod : JvmFieldOrMethod {
     fun complexity(): Int
 
     fun javaSignature(): String
+
+    fun instructions(): List<JvmInstruction>
 }

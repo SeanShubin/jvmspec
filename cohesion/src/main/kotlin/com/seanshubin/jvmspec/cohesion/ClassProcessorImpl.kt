@@ -24,8 +24,10 @@ class ClassProcessorImpl(
             "Complexity: $complexity"
         )
         val methodHeader = listOf("Methods(${jvmClass.methods().size}):")
-        val methodLines = jvmClass.methods().mapIndexed { index, method ->
-            "  [$index]: complexity(${method.complexity()}) ${method.javaSignature()}"
+        val methodLines = jvmClass.methods().flatMapIndexed { index, method ->
+            val instructions = method.instructions()
+            val instructionNames = instructions.map { instruction -> "    " + instruction.name() }
+            listOf("  [$index]: complexity(${method.complexity()}) ${method.javaSignature()}") + instructionNames
         }
         val lines = summaryLines + methodHeader + methodLines
         return lines
