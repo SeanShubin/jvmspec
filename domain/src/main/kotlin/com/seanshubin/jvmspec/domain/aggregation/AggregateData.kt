@@ -2,6 +2,7 @@ package com.seanshubin.jvmspec.domain.aggregation
 
 import com.seanshubin.jvmspec.domain.jvm.JvmClass
 import com.seanshubin.jvmspec.domain.jvm.JvmMethod
+import com.seanshubin.jvmspec.domain.jvm.JvmOrigin
 import com.seanshubin.jvmspec.domain.jvm.JvmRef
 import com.seanshubin.jvmspec.domain.util.FilterResult
 
@@ -11,16 +12,16 @@ data class AggregateData(
     val acceptClass: (String) -> FilterResult,
     val methods: Map<FilterResult, Set<JvmRef>>,
     val classes: Map<FilterResult, Set<String>>,
-    val mapClassNameOriginIds: Map<String, List<String>>
+    val mapClassNameOrigins: Map<String, List<JvmOrigin>>
 ) {
     fun classFile(classFile: JvmClass): AggregateData {
         val originId = classFile.origin
         val className = classFile.thisClassName
-        val oldOriginIds = mapClassNameOriginIds[className] ?: emptyList()
+        val oldOriginIds = mapClassNameOrigins[className] ?: emptyList()
         if (oldOriginIds.contains(originId)) throw RuntimeException("Duplicate origin $originId for $className")
         val newOriginIds = oldOriginIds + originId
-        val newMapClassNameOriginIds = mapClassNameOriginIds + (className to newOriginIds)
-        return copy(mapClassNameOriginIds = newMapClassNameOriginIds)
+        val newMapClassNameOriginIds = mapClassNameOrigins + (className to newOriginIds)
+        return copy(mapClassNameOrigins = newMapClassNameOriginIds)
     }
 
     fun invokeStatic(
@@ -105,9 +106,9 @@ data class AggregateData(
     }
 
     fun summaryOrigin(): List<String> {
-        val classNames = mapClassNameOriginIds.keys.sorted()
+        val classNames = mapClassNameOrigins.keys.sorted()
         return classNames.flatMap { className ->
-            val originIds = mapClassNameOriginIds.getValue(className)
+            val originIds = mapClassNameOrigins.getValue(className)
             val originIdCount = originIds.size
             val classNameLine = "[$originIdCount] $className"
             val originIdLines = originIds.map { originId ->

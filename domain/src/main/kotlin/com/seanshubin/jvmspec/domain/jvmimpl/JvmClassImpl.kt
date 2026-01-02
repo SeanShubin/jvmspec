@@ -1,6 +1,7 @@
 package com.seanshubin.jvmspec.domain.jvmimpl
 
 import com.seanshubin.jvmspec.domain.data.ClassFile
+import com.seanshubin.jvmspec.domain.data.Origin.OriginClassFile
 import com.seanshubin.jvmspec.domain.jvm.*
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 import java.util.*
@@ -10,7 +11,9 @@ class JvmClassImpl(private val classFile: ClassFile) : JvmClass {
         it.index to JvmConstantFactory.createByIndex(classFile.constantPoolMap, it.index)
     }.toSortedMap()
 
-    override val origin: String = classFile.origin.id
+    override val origin: JvmOrigin = when (classFile.origin){
+        is OriginClassFile -> JvmOriginClass(classFile.origin.path)
+    }
     override val magic: Int = classFile.magic.toInt()
     override val minorVersion: Int = classFile.minorVersion.toInt()
     override val majorVersion: Int = classFile.majorVersion.toInt()

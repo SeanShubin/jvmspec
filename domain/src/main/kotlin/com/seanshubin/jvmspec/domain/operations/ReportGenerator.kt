@@ -5,7 +5,7 @@ import com.seanshubin.jvmspec.domain.aggregation.AggregatorImpl
 import com.seanshubin.jvmspec.domain.command.Command
 import com.seanshubin.jvmspec.domain.command.CreateDirectories
 import com.seanshubin.jvmspec.domain.data.ClassFile
-import com.seanshubin.jvmspec.domain.data.OriginClassFile
+import com.seanshubin.jvmspec.domain.data.Origin.OriginClassFile
 import com.seanshubin.jvmspec.domain.files.FilesContract
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
 import com.seanshubin.jvmspec.domain.jvm.JvmRef

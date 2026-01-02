@@ -6,7 +6,7 @@ import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 import java.util.*
 
 interface JvmClass {
-    val origin: String
+    val origin: JvmOrigin
     val magic: Int
     val minorVersion: Int
     val majorVersion: Int

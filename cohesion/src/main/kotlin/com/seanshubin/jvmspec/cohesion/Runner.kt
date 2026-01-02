@@ -1,7 +1,7 @@
 package com.seanshubin.jvmspec.cohesion
 
 import com.seanshubin.jvmspec.domain.converter.toJvmClass
-import com.seanshubin.jvmspec.domain.data.OriginClassFile
+import com.seanshubin.jvmspec.domain.data.Origin.OriginClassFile
 import com.seanshubin.jvmspec.domain.files.FilesContract
 
 class Runner(

@@ -1,7 +1,7 @@
 package com.seanshubin.jvmspec.domain.operations
 
 import com.seanshubin.jvmspec.domain.data.ClassFile
-import com.seanshubin.jvmspec.domain.data.OriginClassFile
+import com.seanshubin.jvmspec.domain.data.Origin.OriginClassFile
 import com.seanshubin.jvmspec.domain.jvm.JvmClass
 import com.seanshubin.jvmspec.domain.jvmimpl.JvmClassImpl
 import java.io.DataInputStream

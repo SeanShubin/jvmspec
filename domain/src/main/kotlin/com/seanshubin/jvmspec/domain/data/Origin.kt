@@ -1,5 +1,7 @@
 package com.seanshubin.jvmspec.domain.data
 
-interface Origin {
-    val id: String
+import java.nio.file.Path
+
+sealed interface Origin {
+    data class OriginClassFile(val path: Path) : Origin
 }
