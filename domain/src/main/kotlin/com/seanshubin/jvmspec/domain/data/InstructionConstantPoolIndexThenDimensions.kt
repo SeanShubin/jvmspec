@@ -7,7 +7,7 @@ class InstructionConstantPoolIndexThenDimensions(
     val classIndex: UShort,
     val dimensions: Int
 ) : Instruction {
-    override fun cyclomaticComplexity(): Int = 0
+    override fun complexity(): Int = 0
 
     companion object {
         val OPERAND_TYPE = OperandType.CONSTANT_POOL_INDEX_THEN_DIMENSIONS

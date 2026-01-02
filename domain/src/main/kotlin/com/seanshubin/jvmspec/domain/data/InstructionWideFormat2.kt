@@ -8,7 +8,7 @@ class InstructionWideFormat2(
     val localVariableIndex: UShort,
     val constant: Short
 ) : Instruction {
-    override fun cyclomaticComplexity(): Int = 0
+    override fun complexity(): Int = 0
 
     companion object {
         fun fromDataInput(opCode: OpCode, modifiedOpCode: OpCode, input: DataInput, index: Int): Instruction {

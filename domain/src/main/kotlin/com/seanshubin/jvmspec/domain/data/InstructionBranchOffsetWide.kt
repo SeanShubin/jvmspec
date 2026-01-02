@@ -6,7 +6,7 @@ class InstructionBranchOffsetWide(
     override val opcode: OpCode,
     val offset: Int,
 ) : Instruction {
-    override fun cyclomaticComplexity(): Int = 1
+    override fun complexity(): Int = 1
 
     companion object {
         val OPERAND_TYPE = OperandType.BRANCH_OFFSET_WIDE

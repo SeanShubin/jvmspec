@@ -6,7 +6,7 @@ class InstructionByte(
     override val opcode: OpCode,
     val value: Byte
 ) : Instruction {
-    override fun cyclomaticComplexity(): Int = 0
+    override fun complexity(): Int = 0
 
     companion object {
         val OPERAND_TYPE = OperandType.BYTE

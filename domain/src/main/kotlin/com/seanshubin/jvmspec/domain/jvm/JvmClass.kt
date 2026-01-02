@@ -20,6 +20,9 @@ interface JvmClass {
     fun fields(): List<JvmField>
     fun attributes(): List<JvmAttribute>
 
+    fun complexity(): Int {
+        return methods().sumOf { method -> method.complexity() }
+    }
     fun lookupClassName(classIndex: UShort): String {
         val classConstant = constants.getValue(classIndex) as JvmConstant.Constant
         val utf8Constant = classConstant.parts[0] as JvmConstant.Constant

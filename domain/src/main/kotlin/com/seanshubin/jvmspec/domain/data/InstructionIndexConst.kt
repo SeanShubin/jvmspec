@@ -7,7 +7,7 @@ class InstructionIndexConst(
     val index: Int,
     val const: Byte
 ) : Instruction {
-    override fun cyclomaticComplexity(): Int = 0
+    override fun complexity(): Int = 0
 
     companion object {
         val OPERAND_TYPE = OperandType.INDEX_CONST

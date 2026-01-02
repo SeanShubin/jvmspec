@@ -9,7 +9,7 @@ class InstructionLookupSwitch(
     val nPairs: Int,
     val pairs: List<MatchOffset>,
 ) : Instruction {
-    override fun cyclomaticComplexity(): Int = pairs.size
+    override fun complexity(): Int = pairs.size
 
     companion object {
         val OPERAND_TYPE = OperandType.LOOKUP_SWITCH

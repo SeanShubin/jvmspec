@@ -7,7 +7,7 @@ class InstructionArrayType(
     override val opcode: OpCode,
     val arrayType: ArrayType
 ) : Instruction {
-    override fun cyclomaticComplexity(): Int = 0
+    override fun complexity(): Int = 0
 
     companion object {
         val OPERAND_TYPE = OperandType.ARRAY_TYPE

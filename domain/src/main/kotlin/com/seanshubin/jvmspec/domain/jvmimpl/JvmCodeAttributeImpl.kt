@@ -21,7 +21,7 @@ class JvmCodeAttributeImpl(
     }
 
     override fun complexity(): Int {
-        return attributeCodeInfo.instructions.sumOf { it.instruction.cyclomaticComplexity() }
+        return attributeCodeInfo.instructions.sumOf { it.instruction.complexity() }
     }
 
     override fun instructions(): List<JvmInstruction> {

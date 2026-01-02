@@ -10,7 +10,7 @@ class InstructionTableSwitch(
     val high: Int,
     val jumpOffsets: List<Int>,
 ) : Instruction {
-    override fun cyclomaticComplexity(): Int = jumpOffsets.size
+    override fun complexity(): Int = jumpOffsets.size
 
     companion object {
         val OPERAND_TYPE = OperandType.TABLE_SWITCH

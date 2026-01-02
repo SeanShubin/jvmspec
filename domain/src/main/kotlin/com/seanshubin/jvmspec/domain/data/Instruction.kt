@@ -2,5 +2,5 @@ package com.seanshubin.jvmspec.domain.data
 
 interface Instruction {
     val opcode: OpCode
-    fun cyclomaticComplexity(): Int
+    fun complexity(): Int
 }

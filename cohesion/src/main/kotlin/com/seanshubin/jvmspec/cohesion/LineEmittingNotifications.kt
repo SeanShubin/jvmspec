@@ -7,6 +7,6 @@ class LineEmittingNotifications(
     private val emit: (Any?) -> Unit
 ) : Notifications {
     override fun filterEvent(file: Path, filterResult: FilterResult) {
-        emit("$filterResult $file")
+//        emit("$filterResult $file")
     }
 }
