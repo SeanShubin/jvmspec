@@ -12,7 +12,7 @@ class JvmClassImpl(private val classFile: ClassFile) : JvmClass {
     }.toSortedMap()
 
     override val origin: JvmOrigin = when (classFile.origin){
-        is OriginClassFile -> JvmOriginClass(classFile.origin.path)
+        is OriginClassFile -> JvmOrigin.JvmOriginClass(classFile.origin.path)
     }
     override val magic: Int = classFile.magic.toInt()
     override val minorVersion: Int = classFile.minorVersion.toInt()
