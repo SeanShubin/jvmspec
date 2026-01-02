@@ -5,7 +5,7 @@
     "ancestorDependsOnDescendant" : true,
     "descendantDependsOnAncestor" : true
   },
-  "maximumAllowedErrorCount" : 2,
+  "maximumAllowedErrorCount" : 0,
   "inputDir" : ".",
   "outputDir" : "generated/code-structure",
   "useObservationsCache" : false,
