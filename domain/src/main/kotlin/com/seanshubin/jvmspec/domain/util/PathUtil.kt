@@ -3,13 +3,12 @@ package com.seanshubin.jvmspec.domain.util
 import java.nio.file.Path
 
 object PathUtil {
-    fun Path.replaceExtension(oldExtension: String, newExtension: String): Path {
+    fun Path.removeExtension(expectedExtension: String): String {
         val asString = this.toString()
-        if (!asString.endsWith(".$oldExtension")) {
-            throw IllegalArgumentException("Path does not end with extension '$oldExtension'")
+        if (!asString.endsWith(".$expectedExtension")) {
+            throw IllegalArgumentException("Path does not end with extension '$expectedExtension'")
         }
-        val withoutExtension = asString.dropLast(oldExtension.length + 1)
-        val withNewExtension = "$withoutExtension.$newExtension"
-        return Path.of(withNewExtension)
+        val withoutExtension = asString.dropLast(expectedExtension.length + 1)
+        return withoutExtension
     }
 }
