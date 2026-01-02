@@ -1,6 +1,6 @@
 package com.seanshubin.jvmspec.domain.util
 
-enum class MatchEnum {
+enum class FilterResult {
     UNKNOWN,
     WHITELIST_ONLY,
     BLACKLIST_ONLY,

@@ -39,19 +39,15 @@
       "artifact": "jackson-datatype-jsr310"
     }
   },
-  "versionOverrides": [
-    {
-      "group": "org.jetbrains.kotlin",
-      "artifact": "kotlin-maven-plugin",
-      "version": "2.3.0-Beta2"
-    }
-  ],
   "modules": {
     "domain": [
       "jackson",
       "jackson-time"
     ],
     "console": [
+      "domain"
+    ],
+    "cohesion": [
       "domain"
     ]
   },

@@ -3,14 +3,14 @@ package com.seanshubin.jvmspec.domain.aggregation
 import com.seanshubin.jvmspec.domain.jvm.JvmClass
 import com.seanshubin.jvmspec.domain.jvm.JvmMethod
 import com.seanshubin.jvmspec.domain.jvm.JvmRef
-import com.seanshubin.jvmspec.domain.util.MatchEnum
+import com.seanshubin.jvmspec.domain.util.FilterResult
 
 data class AggregateData(
     val classDataMap: Map<String, ClassData>,
-    val acceptMethod: (JvmRef) -> MatchEnum,
-    val acceptClass: (String) -> MatchEnum,
-    val methods: Map<MatchEnum, Set<JvmRef>>,
-    val classes: Map<MatchEnum, Set<String>>,
+    val acceptMethod: (JvmRef) -> FilterResult,
+    val acceptClass: (String) -> FilterResult,
+    val methods: Map<FilterResult, Set<JvmRef>>,
+    val classes: Map<FilterResult, Set<String>>,
     val mapClassNameOriginIds: Map<String, List<String>>
 ) {
     fun classFile(classFile: JvmClass): AggregateData {
@@ -124,17 +124,17 @@ data class AggregateData(
         return copy(classDataMap = newMap)
     }
 
-    private fun updateMethods(matchEnum: MatchEnum, qualifiedMethod: JvmRef): AggregateData {
-        val oldSet = methods[matchEnum] ?: emptySet()
+    private fun updateMethods(filterResult: FilterResult, qualifiedMethod: JvmRef): AggregateData {
+        val oldSet = methods[filterResult] ?: emptySet()
         val newSet = oldSet + qualifiedMethod
-        val newMap = methods + (matchEnum to newSet)
+        val newMap = methods + (filterResult to newSet)
         return copy(methods = newMap)
     }
 
-    private fun updateClasses(matchEnum: MatchEnum, className: String): AggregateData {
-        val oldSet = classes[matchEnum] ?: emptySet()
+    private fun updateClasses(filterResult: FilterResult, className: String): AggregateData {
+        val oldSet = classes[filterResult] ?: emptySet()
         val newSet = oldSet + className
-        val newMap = classes + (matchEnum to newSet)
+        val newMap = classes + (filterResult to newSet)
         return copy(classes = newMap)
     }
 
@@ -144,7 +144,7 @@ data class AggregateData(
     ): AggregateData {
         val matchEnum = acceptMethod(target)
         val a = updateMethods(matchEnum, target)
-        return if (matchEnum == MatchEnum.BLACKLIST_ONLY) {
+        return if (matchEnum == FilterResult.BLACKLIST_ONLY) {
             val key = source.className().classBaseName()
             a.updateEntry(key) { classData ->
                 classData.addToStaticReferenceCount(source, target)
@@ -157,7 +157,7 @@ data class AggregateData(
     private fun incrementStaticReferenceCountIfOnBlacklist(source: JvmMethod, target: String): AggregateData {
         val matchEnum = acceptClass(target)
         val a = updateClasses(matchEnum, target)
-        return if (matchEnum == MatchEnum.BLACKLIST_ONLY) {
+        return if (matchEnum == FilterResult.BLACKLIST_ONLY) {
             val key = source.className()
             a.updateEntry(key) { classData ->
                 classData.addToNewInstanceCount(source, target)
@@ -167,13 +167,13 @@ data class AggregateData(
         }
     }
 
-    fun summaryMethodNames(matchEnum: MatchEnum): List<String> {
-        val set = methods[matchEnum] ?: emptySet()
+    fun summaryMethodNames(filterResult: FilterResult): List<String> {
+        val set = methods[filterResult] ?: emptySet()
         return set.map { it.methodId() }.toList().sorted()
     }
 
-    fun summaryClassNames(matchEnum: MatchEnum): List<String> {
-        val set = classes[matchEnum] ?: emptySet()
+    fun summaryClassNames(filterResult: FilterResult): List<String> {
+        val set = classes[filterResult] ?: emptySet()
         return set.toList().sorted()
     }
 
@@ -186,8 +186,8 @@ data class AggregateData(
 
     companion object {
         fun create(
-            acceptMethod: (JvmRef) -> MatchEnum,
-            acceptClass: (String) -> MatchEnum
+            acceptMethod: (JvmRef) -> FilterResult,
+            acceptClass: (String) -> FilterResult
         ) = AggregateData(
             emptyMap(),
             acceptMethod,

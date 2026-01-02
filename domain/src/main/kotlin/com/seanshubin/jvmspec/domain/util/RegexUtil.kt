@@ -4,14 +4,14 @@ object RegexUtil {
     fun createMatchFunctionFromList(
         whitelistPatterns: List<String>,
         blacklistPatterns: List<String>
-    ): (String) -> MatchEnum = { s ->
+    ): (String) -> FilterResult = { s ->
         val isOnWhitelist = whitelistPatterns.map { Regex(it) }.any { it.matches(s) }
         val isOnBlacklist = blacklistPatterns.map { Regex(it) }.any { it.matches(s) }
         when {
-            isOnWhitelist && isOnBlacklist -> MatchEnum.BOTH_WHITELIST_AND_BLACKLIST
-            isOnWhitelist && !isOnBlacklist -> MatchEnum.WHITELIST_ONLY
-            !isOnWhitelist && isOnBlacklist -> MatchEnum.BLACKLIST_ONLY
-            else -> MatchEnum.UNKNOWN
+            isOnWhitelist && isOnBlacklist -> FilterResult.BOTH_WHITELIST_AND_BLACKLIST
+            isOnWhitelist && !isOnBlacklist -> FilterResult.WHITELIST_ONLY
+            !isOnWhitelist && isOnBlacklist -> FilterResult.BLACKLIST_ONLY
+            else -> FilterResult.UNKNOWN
         }
     }
 }

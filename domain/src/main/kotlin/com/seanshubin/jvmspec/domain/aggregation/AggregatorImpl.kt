@@ -3,7 +3,7 @@ package com.seanshubin.jvmspec.domain.aggregation
 import com.seanshubin.jvmspec.domain.jvm.JvmClass
 import com.seanshubin.jvmspec.domain.jvm.JvmMethod
 import com.seanshubin.jvmspec.domain.jvm.JvmRef
-import com.seanshubin.jvmspec.domain.util.MatchEnum
+import com.seanshubin.jvmspec.domain.util.FilterResult
 
 class AggregatorImpl(private val initialAggregateData: AggregateData) : Aggregator {
     private var aggregateData: AggregateData = initialAggregateData
@@ -58,12 +58,12 @@ class AggregatorImpl(private val initialAggregateData: AggregateData) : Aggregat
         return aggregateData.totals()
     }
 
-    override fun summaryMethodNames(matchEnum: MatchEnum): List<String> {
-        return aggregateData.summaryMethodNames(matchEnum)
+    override fun summaryMethodNames(filterResult: FilterResult): List<String> {
+        return aggregateData.summaryMethodNames(filterResult)
     }
 
-    override fun summaryClassNames(matchEnum: MatchEnum): List<String> {
-        return aggregateData.summaryClassNames(matchEnum)
+    override fun summaryClassNames(filterResult: FilterResult): List<String> {
+        return aggregateData.summaryClassNames(filterResult)
     }
 
     override fun summaryOrigin(): List<String> {

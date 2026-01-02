@@ -10,7 +10,7 @@ import com.seanshubin.jvmspec.domain.files.FilesContract
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
 import com.seanshubin.jvmspec.domain.jvm.JvmRef
 import com.seanshubin.jvmspec.domain.jvmimpl.JvmClassImpl
-import com.seanshubin.jvmspec.domain.util.MatchEnum
+import com.seanshubin.jvmspec.domain.util.FilterResult
 import com.seanshubin.jvmspec.domain.util.RegexUtil
 import java.io.DataInputStream
 import java.nio.file.Files
@@ -39,7 +39,7 @@ class ReportGenerator(
             val acceptFileBoolean = { file: Path ->
                 val fileName = file.toString()
                 val result = acceptFile(fileName)
-                result == MatchEnum.WHITELIST_ONLY
+                result == FilterResult.WHITELIST_ONLY
             }
             val acceptMethodKey = RegexUtil.createMatchFunctionFromList(methodWhitelist, methodBlacklist)
             val acceptMethod = { method: JvmRef ->
@@ -70,7 +70,7 @@ class ReportGenerator(
                 newFile(outputDir, "summary-origin.txt"),
                 aggregator.summaryOrigin()
             )
-            MatchEnum.entries.forEach { matchEnum ->
+            FilterResult.entries.forEach { matchEnum ->
                 files.write(
                     newFile(outputDir, "summary-methods-$matchEnum.txt"),
                     aggregator.summaryMethodNames(matchEnum)
