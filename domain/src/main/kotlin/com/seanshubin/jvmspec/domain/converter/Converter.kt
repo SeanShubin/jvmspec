@@ -1,7 +1,6 @@
 package com.seanshubin.jvmspec.domain.converter
 
 import com.seanshubin.jvmspec.domain.data.ClassFile
-import com.seanshubin.jvmspec.domain.data.Origin
 import com.seanshubin.jvmspec.domain.files.FilesContract
 import com.seanshubin.jvmspec.domain.jvm.JvmClass
 import com.seanshubin.jvmspec.domain.jvmimpl.JvmClassImpl
@@ -14,9 +13,9 @@ fun Path.toDataInput(files: FilesContract): DataInput {
     return DataInputStream(inputStream)
 }
 
-fun DataInput.toClassFile(origin: Origin): ClassFile = ClassFile.fromDataInput(origin, this)
+fun DataInput.toClassFile(origin: Path): ClassFile = ClassFile.fromDataInput(origin, this)
 
 fun ClassFile.toJvmClass(): JvmClass = JvmClassImpl(this)
 
-fun Path.toJvmClass(files: FilesContract, origin: Origin): JvmClass =
+fun Path.toJvmClass(files: FilesContract, origin: Path): JvmClass =
     toDataInput(files).toClassFile(origin).toJvmClass()

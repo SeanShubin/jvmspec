@@ -1,7 +1,6 @@
 package com.seanshubin.jvmspec.cohesion
 
 import com.seanshubin.jvmspec.domain.converter.toJvmClass
-import com.seanshubin.jvmspec.domain.data.Origin.OriginClassFile
 import com.seanshubin.jvmspec.domain.files.FilesContract
 
 class Runner(
@@ -12,8 +11,7 @@ class Runner(
 ) : Runnable {
     override fun run() {
         fileSelector.flatMap { file ->
-            val origin = OriginClassFile(file)
-            val jvmClass = file.toJvmClass(files, origin)
+            val jvmClass = file.toJvmClass(files, file)
             classProcessor.processClass(jvmClass)
         }.forEach { command ->
             commandRunner.runCommand(command)

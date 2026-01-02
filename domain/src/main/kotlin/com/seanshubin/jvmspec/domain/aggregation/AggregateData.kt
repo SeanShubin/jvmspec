@@ -2,9 +2,9 @@ package com.seanshubin.jvmspec.domain.aggregation
 
 import com.seanshubin.jvmspec.domain.jvm.JvmClass
 import com.seanshubin.jvmspec.domain.jvm.JvmMethod
-import com.seanshubin.jvmspec.domain.jvm.JvmOrigin
 import com.seanshubin.jvmspec.domain.jvm.JvmRef
 import com.seanshubin.jvmspec.domain.util.FilterResult
+import java.nio.file.Path
 
 data class AggregateData(
     val classDataMap: Map<String, ClassData>,
@@ -12,7 +12,7 @@ data class AggregateData(
     val acceptClass: (String) -> FilterResult,
     val methods: Map<FilterResult, Set<JvmRef>>,
     val classes: Map<FilterResult, Set<String>>,
-    val mapClassNameOrigins: Map<String, List<JvmOrigin>>
+    val mapClassNameOrigins: Map<String, List<Path>>
 ) {
     fun classFile(classFile: JvmClass): AggregateData {
         val originId = classFile.origin

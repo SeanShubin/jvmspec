@@ -3,10 +3,11 @@ package com.seanshubin.jvmspec.domain.jvm
 import com.seanshubin.jvmspec.domain.descriptor.DescriptorParser
 import com.seanshubin.jvmspec.domain.descriptor.Signature
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
+import java.nio.file.Path
 import java.util.*
 
 interface JvmClass {
-    val origin: JvmOrigin
+    val origin: Path
     val magic: Int
     val minorVersion: Int
     val majorVersion: Int

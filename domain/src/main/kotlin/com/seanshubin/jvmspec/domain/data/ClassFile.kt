@@ -2,9 +2,10 @@ package com.seanshubin.jvmspec.domain.data
 
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 import java.io.DataInput
+import java.nio.file.Path
 
 data class ClassFile(
-    val origin: Origin,
+    val origin: Path,
     val magic: UInt,
     val minorVersion: UShort,
     val majorVersion: UShort,
@@ -24,7 +25,7 @@ data class ClassFile(
     val attributes: List<AttributeInfo>
 ) {
     companion object {
-        fun fromDataInput(origin: Origin, input: DataInput): ClassFile {
+        fun fromDataInput(origin: Path, input: DataInput): ClassFile {
             val magic = input.readInt().toUInt()
             val minorVersion = input.readUnsignedShort().toUShort()
             val majorVersion = input.readUnsignedShort().toUShort()

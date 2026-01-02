@@ -1,7 +1,6 @@
 package com.seanshubin.jvmspec.domain.operations
 
 import com.seanshubin.jvmspec.domain.data.ClassFile
-import com.seanshubin.jvmspec.domain.data.Origin.OriginClassFile
 import com.seanshubin.jvmspec.domain.jvm.JvmClass
 import com.seanshubin.jvmspec.domain.jvmimpl.JvmClassImpl
 import java.io.DataInputStream
@@ -15,8 +14,7 @@ object PrototypeApp {
         val file = Paths.get(fileName)
         val classFile = Files.newInputStream(file).use { inputStream ->
             val input = DataInputStream(inputStream)
-            val origin = OriginClassFile(file)
-            ClassFile.fromDataInput(origin, input)
+            ClassFile.fromDataInput(file, input)
         }
         val jvmClass = JvmClassImpl(classFile)
         display(jvmClass)

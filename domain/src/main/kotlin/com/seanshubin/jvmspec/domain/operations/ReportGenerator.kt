@@ -5,7 +5,6 @@ import com.seanshubin.jvmspec.domain.aggregation.AggregatorImpl
 import com.seanshubin.jvmspec.domain.command.Command
 import com.seanshubin.jvmspec.domain.command.CreateDirectories
 import com.seanshubin.jvmspec.domain.data.ClassFile
-import com.seanshubin.jvmspec.domain.data.Origin.OriginClassFile
 import com.seanshubin.jvmspec.domain.files.FilesContract
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
 import com.seanshubin.jvmspec.domain.jvm.JvmRef
@@ -104,8 +103,7 @@ class ReportGenerator(
         events.processingFile(inputFile, outputDir)
         val javaFile = files.newInputStream(inputFile).use { inputStream ->
             val input = DataInputStream(inputStream)
-            val origin = OriginClassFile(inputFile)
-            ClassFile.fromDataInput(origin, input)
+            ClassFile.fromDataInput(inputFile, input)
         }
         val jvmClass = JvmClassImpl(javaFile)
         events.executeCommand(CreateDirectories(outputDir))
