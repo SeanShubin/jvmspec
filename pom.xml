@@ -99,6 +99,21 @@
                     <jvmTarget>25</jvmTarget>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.seanshubin.code.structure</groupId>
+                <artifactId>code-structure-maven</artifactId>
+                <version>1.0.3</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>code-structure</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <configBaseName>code-structure</configBaseName>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
