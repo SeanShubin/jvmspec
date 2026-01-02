@@ -1,7 +1,6 @@
-package com.seanshubin.jvmspec.domain.jvmimpl
+package com.seanshubin.jvmspec.domain.descriptor
 
-import com.seanshubin.jvmspec.domain.jvm.Signature
-import com.seanshubin.jvmspec.domain.jvm.SignatureType
+import kotlin.collections.plus
 
 interface DescriptorParser {
     fun parseCharacter(c: Char): DescriptorParser

@@ -5,7 +5,7 @@ import com.seanshubin.jvmspec.domain.command.Command
 import com.seanshubin.jvmspec.domain.command.WriteLines
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
 import com.seanshubin.jvmspec.domain.jvm.*
-import com.seanshubin.jvmspec.domain.jvmimpl.DescriptorParser
+import com.seanshubin.jvmspec.domain.descriptor.DescriptorParser
 import com.seanshubin.jvmspec.domain.util.StringListRuleMatcher
 import java.nio.file.Path
 

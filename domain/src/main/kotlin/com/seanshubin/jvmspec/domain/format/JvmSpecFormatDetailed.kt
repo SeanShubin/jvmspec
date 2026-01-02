@@ -1,5 +1,7 @@
 package com.seanshubin.jvmspec.domain.format
 
+import com.seanshubin.jvmspec.domain.descriptor.Signature
+import com.seanshubin.jvmspec.domain.descriptor.SignatureType
 import com.seanshubin.jvmspec.domain.jvm.*
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 import com.seanshubin.jvmspec.domain.primitive.ConstantPoolTag

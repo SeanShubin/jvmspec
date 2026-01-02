@@ -4,7 +4,7 @@ import com.seanshubin.jvmspec.domain.data.FieldInfo
 import com.seanshubin.jvmspec.domain.jvm.JvmAttribute
 import com.seanshubin.jvmspec.domain.jvm.JvmClass
 import com.seanshubin.jvmspec.domain.jvm.JvmField
-import com.seanshubin.jvmspec.domain.jvm.Signature
+import com.seanshubin.jvmspec.domain.descriptor.Signature
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 
 class JvmFieldImpl(

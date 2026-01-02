@@ -1,6 +1,7 @@
 package com.seanshubin.jvmspec.domain.jvm
 
-import com.seanshubin.jvmspec.domain.jvmimpl.DescriptorParser
+import com.seanshubin.jvmspec.domain.descriptor.DescriptorParser
+import com.seanshubin.jvmspec.domain.descriptor.Signature
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 import java.util.*
 
