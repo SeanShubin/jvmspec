@@ -11,17 +11,17 @@ import java.nio.file.Path
 class ApplicationDependencies(
     private val baseDir: Path,
     private val outputDir: Path,
+    private val include: List<String>,
+    private val exclude: List<String>,
     private val core: List<String>,
     private val boundary: List<String>,
     private val categoryRuleSet: Map<String, CategoryRule>
 ) {
     private val files: FilesContract = FilesDelegate
-    private val whiteListPatterns: List<String> = listOf(""".*\.class""")
-    private val blackListPatterns: List<String> = listOf()
     private val emit: (Any?) -> Unit = ::println
     private val notifications: Notifications = LineEmittingNotifications(emit)
     private val filter: (Path) -> FilterResult =
-        FilterImpl(whiteListPatterns, blackListPatterns, notifications::filterEvent)
+        FilterImpl(include, exclude, notifications::filterEvent)
     private val fileSelector: FileSelector = FileSelectorImpl(baseDir, files, filter)
     private val jvmSpecFormat: JvmSpecFormat = JvmSpecFormatDetailed()
     private val classProcessor: ClassProcessor = ClassProcessorImpl(baseDir, outputDir, jvmSpecFormat)

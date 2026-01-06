@@ -14,6 +14,8 @@ class BootstrapDependencies(
         ApplicationDependencies(
             configuration.baseDir,
             configuration.outputDir,
+            configuration.include,
+            configuration.exclude,
             configuration.core,
             configuration.boundary,
             configuration.categoryRuleSet

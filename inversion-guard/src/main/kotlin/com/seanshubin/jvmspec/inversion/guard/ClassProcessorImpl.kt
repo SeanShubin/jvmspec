@@ -1,7 +1,11 @@
 package com.seanshubin.jvmspec.inversion.guard
 
+import com.seanshubin.jvmspec.domain.descriptor.DescriptorParser
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
+import com.seanshubin.jvmspec.domain.jvm.JvmArgument
 import com.seanshubin.jvmspec.domain.jvm.JvmClass
+import com.seanshubin.jvmspec.domain.jvm.JvmConstant
+import com.seanshubin.jvmspec.domain.jvm.JvmInstruction
 import com.seanshubin.jvmspec.domain.tree.Tree
 import com.seanshubin.jvmspec.domain.util.PathUtil.removeExtension
 import java.nio.file.Path
@@ -29,10 +33,13 @@ class ClassProcessorImpl(
             Tree("Complexity: $complexity")
         )
         val methodChildren: List<Tree> = jvmClass.methods().mapIndexed { index, method ->
-            val instructions = method.instructions()
-            val instructionRoots = instructions.map { Tree(it.name()) }
+            val instructionMap = method.instructions().groupBy { it.name() }
+            val invokeStaticNodes = createInstructionNode(instructionMap, "invokestatic")
+            val putStaticNodes = createInstructionNode(instructionMap, "getstatic")
+            val getStaticNodes = createInstructionNode(instructionMap, "putstatic")
+            val staticNodes = invokeStaticNodes + putStaticNodes + getStaticNodes
             val methodHeader = "[$index]: complexity(${method.complexity()}) ${method.javaSignature()}"
-            val methodRoot = Tree(methodHeader, instructionRoots)
+            val methodRoot = Tree(methodHeader, staticNodes)
             methodRoot
         }
         val methodsHeader = "Methods(${jvmClass.methods().size}):"
@@ -41,6 +48,21 @@ class ClassProcessorImpl(
         val roots: List<Tree> = summaryRoots + methodRoots
         val command = CreateFileCommand(outputFile, roots)
         return listOf(command)
+    }
+
+    private fun createInstructionNode(instructionMap: Map<String, List<JvmInstruction>>, name: String): List<Tree> {
+        val relevant = instructionMap[name] ?: return emptyList()
+        val root = "$name (${relevant.size})"
+        val children = relevant.map {
+            val args = it.args()
+            val firstArg = args[0] as JvmArgument.Constant
+            val constant = firstArg.value as JvmConstant.Constant
+            val (className, methodName, methodDescriptor) = JvmConstant.refToStrings(constant)
+            val signature = DescriptorParser.build(methodDescriptor)
+            val javaSignature = signature.javaFormat(className, methodName)
+            Tree(javaSignature)
+        }
+        return listOf(Tree(root, children))
     }
 
     private fun createDisassemblyCommands(baseFileName: String, jvmClass: JvmClass): List<Command> {
