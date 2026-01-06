@@ -5,16 +5,16 @@ import com.seanshubin.jvmspec.contract.FilesDelegate
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormatDetailed
 import com.seanshubin.jvmspec.domain.util.FilterResult
+import com.seanshubin.jvmspec.rules.CategoryRule
 import java.nio.file.Path
-import java.nio.file.Paths
 
-class Dependencies(
-    private val args: Array<String>
+class ApplicationDependencies(
+    private val baseDir: Path,
+    private val outputDir: Path,
+    private val core: List<String>,
+    private val boundary: List<String>,
+    private val categoryRuleSet: Map<String, CategoryRule>
 ) {
-    private val baseDirName: String = args.getOrNull(0) ?: "."
-    private val outputDirName: String = args.getOrNull(1) ?: "generated/inversion"
-    private val baseDir = Paths.get(baseDirName)
-    private val outputDir = Paths.get(outputDirName)
     private val files: FilesContract = FilesDelegate
     private val whiteListPatterns: List<String> = listOf(""".*\.class""")
     private val blackListPatterns: List<String> = listOf()

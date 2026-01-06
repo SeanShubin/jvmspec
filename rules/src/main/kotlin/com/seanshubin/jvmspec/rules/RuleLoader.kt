@@ -1,5 +1,5 @@
 package com.seanshubin.jvmspec.rules
 
 interface RuleLoader {
-    fun load(): CategoryRuleSet
+    fun load(json: String): CategoryRuleSet
 }

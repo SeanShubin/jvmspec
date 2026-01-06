@@ -7,4 +7,7 @@ interface KeyValueStore {
     fun arraySize(key: List<Any>): Int
     fun loadOrDefault(key: List<Any>, default: Any?): Any? =
         if (exists(key)) load(key) else default
+
+    fun loadOrCreateDefault(key: List<Any>, default: Any?): Any? =
+        if (exists(key)) load(key) else default.also { store(key, it) }
 }

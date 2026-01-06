@@ -11,8 +11,16 @@ class JsonRuleLoaderTest {
     fun `load rules from json file`() {
         // When running from maven, working directory is the rules module, so we need to go up one level
         val rulesPath = Paths.get("../rules.json")
-        val loader = JsonRuleLoader(rulesPath)
-        val ruleSet = loader.load()
+        val rulesJson = java.nio.file.Files.readString(rulesPath)
+        val loader = JsonRuleLoader()
+        val ruleSet = loader.load(rulesJson)
+
+        // Verify core and boundary fields are loaded
+        assertEquals(1, ruleSet.core.size)
+        assertEquals("java/lang/Math:.*", ruleSet.core[0])
+        assertEquals(2, ruleSet.boundary.size)
+        assertTrue(ruleSet.boundary.contains("java/lang/Math:random:.*"))
+        assertTrue(ruleSet.boundary.contains("java/io/File:.*"))
 
         // Verify all 9 categories are loaded
         assertEquals(9, ruleSet.categories.size)
