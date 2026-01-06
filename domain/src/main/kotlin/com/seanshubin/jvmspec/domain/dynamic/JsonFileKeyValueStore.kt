@@ -1,7 +1,7 @@
 package com.seanshubin.jvmspec.domain.dynamic
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.seanshubin.jvmspec.domain.files.FilesContract
+import com.seanshubin.jvmspec.contract.FilesContract
 import com.seanshubin.jvmspec.domain.json.JsonMappers
 import java.nio.charset.StandardCharsets
 import java.nio.file.Path

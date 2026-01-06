@@ -44,7 +44,10 @@
     <modules>
         <module>domain</module>
         <module>console</module>
-        <module>cohesion</module>
+        <module>inversion-guard</module>
+        <module>rules</module>
+        <module>configuration</module>
+        <module>contract</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

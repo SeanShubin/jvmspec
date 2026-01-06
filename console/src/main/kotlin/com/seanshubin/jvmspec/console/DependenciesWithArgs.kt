@@ -1,9 +1,9 @@
 package com.seanshubin.jvmspec.console
 
+import com.seanshubin.jvmspec.contract.FilesContract
+import com.seanshubin.jvmspec.contract.FilesDelegate
 import com.seanshubin.jvmspec.domain.dynamic.JsonFileKeyValueStore
 import com.seanshubin.jvmspec.domain.dynamic.KeyValueStore
-import com.seanshubin.jvmspec.domain.files.FilesContract
-import com.seanshubin.jvmspec.domain.files.FilesDelegate
 import com.seanshubin.jvmspec.domain.operations.Configuration
 import com.seanshubin.jvmspec.domain.operations.ConfigurationReader
 import java.nio.file.Paths

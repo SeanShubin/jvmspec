@@ -1,6 +1,6 @@
 package com.seanshubin.jvmspec.domain.samples
 
-import com.seanshubin.jvmspec.domain.files.FilesContract
+import com.seanshubin.jvmspec.contract.FilesContract
 import java.nio.file.Paths
 import java.time.Clock
 

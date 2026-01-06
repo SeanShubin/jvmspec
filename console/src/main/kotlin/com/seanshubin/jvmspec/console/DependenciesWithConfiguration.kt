@@ -1,11 +1,11 @@
 package com.seanshubin.jvmspec.console
 
+import com.seanshubin.jvmspec.contract.FilesContract
+import com.seanshubin.jvmspec.contract.FilesDelegate
 import com.seanshubin.jvmspec.domain.command.CommandRunner
 import com.seanshubin.jvmspec.domain.command.CommandRunnerImpl
 import com.seanshubin.jvmspec.domain.command.Environment
 import com.seanshubin.jvmspec.domain.command.EnvironmentImpl
-import com.seanshubin.jvmspec.domain.files.FilesContract
-import com.seanshubin.jvmspec.domain.files.FilesDelegate
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormatDetailed
 import com.seanshubin.jvmspec.domain.operations.*

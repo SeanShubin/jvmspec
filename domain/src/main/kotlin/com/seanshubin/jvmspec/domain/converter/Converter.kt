@@ -1,7 +1,7 @@
 package com.seanshubin.jvmspec.domain.converter
 
+import com.seanshubin.jvmspec.contract.FilesContract
 import com.seanshubin.jvmspec.domain.data.ClassFile
-import com.seanshubin.jvmspec.domain.files.FilesContract
 import com.seanshubin.jvmspec.domain.jvm.JvmClass
 import com.seanshubin.jvmspec.domain.jvmimpl.JvmClassImpl
 import java.io.DataInput

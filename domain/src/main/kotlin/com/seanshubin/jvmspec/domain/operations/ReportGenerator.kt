@@ -1,11 +1,11 @@
 package com.seanshubin.jvmspec.domain.operations
 
+import com.seanshubin.jvmspec.contract.FilesContract
 import com.seanshubin.jvmspec.domain.aggregation.AggregateData
 import com.seanshubin.jvmspec.domain.aggregation.AggregatorImpl
 import com.seanshubin.jvmspec.domain.command.Command
 import com.seanshubin.jvmspec.domain.command.CreateDirectories
 import com.seanshubin.jvmspec.domain.data.ClassFile
-import com.seanshubin.jvmspec.domain.files.FilesContract
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
 import com.seanshubin.jvmspec.domain.jvm.JvmRef
 import com.seanshubin.jvmspec.domain.jvmimpl.JvmClassImpl

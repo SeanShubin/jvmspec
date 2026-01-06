@@ -42,14 +42,27 @@
   "modules": {
     "domain": [
       "jackson",
-      "jackson-time"
+      "jackson-time",
+      "contract"
     ],
     "console": [
       "domain"
     ],
-    "cohesion": [
-      "domain"
-    ]
+    "inversion-guard": [
+      "domain",
+      "rules",
+      "configuration"
+    ],
+    "rules": [
+      "jackson",
+      "jackson-time"
+    ],
+    "configuration": [
+      "jackson",
+      "jackson-time",
+      "contract"
+    ],
+    "contract": []
   },
   "javaVersion": "25"
 }

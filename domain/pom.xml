@@ -12,6 +12,11 @@
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.seanshubin.jvmspec</groupId>
+            <artifactId>jvmspec-contract</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     <parent>
         <groupId>com.seanshubin.jvmspec</groupId>
