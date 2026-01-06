@@ -12,7 +12,7 @@ class Dependencies(
     private val args: Array<String>
 ) {
     private val baseDirName: String = args.getOrNull(0) ?: "."
-    private val outputDirName: String = args.getOrNull(1) ?: "generated/cohesion"
+    private val outputDirName: String = args.getOrNull(1) ?: "generated/inversion"
     private val baseDir = Paths.get(baseDirName)
     private val outputDir = Paths.get(outputDirName)
     private val files: FilesContract = FilesDelegate
