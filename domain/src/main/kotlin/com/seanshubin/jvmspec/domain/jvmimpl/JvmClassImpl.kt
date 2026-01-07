@@ -1,13 +1,8 @@
 package com.seanshubin.jvmspec.domain.jvmimpl
 
 import com.seanshubin.jvmspec.domain.data.ClassFile
-import com.seanshubin.jvmspec.domain.jvm.JvmAttribute
-import com.seanshubin.jvmspec.domain.jvm.JvmClass
-import com.seanshubin.jvmspec.domain.jvm.JvmField
-import com.seanshubin.jvmspec.domain.jvm.JvmMethod
+import com.seanshubin.jvmspec.domain.jvm.*
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
-import com.seanshubin.jvmspec.domain.prototype.JvmConstant
-import com.seanshubin.jvmspec.domain.prototype.JvmConstantFactory
 import java.nio.file.Path
 import java.util.*
 

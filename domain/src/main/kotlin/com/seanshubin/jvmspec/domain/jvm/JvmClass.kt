@@ -3,7 +3,6 @@ package com.seanshubin.jvmspec.domain.jvm
 import com.seanshubin.jvmspec.domain.descriptor.DescriptorParser
 import com.seanshubin.jvmspec.domain.descriptor.Signature
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
-import com.seanshubin.jvmspec.domain.prototype.JvmConstant
 import java.nio.file.Path
 import java.util.*
 
@@ -26,7 +25,7 @@ interface JvmClass {
     }
     fun lookupClassName(classIndex: UShort): String {
         val classConstant = constants.getValue(classIndex) as JvmConstant.JvmConstantClass
-        return classConstant.name.value
+        return classConstant.nameUtf8.value
     }
 
     fun lookupUtf8(utf8Index: UShort): String {

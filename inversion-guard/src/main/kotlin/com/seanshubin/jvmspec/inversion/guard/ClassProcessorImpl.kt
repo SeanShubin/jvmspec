@@ -2,11 +2,7 @@ package com.seanshubin.jvmspec.inversion.guard
 
 import com.seanshubin.jvmspec.domain.descriptor.DescriptorParser
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
-import com.seanshubin.jvmspec.domain.jvm.JvmArgument
-import com.seanshubin.jvmspec.domain.jvm.JvmClass
-import com.seanshubin.jvmspec.domain.jvm.JvmInstruction
-import com.seanshubin.jvmspec.domain.prototype.JvmConstant
-import com.seanshubin.jvmspec.domain.prototype.asStrings
+import com.seanshubin.jvmspec.domain.jvm.*
 import com.seanshubin.jvmspec.domain.tree.Tree
 import com.seanshubin.jvmspec.domain.util.PathUtil.removeExtension
 import com.seanshubin.jvmspec.rules.CategoryRule

@@ -5,7 +5,6 @@ import com.seanshubin.jvmspec.domain.descriptor.SignatureType
 import com.seanshubin.jvmspec.domain.jvm.*
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 import com.seanshubin.jvmspec.domain.primitive.ConstantPoolTag
-import com.seanshubin.jvmspec.domain.prototype.JvmConstant
 import com.seanshubin.jvmspec.domain.tree.Tree
 import java.util.*
 
@@ -84,26 +83,26 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
             }
 
             is JvmConstant.Class -> {
-                Tree("class", listOf(constantTree(constant.name)))
+                Tree("class", listOf(constantTree(constant.nameUtf8)))
             }
 
             is JvmConstant.StringConstant -> {
-                Tree("string", listOf(constantTree(constant.value)))
+                Tree("string", listOf(constantTree(constant.valueUtf8)))
             }
 
             is JvmConstant.Module -> {
-                Tree("module", listOf(constantTree(constant.moduleName)))
+                Tree("module", listOf(constantTree(constant.moduleNameUtf8)))
             }
 
             is JvmConstant.Package -> {
-                Tree("package", listOf(constantTree(constant.packageName)))
+                Tree("package", listOf(constantTree(constant.packageNameUtf8)))
             }
 
             is JvmConstant.NameAndType -> {
                 Tree(
                     "name-and-type", listOf(
-                        constantTree(constant.name),
-                        constantTree(constant.descriptor)
+                        constantTree(constant.nameUtf8),
+                        constantTree(constant.descriptorUtf8)
                     )
                 )
             }
@@ -118,7 +117,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
             }
 
             is JvmConstant.MethodType -> {
-                Tree("method-type", listOf(constantTree(constant.descriptor)))
+                Tree("method-type", listOf(constantTree(constant.descriptorUtf8)))
             }
 
             is JvmConstant.MethodHandle -> {

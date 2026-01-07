@@ -1,4 +1,4 @@
-package com.seanshubin.jvmspec.domain.prototype
+package com.seanshubin.jvmspec.domain.jvm
 
 import com.seanshubin.jvmspec.domain.primitive.ConstantPoolTag
 import com.seanshubin.jvmspec.domain.primitive.ReferenceKind
@@ -7,16 +7,20 @@ interface JvmConstant {
     val tag: ConstantPoolTag
 
     interface JvmConstantClass : JvmConstant {
-        val name: JvmConstantUtf8
+        val nameUtf8: JvmConstantUtf8
+        val name: String
     }
 
     interface JvmConstantNameAndType : JvmConstant {
-        val name: JvmConstantUtf8
-        val descriptor: JvmConstantUtf8
+        val nameUtf8: JvmConstantUtf8
+        val descriptorUtf8: JvmConstantUtf8
+        val name: String
+        val descriptor: String
     }
 
     interface JvmConstantRef : JvmConstant {
         val jvmClass: JvmConstantClass
+        val className: String
         val jvmNameAndType: JvmConstantNameAndType
     }
 
@@ -25,7 +29,8 @@ interface JvmConstant {
     }
 
     interface JvmConstantString : JvmConstant {
-        val value: JvmConstantUtf8
+        val valueUtf8: JvmConstantUtf8
+        val value: String
     }
 
     interface JvmConstantInteger : JvmConstant {
@@ -50,7 +55,8 @@ interface JvmConstant {
     }
 
     interface JvmConstantMethodType : JvmConstant {
-        val descriptor: JvmConstantUtf8
+        val descriptorUtf8: JvmConstantUtf8
+        val descriptor: String
     }
 
     interface JvmConstantDynamic : JvmConstant {
@@ -59,11 +65,13 @@ interface JvmConstant {
     }
 
     interface JvmConstantModule : JvmConstant {
-        val moduleName: JvmConstantUtf8
+        val moduleNameUtf8: JvmConstantUtf8
+        val moduleName: String
     }
 
     interface JvmConstantPackage : JvmConstant {
-        val packageName: JvmConstantUtf8
+        val packageNameUtf8: JvmConstantUtf8
+        val packageName: String
     }
 
     // Data class implementations
@@ -94,40 +102,55 @@ interface JvmConstant {
 
     data class Class(
         override val tag: ConstantPoolTag,
-        override val name: JvmConstantUtf8
-    ) : JvmConstantClass
+        override val nameUtf8: JvmConstantUtf8
+    ) : JvmConstantClass {
+        override val name: String get() = nameUtf8.value
+    }
 
     data class StringConstant(
         override val tag: ConstantPoolTag,
-        override val value: JvmConstantUtf8
-    ) : JvmConstantString
+        override val valueUtf8: JvmConstantUtf8
+    ) : JvmConstantString {
+        override val value: String get() = valueUtf8.value
+    }
 
     data class Module(
         override val tag: ConstantPoolTag,
-        override val moduleName: JvmConstantUtf8
-    ) : JvmConstantModule
+        override val moduleNameUtf8: JvmConstantUtf8
+    ) : JvmConstantModule {
+        override val moduleName: String get() = moduleNameUtf8.value
+    }
 
     data class Package(
         override val tag: ConstantPoolTag,
-        override val packageName: JvmConstantUtf8
-    ) : JvmConstantPackage
+        override val packageNameUtf8: JvmConstantUtf8
+    ) : JvmConstantPackage {
+        override val packageName: String get() = packageNameUtf8.value
+    }
 
     data class NameAndType(
         override val tag: ConstantPoolTag,
-        override val name: JvmConstantUtf8,
-        override val descriptor: JvmConstantUtf8
-    ) : JvmConstantNameAndType
+        override val nameUtf8: JvmConstantUtf8,
+        override val descriptorUtf8: JvmConstantUtf8
+    ) : JvmConstantNameAndType {
+        override val name: String get() = nameUtf8.value
+        override val descriptor: String get() = descriptorUtf8.value
+    }
 
     data class Ref(
         override val tag: ConstantPoolTag,
         override val jvmClass: JvmConstantClass,
         override val jvmNameAndType: JvmConstantNameAndType
-    ) : JvmConstantRef
+    ) : JvmConstantRef {
+        override val className: String get() = jvmClass.name
+    }
 
     data class MethodType(
         override val tag: ConstantPoolTag,
-        override val descriptor: JvmConstantUtf8
-    ) : JvmConstantMethodType
+        override val descriptorUtf8: JvmConstantUtf8
+    ) : JvmConstantMethodType {
+        override val descriptor: String get() = descriptorUtf8.value
+    }
 
     data class MethodHandle(
         override val tag: ConstantPoolTag,
@@ -145,13 +168,13 @@ interface JvmConstant {
 // Extension functions for easier migration from old companion methods
 fun JvmConstant.JvmConstantUtf8.asString(): String = this.value
 
-fun JvmConstant.JvmConstantClass.asString(): String = this.name.value
+fun JvmConstant.JvmConstantClass.asString(): String = this.nameUtf8.value
 
 fun JvmConstant.JvmConstantNameAndType.asStrings(): Pair<String, String> =
-    this.name.value to this.descriptor.value
+    this.nameUtf8.value to this.descriptorUtf8.value
 
 fun JvmConstant.JvmConstantRef.asStrings(): Triple<String, String, String> {
-    val className = this.jvmClass.name.value
+    val className = this.jvmClass.nameUtf8.value
     val (methodName, methodDescriptor) = this.jvmNameAndType.asStrings()
     return Triple(className, methodName, methodDescriptor)
 }

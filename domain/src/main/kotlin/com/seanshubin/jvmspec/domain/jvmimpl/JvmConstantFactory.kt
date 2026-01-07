@@ -1,6 +1,7 @@
-package com.seanshubin.jvmspec.domain.prototype
+package com.seanshubin.jvmspec.domain.jvmimpl
 
 import com.seanshubin.jvmspec.domain.data.*
+import com.seanshubin.jvmspec.domain.jvm.JvmConstant
 import com.seanshubin.jvmspec.domain.primitive.ConstantPoolTag
 
 object JvmConstantFactory {
@@ -43,7 +44,7 @@ object JvmConstantFactory {
         val name = createByIndex(constantPoolMap, constantInfo.nameIndex) as JvmConstant.JvmConstantUtf8
         return JvmConstant.Class(
             tag = constantInfo.tag,
-            name = name
+            nameUtf8 = name
         )
     }
 
@@ -56,8 +57,8 @@ object JvmConstantFactory {
         val descriptor = createByIndex(constantPoolMap, constantInfo.descriptorIndex) as JvmConstant.JvmConstantUtf8
         return JvmConstant.NameAndType(
             tag = constantInfo.tag,
-            name = name,
-            descriptor = descriptor
+            nameUtf8 = name,
+            descriptorUtf8 = descriptor
         )
     }
 
@@ -78,7 +79,7 @@ object JvmConstantFactory {
         val value = createByIndex(constantPoolMap, constantInfo.stringIndex) as JvmConstant.JvmConstantUtf8
         return JvmConstant.StringConstant(
             tag = constantInfo.tag,
-            value = value
+            valueUtf8 = value
         )
     }
 
@@ -122,7 +123,7 @@ object JvmConstantFactory {
         val descriptor = createByIndex(constantPoolMap, constantInfo.descriptorIndex) as JvmConstant.JvmConstantUtf8
         return JvmConstant.MethodType(
             tag = constantInfo.tag,
-            descriptor = descriptor
+            descriptorUtf8 = descriptor
         )
     }
 
@@ -169,7 +170,7 @@ object JvmConstantFactory {
         val moduleName = createByIndex(constantPoolMap, constantInfo.nameIndex) as JvmConstant.JvmConstantUtf8
         return JvmConstant.Module(
             tag = constantInfo.tag,
-            moduleName = moduleName
+            moduleNameUtf8 = moduleName
         )
     }
 
@@ -178,7 +179,7 @@ object JvmConstantFactory {
         val packageName = createByIndex(constantPoolMap, constantInfo.nameIndex) as JvmConstant.JvmConstantUtf8
         return JvmConstant.Package(
             tag = constantInfo.tag,
-            packageName = packageName
+            packageNameUtf8 = packageName
         )
     }
 }
