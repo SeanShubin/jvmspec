@@ -5,14 +5,14 @@ import com.seanshubin.jvmspec.contract.FilesContract
 import com.seanshubin.jvmspec.rules.RuleLoader
 import java.nio.file.Path
 
-class ConfigurationRunner(
+class ConfiguredRunnerFactory(
     private val args: Array<String>,
-    private val createRunner: (Configuration) -> Runnable,
+    private val createRunner: (FilesContract, Configuration) -> Runnable,
     private val keyValueStoreFactory: FixedPathJsonFileKeyValueStoreFactory,
     private val ruleLoader: RuleLoader,
     private val files: FilesContract,
-) : Runnable {
-    override fun run() {
+) {
+    fun createConfiguredRunner(): Runnable {
         val configPathName = args.getOrNull(0) ?: "inversion-guard-config.json"
         val configPath = Path.of(configPathName)
         val keyValueStore = keyValueStoreFactory.create(configPath)
@@ -44,6 +44,6 @@ class ConfigurationRunner(
             boundary,
             categories
         )
-        createRunner(configuration).run()
+        return createRunner(files, configuration)
     }
 }

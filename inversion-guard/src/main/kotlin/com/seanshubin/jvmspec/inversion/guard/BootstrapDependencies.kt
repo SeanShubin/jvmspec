@@ -10,26 +10,15 @@ import com.seanshubin.jvmspec.rules.RuleLoader
 class BootstrapDependencies(
     private val args: Array<String>
 ) {
-    private val createRunner: (configuration: Configuration) -> Runnable = { configuration ->
-        ApplicationDependencies(
-            configuration.baseDir,
-            configuration.outputDir,
-            configuration.include,
-            configuration.exclude,
-            configuration.core,
-            configuration.boundary,
-            configuration.categoryRuleSet
-        ).runner
-    }
-
     val files: FilesContract = FilesDelegate
     val keyValueStoreFactory: FixedPathJsonFileKeyValueStoreFactory = FixedPathJsonFileKeyValueStoreFactoryImpl(files)
     val ruleLoader: RuleLoader = JsonRuleLoader()
-    val runner: Runnable = ConfigurationRunner(
+    val configuredRunnerFactory: ConfiguredRunnerFactory = ConfiguredRunnerFactory(
         args,
-        createRunner,
+        ApplicationDependencies::fromConfiguration,
         keyValueStoreFactory,
         ruleLoader,
         files
     )
+    val runner: Runnable = configuredRunnerFactory.createConfiguredRunner()
 }
