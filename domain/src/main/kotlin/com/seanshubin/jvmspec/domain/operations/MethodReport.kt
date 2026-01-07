@@ -5,7 +5,13 @@ import com.seanshubin.jvmspec.domain.command.Command
 import com.seanshubin.jvmspec.domain.command.WriteLines
 import com.seanshubin.jvmspec.domain.descriptor.DescriptorParser
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
-import com.seanshubin.jvmspec.domain.jvm.*
+import com.seanshubin.jvmspec.domain.jvm.JvmArgument
+import com.seanshubin.jvmspec.domain.jvm.JvmClass
+import com.seanshubin.jvmspec.domain.jvm.JvmInstruction
+import com.seanshubin.jvmspec.domain.jvm.JvmRef
+import com.seanshubin.jvmspec.domain.prototype.JvmConstant
+import com.seanshubin.jvmspec.domain.prototype.asString
+import com.seanshubin.jvmspec.domain.prototype.asStrings
 import com.seanshubin.jvmspec.domain.util.StringListRuleMatcher
 import java.nio.file.Path
 
@@ -77,8 +83,8 @@ class MethodReport(
             }
             val arg = instruction.args()[0]
             arg as JvmArgument.Constant
-            val constant = arg.value as JvmConstant.Constant
-            val (className, methodName, methodDescriptor) = JvmConstant.refToStrings(constant)
+            val constant = arg.value as JvmConstant.JvmConstantRef
+            val (className, methodName, methodDescriptor) = constant.asStrings()
             val signature = DescriptorParser.build(methodDescriptor)
             return JvmRef(className, methodName, signature)
         }
@@ -89,8 +95,8 @@ class MethodReport(
             }
             val arg = instruction.args()[0]
             arg as JvmArgument.Constant
-            val constant = arg.value as JvmConstant.Constant
-            val className = JvmConstant.classToString(constant)
+            val constant = arg.value as JvmConstant.JvmConstantClass
+            val className = constant.asString()
             return className
         }
 

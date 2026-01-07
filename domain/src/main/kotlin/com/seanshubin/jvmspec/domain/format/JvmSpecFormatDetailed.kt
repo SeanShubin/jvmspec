@@ -5,6 +5,7 @@ import com.seanshubin.jvmspec.domain.descriptor.SignatureType
 import com.seanshubin.jvmspec.domain.jvm.*
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 import com.seanshubin.jvmspec.domain.primitive.ConstantPoolTag
+import com.seanshubin.jvmspec.domain.prototype.JvmConstant
 import com.seanshubin.jvmspec.domain.tree.Tree
 import java.util.*
 
@@ -38,7 +39,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         return parent
     }
 
-    private fun interfacesTree(interfaces: List<JvmConstant.Constant>): Tree {
+    private fun interfacesTree(interfaces: List<JvmConstant>): Tree {
         val children = interfaces.map { constant ->
             constantTree(constant)
         }
@@ -52,7 +53,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         return accessFlagTree
     }
 
-    private fun constantsTree(constants: SortedMap<UShort, JvmConstant.Constant>): Tree {
+    private fun constantsTree(constants: SortedMap<UShort, JvmConstant>): Tree {
         val children = constants.map { (index, constant) ->
             constantTree(constant)
         }
@@ -62,19 +63,83 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
 
     private fun constantTree(constant: JvmConstant): Tree {
         return when (constant) {
-            is JvmConstant.Constant -> {
-                val parent = "[${constant.index.formatDecimalHex()}] ${constant.tag.formatNameId()}"
-                val children = constant.parts.map { part -> constantTree(part) }
-                Tree(parent, children)
+            is JvmConstant.Utf8 -> {
+                Tree(constant.value.toSanitizedString())
             }
 
-            is JvmConstant.StringValue -> Tree(constant.s.toSanitizedString())
-            is JvmConstant.IntegerValue -> Tree("${constant.i}")
-            is JvmConstant.FloatValue -> Tree("${constant.f}")
-            is JvmConstant.LongValue -> Tree("${constant.l}")
-            is JvmConstant.DoubleValue -> Tree("${constant.d}")
-            is JvmConstant.ReferenceKindValue -> Tree("${constant.name}(${constant.id})")
-            is JvmConstant.IndexValue -> Tree("${constant.index}")
+            is JvmConstant.IntegerConstant -> {
+                Tree("${constant.value}")
+            }
+
+            is JvmConstant.FloatConstant -> {
+                Tree("${constant.value}")
+            }
+
+            is JvmConstant.LongConstant -> {
+                Tree("${constant.value}")
+            }
+
+            is JvmConstant.DoubleConstant -> {
+                Tree("${constant.value}")
+            }
+
+            is JvmConstant.Class -> {
+                Tree("class", listOf(constantTree(constant.name)))
+            }
+
+            is JvmConstant.StringConstant -> {
+                Tree("string", listOf(constantTree(constant.value)))
+            }
+
+            is JvmConstant.Module -> {
+                Tree("module", listOf(constantTree(constant.moduleName)))
+            }
+
+            is JvmConstant.Package -> {
+                Tree("package", listOf(constantTree(constant.packageName)))
+            }
+
+            is JvmConstant.NameAndType -> {
+                Tree(
+                    "name-and-type", listOf(
+                        constantTree(constant.name),
+                        constantTree(constant.descriptor)
+                    )
+                )
+            }
+
+            is JvmConstant.Ref -> {
+                Tree(
+                    constant.tag.name.lowercase(), listOf(
+                        constantTree(constant.jvmClass),
+                        constantTree(constant.jvmNameAndType)
+                    )
+                )
+            }
+
+            is JvmConstant.MethodType -> {
+                Tree("method-type", listOf(constantTree(constant.descriptor)))
+            }
+
+            is JvmConstant.MethodHandle -> {
+                Tree(
+                    "method-handle", listOf(
+                        Tree("${constant.referenceKind.name}(${constant.referenceKind.code})"),
+                        constantTree(constant.reference)
+                    )
+                )
+            }
+
+            is JvmConstant.Dynamic -> {
+                Tree(
+                    constant.tag.name.lowercase(), listOf(
+                        Tree("bootstrap-method: ${constant.bootstrapMethodAttrIndex}"),
+                        constantTree(constant.nameAndType)
+                    )
+                )
+            }
+
+            else -> Tree("unknown-constant-type: ${constant::class.simpleName}")
         }
     }
 

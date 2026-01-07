@@ -1,13 +1,18 @@
 package com.seanshubin.jvmspec.domain.jvmimpl
 
 import com.seanshubin.jvmspec.domain.data.ClassFile
-import com.seanshubin.jvmspec.domain.jvm.*
+import com.seanshubin.jvmspec.domain.jvm.JvmAttribute
+import com.seanshubin.jvmspec.domain.jvm.JvmClass
+import com.seanshubin.jvmspec.domain.jvm.JvmField
+import com.seanshubin.jvmspec.domain.jvm.JvmMethod
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
+import com.seanshubin.jvmspec.domain.prototype.JvmConstant
+import com.seanshubin.jvmspec.domain.prototype.JvmConstantFactory
 import java.nio.file.Path
 import java.util.*
 
 class JvmClassImpl(private val classFile: ClassFile) : JvmClass {
-    override val constants: SortedMap<UShort, JvmConstant.Constant> = classFile.constantPool.associate {
+    override val constants: SortedMap<UShort, JvmConstant> = classFile.constantPool.associate {
         it.index to JvmConstantFactory.createByIndex(classFile.constantPoolMap, it.index)
     }.toSortedMap()
 
@@ -32,7 +37,7 @@ class JvmClassImpl(private val classFile: ClassFile) : JvmClass {
         }
     }
 
-    override fun interfaces(): List<JvmConstant.Constant> {
+    override fun interfaces(): List<JvmConstant> {
         return classFile.interfaces.map {
             constants.getValue(it)
         }

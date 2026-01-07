@@ -3,6 +3,7 @@ package com.seanshubin.jvmspec.domain.jvm
 import com.seanshubin.jvmspec.domain.descriptor.DescriptorParser
 import com.seanshubin.jvmspec.domain.descriptor.Signature
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
+import com.seanshubin.jvmspec.domain.prototype.JvmConstant
 import java.nio.file.Path
 import java.util.*
 
@@ -14,9 +15,9 @@ interface JvmClass {
     val thisClassName: String
     val superClassName: String
     fun methods(): List<JvmMethod>
-    val constants: SortedMap<UShort, JvmConstant.Constant>
+    val constants: SortedMap<UShort, JvmConstant>
     val accessFlags: Set<AccessFlag>
-    fun interfaces(): List<JvmConstant.Constant>
+    fun interfaces(): List<JvmConstant>
     fun fields(): List<JvmField>
     fun attributes(): List<JvmAttribute>
 
@@ -24,16 +25,13 @@ interface JvmClass {
         return methods().sumOf { method -> method.complexity() }
     }
     fun lookupClassName(classIndex: UShort): String {
-        val classConstant = constants.getValue(classIndex) as JvmConstant.Constant
-        val utf8Constant = classConstant.parts[0] as JvmConstant.Constant
-        val utf8Value = utf8Constant.parts[0] as JvmConstant.StringValue
-        return utf8Value.s
+        val classConstant = constants.getValue(classIndex) as JvmConstant.JvmConstantClass
+        return classConstant.name.value
     }
 
     fun lookupUtf8(utf8Index: UShort): String {
-        val utf8Constant = constants.getValue(utf8Index) as JvmConstant.Constant
-        val utf8Value = utf8Constant.parts[0] as JvmConstant.StringValue
-        return utf8Value.s
+        val utf8Constant = constants.getValue(utf8Index) as JvmConstant.JvmConstantUtf8
+        return utf8Constant.value
     }
 
     fun lookupSignature(descriptorIndex: UShort): Signature {

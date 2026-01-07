@@ -4,8 +4,9 @@ import com.seanshubin.jvmspec.domain.descriptor.DescriptorParser
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
 import com.seanshubin.jvmspec.domain.jvm.JvmArgument
 import com.seanshubin.jvmspec.domain.jvm.JvmClass
-import com.seanshubin.jvmspec.domain.jvm.JvmConstant
 import com.seanshubin.jvmspec.domain.jvm.JvmInstruction
+import com.seanshubin.jvmspec.domain.prototype.JvmConstant
+import com.seanshubin.jvmspec.domain.prototype.asStrings
 import com.seanshubin.jvmspec.domain.tree.Tree
 import com.seanshubin.jvmspec.domain.util.PathUtil.removeExtension
 import com.seanshubin.jvmspec.rules.CategoryRule
@@ -61,8 +62,8 @@ class ClassProcessorImpl(
         val children = relevant.map {
             val args = it.args()
             val firstArg = args[0] as JvmArgument.Constant
-            val constant = firstArg.value as JvmConstant.Constant
-            val (className, methodName, methodDescriptor) = JvmConstant.refToStrings(constant)
+            val constant = firstArg.value as JvmConstant.JvmConstantRef
+            val (className, methodName, methodDescriptor) = constant.asStrings()
             val signature = DescriptorParser.build(methodDescriptor)
             val javaSignature = signature.javaFormat(className, methodName)
             Tree(javaSignature)

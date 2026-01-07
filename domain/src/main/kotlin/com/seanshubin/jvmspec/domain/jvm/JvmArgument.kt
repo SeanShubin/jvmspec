@@ -1,6 +1,7 @@
 package com.seanshubin.jvmspec.domain.jvm
 
 import com.seanshubin.jvmspec.domain.primitive.ArrayType
+import com.seanshubin.jvmspec.domain.prototype.JvmConstant
 
 sealed interface JvmArgument {
     data class Constant(val value: JvmConstant) : JvmArgument
