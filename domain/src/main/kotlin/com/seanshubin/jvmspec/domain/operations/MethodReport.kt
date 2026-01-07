@@ -78,7 +78,9 @@ class MethodReport(
             val arg = instruction.args()[0]
             arg as JvmArgument.Constant
             val constant = arg.value as JvmConstant.JvmConstantRef
-            val (className, methodName, methodDescriptor) = constant.asStrings()
+            val className = constant.className
+            val methodName = constant.jvmNameAndType.name
+            val methodDescriptor = constant.jvmNameAndType.descriptor
             val signature = DescriptorParser.build(methodDescriptor)
             return JvmRef(className, methodName, signature)
         }
@@ -90,7 +92,7 @@ class MethodReport(
             val arg = instruction.args()[0]
             arg as JvmArgument.Constant
             val constant = arg.value as JvmConstant.JvmConstantClass
-            val className = constant.asString()
+            val className = constant.name
             return className
         }
 

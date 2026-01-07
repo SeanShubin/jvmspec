@@ -164,17 +164,3 @@ interface JvmConstant {
         override val nameAndType: JvmConstantNameAndType
     ) : JvmConstantDynamic
 }
-
-// Extension functions for easier migration from old companion methods
-fun JvmConstant.JvmConstantUtf8.asString(): String = this.value
-
-fun JvmConstant.JvmConstantClass.asString(): String = this.nameUtf8.value
-
-fun JvmConstant.JvmConstantNameAndType.asStrings(): Pair<String, String> =
-    this.nameUtf8.value to this.descriptorUtf8.value
-
-fun JvmConstant.JvmConstantRef.asStrings(): Triple<String, String, String> {
-    val className = this.jvmClass.nameUtf8.value
-    val (methodName, methodDescriptor) = this.jvmNameAndType.asStrings()
-    return Triple(className, methodName, methodDescriptor)
-}
