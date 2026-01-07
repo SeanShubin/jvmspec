@@ -24,7 +24,14 @@ class ApplicationDependencies(
         FilterImpl(include, exclude, notifications::filterEvent)
     private val fileSelector: FileSelector = FileSelectorImpl(baseDir, files, filter)
     private val jvmSpecFormat: JvmSpecFormat = JvmSpecFormatDetailed()
-    private val classProcessor: ClassProcessor = ClassProcessorImpl(baseDir, outputDir, jvmSpecFormat)
+    private val classProcessor: ClassProcessor = ClassProcessorImpl(
+        baseDir,
+        outputDir,
+        jvmSpecFormat,
+        core,
+        boundary,
+        categoryRuleSet
+    )
     private val environment: Environment = EnvironmentImpl(files)
     private val commandRunner: CommandRunner = CommandRunnerImpl(environment)
     val runner: Runnable = Runner(

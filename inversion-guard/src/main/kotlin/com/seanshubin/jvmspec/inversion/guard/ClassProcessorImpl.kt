@@ -8,12 +8,17 @@ import com.seanshubin.jvmspec.domain.jvm.JvmConstant
 import com.seanshubin.jvmspec.domain.jvm.JvmInstruction
 import com.seanshubin.jvmspec.domain.tree.Tree
 import com.seanshubin.jvmspec.domain.util.PathUtil.removeExtension
+import com.seanshubin.jvmspec.rules.CategoryRule
 import java.nio.file.Path
 
 class ClassProcessorImpl(
     private val baseDir: Path,
     private val outputDir: Path,
-    private val format: JvmSpecFormat
+    private val format: JvmSpecFormat,
+    private val core: List<String>,
+    private val boundary: List<String>,
+    private val categoryRuleSet: Map<String, CategoryRule>
+
 ) : ClassProcessor {
     override fun processClass(jvmClass: JvmClass): List<Command> {
         val relativePath = baseDir.relativize(jvmClass.origin)
