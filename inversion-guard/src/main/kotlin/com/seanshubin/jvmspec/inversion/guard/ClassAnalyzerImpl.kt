@@ -10,10 +10,8 @@ class ClassAnalyzerImpl(
     private val ruleInterpreter: RuleInterpreter
 ) : ClassAnalyzer {
     override fun analyzeClass(jvmClass: JvmClass): ClassAnalysis {
-        val path = jvmClass.origin
-        val name = jvmClass.thisClassName
         val methodAnalysisList: List<MethodAnalysis> = analyzeMethods(jvmClass)
-        return ClassAnalysis(path, name, methodAnalysisList)
+        return ClassAnalysis(jvmClass, methodAnalysisList)
     }
 
     private fun analyzeMethods(jvmClass: JvmClass): List<MethodAnalysis> {

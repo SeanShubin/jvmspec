@@ -1,10 +1,9 @@
 package com.seanshubin.jvmspec.inversion.guard
 
-import java.nio.file.Path
+import com.seanshubin.jvmspec.domain.jvm.JvmClass
 
 data class ClassAnalysis(
-    val path: Path,
-    val name: String,
+    val jvmClass: JvmClass,
     val methodAnalysisList: List<MethodAnalysis>
 ) {
     fun complexity(): Int {

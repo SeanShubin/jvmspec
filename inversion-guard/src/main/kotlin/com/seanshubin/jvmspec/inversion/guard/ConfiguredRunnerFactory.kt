@@ -27,14 +27,20 @@ class ConfiguredRunnerFactory(
         val excludeClasses =
             keyValueStore.loadOrCreateDefault(listOf("classes", "exclude"), emptyList<String>()) as List<String>
         val rulesFileName = keyValueStore.loadOrCreateDefault(listOf("rules"), "inversion-guard-rules.json") as String
+        val localCore =
+            keyValueStore.loadOrCreateDefault(listOf("localRules", "core"), emptyList<String>()) as List<String>
+        val localBoundary =
+            keyValueStore.loadOrCreateDefault(listOf("localRules", "boundary"), emptyList<String>()) as List<String>
         val baseDir = Path.of(baseDirName)
         val outputDir = Path.of(outputDirName)
         val rulesFile = Path.of(rulesFileName)
         val rulesJson = files.readString(rulesFile)
         val rulesData = ruleLoader.load(rulesJson)
         val categories = rulesData.categories
-        val core = rulesData.core
-        val boundary = rulesData.boundary
+        val globalCore = rulesData.core
+        val globalBoundary = rulesData.boundary
+        val core = localCore + globalCore
+        val boundary = localBoundary + globalBoundary
         val configuration = Configuration(
             baseDir,
             outputDir,

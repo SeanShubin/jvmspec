@@ -9,6 +9,19 @@ class FileSelectorImpl(
     private val files: FilesContract,
     private val filter: (Path) -> FilterResult
 ) : FileSelector {
+    override fun <T> map(f: (Path) -> T): List<T> {
+        return files.walk(baseDir).filter { path ->
+            files.isRegularFile(path)
+        }.flatMap { path ->
+            val filterResult = filter(path)
+            if (filterResult == FilterResult.WHITELIST_ONLY) {
+                listOf(f(path)).stream()
+            } else {
+                emptyList<T>().stream()
+            }
+        }.toList()
+    }
+
     override fun <T> flatMap(f: (Path) -> List<T>): List<T> {
         return files.walk(baseDir).filter { path ->
             files.isRegularFile(path)

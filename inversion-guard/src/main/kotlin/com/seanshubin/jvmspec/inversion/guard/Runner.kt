@@ -7,15 +7,19 @@ class Runner(
     private val files: FilesContract,
     private val fileSelector: FileSelector,
     private val classAnalyzer: ClassAnalyzer,
+    private val analysisSummarizer: AnalysisSummarizer,
     private val classProcessor: ClassProcessor,
     private val commandRunner: CommandRunner
 ) : Runnable {
     override fun run() {
-        fileSelector.flatMap { file ->
+        val analysisList = fileSelector.map { file ->
             val jvmClass = file.toJvmClass(files, file)
-            val analysis = classAnalyzer.analyzeClass(jvmClass)
-            classProcessor.processClass(jvmClass, analysis)
-        }.forEach { command ->
+            classAnalyzer.analyzeClass(jvmClass)
+        }
+        val commands = analysisList.flatMap { analysis ->
+            classProcessor.processClass(analysis)
+        } + analysisSummarizer.summarize(analysisList)
+        commands.forEach { command ->
             commandRunner.runCommand(command)
         }
     }

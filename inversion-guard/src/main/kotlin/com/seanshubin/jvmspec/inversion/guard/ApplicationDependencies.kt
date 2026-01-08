@@ -37,10 +37,14 @@ class ApplicationDependencies(
     )
     private val environment: Environment = EnvironmentImpl(files)
     private val commandRunner: CommandRunner = CommandRunnerImpl(environment)
+    private val analysisSummarizer: AnalysisSummarizer = AnalysisSummarizerImpl(
+        outputDir
+    )
     val runner: Runnable = Runner(
         files,
         fileSelector,
         classAnalyzer,
+        analysisSummarizer,
         classProcessor,
         commandRunner
     )

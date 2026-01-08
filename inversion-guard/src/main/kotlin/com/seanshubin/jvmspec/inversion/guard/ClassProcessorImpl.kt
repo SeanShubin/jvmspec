@@ -11,11 +11,11 @@ class ClassProcessorImpl(
     private val outputDir: Path,
     private val format: JvmSpecFormat
 ) : ClassProcessor {
-    override fun processClass(jvmClass: JvmClass, classAnalysis: ClassAnalysis): List<Command> {
-        val relativePath = baseDir.relativize(classAnalysis.path)
+    override fun processClass(classAnalysis: ClassAnalysis): List<Command> {
+        val relativePath = baseDir.relativize(classAnalysis.jvmClass.origin)
         val baseFileName = outputDir.resolve(relativePath).removeExtension("class")
         val analysisCommands = createAnalysisCommands(baseFileName, classAnalysis)
-        val disassemblyCommands = createDisassemblyCommands(baseFileName, jvmClass)
+        val disassemblyCommands = createDisassemblyCommands(baseFileName, classAnalysis.jvmClass)
         val allCommands = analysisCommands + disassemblyCommands
         return allCommands
     }
@@ -30,8 +30,8 @@ class ClassProcessorImpl(
     private fun createAnalysisSummaryTrees(classAnalysis: ClassAnalysis): List<Tree> {
         val methodTrees = createMethodAnalysisTrees(classAnalysis.methodAnalysisList)
         return listOf(
-            Tree("Class: ${classAnalysis.name}"),
-            Tree("Origin: ${classAnalysis.path}"),
+            Tree("Class: ${classAnalysis.jvmClass.thisClassName}"),
+            Tree("Origin: ${classAnalysis.jvmClass.origin}"),
             Tree("Complexity: ${classAnalysis.complexity()}"),
             Tree("Methods(${classAnalysis.methodAnalysisList.size})", methodTrees)
         )

@@ -1,10 +1,19 @@
 {
   "core": [
-    "java/lang/Math:.*"
+    "Long:valueOf:long:Long",
+    "Integer:valueOf:int:Integer",
+    "java.nio.file.FileVisitResult:.*",
+    "java.nio.file.Paths:get:.*",
+    "java.nio.charset.StandardCharsets:.*",
+    "System:arraycopy:.*",
+    "String:format:.*",
+    "java.time.Duration:between:.*"
   ],
   "boundary": [
-    "java/lang/Math:random:.*",
-    "java/io/File:.*"
+    "java.nio.file.Files:.*",
+    "System:out:.*",
+    "java.security.MessageDigest:getInstance:.*",
+    "Thread:sleep:.*"
   ],
   "categories": {
     "static-pass-through": {
