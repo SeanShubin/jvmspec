@@ -13,6 +13,14 @@ data class Signature(
         return formatted
     }
 
+    fun compactFormat(className: String, methodName: String): String {
+        val parameterList = parameters?.joinToString(",") { it.toJavaClassName() } ?: ""
+        val javaClassName = className.toJavaClassName()
+        val formattedReturnType = returnType.toJavaClassName()
+        val formatted = "$javaClassName:$methodName:$parameterList:$formattedReturnType"
+        return formatted
+    }
+
     fun javaFormatUnqualified(className: String, methodName: String): String {
         val parameterList = parameters?.joinToString(", ", "(", ")") { it.toUnqualifiedJavaClassName() } ?: ""
         val javaClassName = className.removePrefix()

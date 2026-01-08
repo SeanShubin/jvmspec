@@ -58,7 +58,7 @@ class RuleInterpreterTest {
                 )
             )
         )
-        val interpreter = RuleInterpreter(ruleSet)
+        val interpreter = RuleInterpreter(ruleSet.categories)
 
         // Should match: no loads, invokestatic, return
         val opcodes1 = listOf("invokestatic", "return")
@@ -94,7 +94,7 @@ class RuleInterpreterTest {
                 )
             )
         )
-        val interpreter = RuleInterpreter(ruleSet)
+        val interpreter = RuleInterpreter(ruleSet.categories)
 
         // Should match: aload, getfield, aload, invokeinterface, return
         val opcodes = listOf("aload", "getfield", "aload", "invokeinterface", "areturn")
@@ -122,7 +122,7 @@ class RuleInterpreterTest {
                 )
             )
         )
-        val interpreter = RuleInterpreter(ruleSet)
+        val interpreter = RuleInterpreter(ruleSet.categories)
 
         val opcodes = listOf("aload", "invokespecial", "return")
 
@@ -166,7 +166,7 @@ class RuleInterpreterTest {
                 )
             )
         )
-        val interpreter = RuleInterpreter(ruleSet)
+        val interpreter = RuleInterpreter(ruleSet.categories)
 
         // Should match with return
         val opcodesWithReturn = listOf(
@@ -205,7 +205,7 @@ class RuleInterpreterTest {
                 )
             )
         )
-        val interpreter = RuleInterpreter(ruleSet)
+        val interpreter = RuleInterpreter(ruleSet.categories)
 
         val opcodes = listOf(
             "getstatic", "ifnonnull", "new", "dup", "invokespecial",
@@ -234,7 +234,7 @@ class RuleInterpreterTest {
                 )
             )
         )
-        val interpreter = RuleInterpreter(ruleSet)
+        val interpreter = RuleInterpreter(ruleSet.categories)
 
         val opcodes = listOf("return")
         val result = interpreter.evaluateCategories("testMethod", opcodes)
@@ -258,7 +258,7 @@ class RuleInterpreterTest {
                 )
             )
         )
-        val interpreter = RuleInterpreter(ruleSet)
+        val interpreter = RuleInterpreter(ruleSet.categories)
 
         // Match with zero loads
         val opcodes0 = listOf("return")

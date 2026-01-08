@@ -1,75 +1,67 @@
 package com.seanshubin.jvmspec.inversion.guard
 
-import com.seanshubin.jvmspec.domain.descriptor.DescriptorParser
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
-import com.seanshubin.jvmspec.domain.jvm.JvmArgument
 import com.seanshubin.jvmspec.domain.jvm.JvmClass
-import com.seanshubin.jvmspec.domain.jvm.JvmConstant
-import com.seanshubin.jvmspec.domain.jvm.JvmInstruction
 import com.seanshubin.jvmspec.domain.tree.Tree
 import com.seanshubin.jvmspec.domain.util.PathUtil.removeExtension
-import com.seanshubin.jvmspec.rules.CategoryRule
 import java.nio.file.Path
 
 class ClassProcessorImpl(
     private val baseDir: Path,
     private val outputDir: Path,
-    private val format: JvmSpecFormat,
-    private val core: List<String>,
-    private val boundary: List<String>,
-    private val categoryRuleSet: Map<String, CategoryRule>
-
+    private val format: JvmSpecFormat
 ) : ClassProcessor {
-    override fun processClass(jvmClass: JvmClass): List<Command> {
-        val relativePath = baseDir.relativize(jvmClass.origin)
+    override fun processClass(jvmClass: JvmClass, classAnalysis: ClassAnalysis): List<Command> {
+        val relativePath = baseDir.relativize(classAnalysis.path)
         val baseFileName = outputDir.resolve(relativePath).removeExtension("class")
-        val analysisCommands = createAnalysisCommands(baseFileName, jvmClass)
+        val analysisCommands = createAnalysisCommands(baseFileName, classAnalysis)
         val disassemblyCommands = createDisassemblyCommands(baseFileName, jvmClass)
         val allCommands = analysisCommands + disassemblyCommands
         return allCommands
     }
 
-    private fun createAnalysisCommands(baseFileName: String, jvmClass: JvmClass): List<Command> {
+    private fun createAnalysisCommands(baseFileName: String, classAnalysis: ClassAnalysis): List<Command> {
         val outputFile = Path.of("$baseFileName-analysis.txt")
-        val complexity = jvmClass.complexity()
+        val methodNodes = classAnalysis.methodAnalysisList.mapIndexed { index, methodAnalysis ->
+            val javaMethod = methodAnalysis.signature.javaFormat(methodAnalysis.className, methodAnalysis.methodName)
+            val compactMethod =
+                methodAnalysis.signature.compactFormat(methodAnalysis.className, methodAnalysis.methodName)
+            val staticInvocationChildren = methodAnalysis.staticInvocations.mapIndexed { index, invocationAnalysis ->
+                val invocationJava =
+                    invocationAnalysis.signature.javaFormat(invocationAnalysis.className, invocationAnalysis.methodName)
+                val invocationCompact = invocationAnalysis.signature.compactFormat(
+                    invocationAnalysis.className,
+                    invocationAnalysis.methodName
+                )
+                val invocationNodes = listOf(
+                    Tree("java: $invocationJava"),
+                    Tree("compact: $invocationCompact"),
+                    Tree("invocationOpcodeName: ${invocationAnalysis.invocationOpcodeName}"),
+                    Tree("invocationType: ${invocationAnalysis.invocationType}")
+                )
+                Tree("Invocation[$index]", invocationNodes)
+            }
+            val methodChildren = listOf(
+                Tree("java: $javaMethod"),
+                Tree("compact: $compactMethod"),
+                Tree("complexity: ${methodAnalysis.complexity}"),
+                Tree("categories: ${methodAnalysis.boundaryLogicCategories.joinToString(",")}"),
+                Tree(
+                    "staticInvocations(${methodAnalysis.staticInvocations.size}): ${methodAnalysis.methodName}",
+                    staticInvocationChildren
+                ),
+                Tree("isBoundaryLogic: ${methodAnalysis.isBoundaryLogic()}")
+            )
+            Tree("Method[$index]", methodChildren)
+        }
         val summaryRoots = listOf(
-            Tree("Class: ${jvmClass.thisClassName}"),
-            Tree("Origin: ${jvmClass.origin}"),
-            Tree("Complexity: $complexity")
+            Tree("Class: ${classAnalysis.name}"),
+            Tree("Origin: ${classAnalysis.path}"),
+            Tree("Complexity: ${classAnalysis.complexity()}"),
+            Tree("Methods(${classAnalysis.methodAnalysisList.size})", methodNodes)
         )
-        val methodChildren: List<Tree> = jvmClass.methods().mapIndexed { index, method ->
-            val instructionMap = method.instructions().groupBy { it.name() }
-            val invokeStaticNodes = createInstructionNode(instructionMap, "invokestatic")
-            val putStaticNodes = createInstructionNode(instructionMap, "getstatic")
-            val getStaticNodes = createInstructionNode(instructionMap, "putstatic")
-            val staticNodes = invokeStaticNodes + putStaticNodes + getStaticNodes
-            val methodHeader = "[$index]: complexity(${method.complexity()}) ${method.javaSignature()}"
-            val methodRoot = Tree(methodHeader, staticNodes)
-            methodRoot
-        }
-        val methodsHeader = "Methods(${jvmClass.methods().size}):"
-        val methodsRoot: Tree = Tree(methodsHeader, methodChildren)
-        val methodRoots = listOf(methodsRoot)
-        val roots: List<Tree> = summaryRoots + methodRoots
-        val command = CreateFileCommand(outputFile, roots)
+        val command = CreateFileCommand(outputFile, summaryRoots)
         return listOf(command)
-    }
-
-    private fun createInstructionNode(instructionMap: Map<String, List<JvmInstruction>>, name: String): List<Tree> {
-        val relevant = instructionMap[name] ?: return emptyList()
-        val root = "$name (${relevant.size})"
-        val children = relevant.map {
-            val args = it.args()
-            val firstArg = args[0] as JvmArgument.Constant
-            val constant = firstArg.value as JvmConstant.JvmConstantRef
-            val className = constant.className
-            val methodName = constant.jvmNameAndType.name
-            val methodDescriptor = constant.jvmNameAndType.descriptor
-            val signature = DescriptorParser.build(methodDescriptor)
-            val javaSignature = signature.javaFormat(className, methodName)
-            Tree(javaSignature)
-        }
-        return listOf(Tree(root, children))
     }
 
     private fun createDisassemblyCommands(baseFileName: String, jvmClass: JvmClass): List<Command> {

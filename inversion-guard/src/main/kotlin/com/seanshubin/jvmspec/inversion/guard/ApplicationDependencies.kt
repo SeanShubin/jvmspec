@@ -5,6 +5,7 @@ import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormatDetailed
 import com.seanshubin.jvmspec.domain.util.FilterResult
 import com.seanshubin.jvmspec.rules.CategoryRule
+import com.seanshubin.jvmspec.rules.RuleInterpreter
 import java.nio.file.Path
 
 class ApplicationDependencies(
@@ -23,19 +24,23 @@ class ApplicationDependencies(
         FilterImpl(include, exclude, notifications::filterEvent)
     private val fileSelector: FileSelector = FileSelectorImpl(baseDir, files, filter)
     private val jvmSpecFormat: JvmSpecFormat = JvmSpecFormatDetailed()
+    private val ruleInterpreter: RuleInterpreter = RuleInterpreter(categoryRuleSet)
+    private val regexMatcher: RegexMatcher = RegexMatcher(core, boundary)
+    private val classAnalyzer: ClassAnalyzer = ClassAnalyzerImpl(
+        regexMatcher,
+        ruleInterpreter
+    )
     private val classProcessor: ClassProcessor = ClassProcessorImpl(
         baseDir,
         outputDir,
-        jvmSpecFormat,
-        core,
-        boundary,
-        categoryRuleSet
+        jvmSpecFormat
     )
     private val environment: Environment = EnvironmentImpl(files)
     private val commandRunner: CommandRunner = CommandRunnerImpl(environment)
     val runner: Runnable = Runner(
         files,
         fileSelector,
+        classAnalyzer,
         classProcessor,
         commandRunner
     )

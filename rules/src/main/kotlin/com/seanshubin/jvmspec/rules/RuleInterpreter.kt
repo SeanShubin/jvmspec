@@ -1,8 +1,8 @@
 package com.seanshubin.jvmspec.rules
 
-class RuleInterpreter(private val ruleSet: CategoryRuleSet) {
+class RuleInterpreter(private val categories: Map<String, CategoryRule>) {
     fun evaluateCategories(method: String, opcodes: List<String>): Set<String> {
-        return ruleSet.categories.flatMap { (categoryName, categoryRule) ->
+        return categories.flatMap { (categoryName, categoryRule) ->
             if (evaluateCategory(method, opcodes, categoryRule)) {
                 setOf(categoryName)
             } else {

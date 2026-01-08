@@ -8,7 +8,7 @@ class CategoryTest {
         private fun createCategory(): Category {
             val objectMapper = RuleMapperFactory.createObjectMapper()
             val ruleSet = objectMapper.readValue(SampleData.rulesJson, CategoryRuleSet::class.java)
-            return Category(ruleSet)
+            return Category(ruleSet.categories)
         }
     }
 
