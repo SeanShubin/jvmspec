@@ -4,6 +4,7 @@ import com.seanshubin.jvmspec.domain.aggregation.Aggregator
 import com.seanshubin.jvmspec.domain.command.Command
 import com.seanshubin.jvmspec.domain.command.WriteLines
 import com.seanshubin.jvmspec.domain.descriptor.DescriptorParser
+import com.seanshubin.jvmspec.domain.descriptor.Signature
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
 import com.seanshubin.jvmspec.domain.jvm.*
 import com.seanshubin.jvmspec.domain.util.StringListRuleMatcher
@@ -26,9 +27,8 @@ class MethodReport(
             "new"
         )
         methods.forEach { method ->
-            val methodName = method.name()
             val methodSignature = method.signature()
-            val javaFormat = methodSignature.javaFormat(className, methodName)
+            val javaFormat = methodSignature.javaFormat()
             val code = method.code()
             if (code == null) {
                 lines.add(javaFormat)
@@ -81,7 +81,8 @@ class MethodReport(
             val className = constant.className
             val methodName = constant.jvmNameAndType.name
             val methodDescriptor = constant.jvmNameAndType.descriptor
-            val signature = DescriptorParser.build(methodDescriptor)
+            val descriptor = DescriptorParser.build(methodDescriptor)
+            val signature = Signature(className, methodName, descriptor)
             return JvmRef(className, methodName, signature)
         }
 

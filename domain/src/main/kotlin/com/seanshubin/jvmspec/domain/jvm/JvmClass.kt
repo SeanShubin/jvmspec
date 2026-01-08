@@ -1,7 +1,7 @@
 package com.seanshubin.jvmspec.domain.jvm
 
+import com.seanshubin.jvmspec.domain.descriptor.Descriptor
 import com.seanshubin.jvmspec.domain.descriptor.DescriptorParser
-import com.seanshubin.jvmspec.domain.descriptor.Signature
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 import java.nio.file.Path
 import java.util.*
@@ -33,7 +33,7 @@ interface JvmClass {
         return utf8Constant.value
     }
 
-    fun lookupSignature(descriptorIndex: UShort): Signature {
+    fun lookupDescriptor(descriptorIndex: UShort): Descriptor {
         val descriptorUtf8 = lookupUtf8(descriptorIndex)
         val descriptor = DescriptorParser.build(descriptorUtf8)
         return descriptor

@@ -170,7 +170,7 @@ data class AggregateData(
 
     fun summaryMethodNames(filterResult: FilterResult): List<String> {
         val set = methods[filterResult] ?: emptySet()
-        return set.map { it.methodId() }.toList().sorted()
+        return set.map { it.signature.compactFormat() }.toList().sorted()
     }
 
     fun summaryClassNames(filterResult: FilterResult): List<String> {

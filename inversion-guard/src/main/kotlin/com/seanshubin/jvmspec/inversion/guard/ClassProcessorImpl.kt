@@ -44,8 +44,8 @@ class ClassProcessorImpl(
     }
 
     private fun createMethodAnalysisTree(index: Int, methodAnalysis: MethodAnalysis): Tree {
-        val javaMethod = methodAnalysis.signature.javaFormat(methodAnalysis.className, methodAnalysis.methodName)
-        val compactMethod = methodAnalysis.signature.compactFormat(methodAnalysis.className, methodAnalysis.methodName)
+        val javaMethod = methodAnalysis.signature.javaFormat()
+        val compactMethod = methodAnalysis.signature.compactFormat()
         val invocationTrees = createInvocationAnalysisTrees(methodAnalysis.staticInvocations)
         val methodChildren = listOf(
             Tree("java: $javaMethod"),
@@ -69,11 +69,8 @@ class ClassProcessorImpl(
 
     private fun createInvocationAnalysisTree(index: Int, invocationAnalysis: InvocationAnalysis): Tree {
         val invocationJava =
-            invocationAnalysis.signature.javaFormat(invocationAnalysis.className, invocationAnalysis.methodName)
-        val invocationCompact = invocationAnalysis.signature.compactFormat(
-            invocationAnalysis.className,
-            invocationAnalysis.methodName
-        )
+            invocationAnalysis.signature.javaFormat()
+        val invocationCompact = invocationAnalysis.signature.compactFormat()
         val invocationNodes = listOf(
             Tree("java: $invocationJava"),
             Tree("compact: $invocationCompact"),

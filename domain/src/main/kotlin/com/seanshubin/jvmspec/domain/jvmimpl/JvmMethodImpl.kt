@@ -25,14 +25,8 @@ class JvmMethodImpl(
 
     override fun signature(): Signature {
         val methodDescriptorIndex = methodInfo.descriptorIndex
-        return jvmClass.lookupSignature(methodDescriptorIndex)
-    }
-
-    override fun javaSignature(): String {
-        val className = className()
-        val methodName = name()
-        val signature = signature()
-        return signature.javaFormat(className, methodName)
+        val descriptor = jvmClass.lookupDescriptor(methodDescriptorIndex)
+        return Signature(className(), name(), descriptor)
     }
 
     override fun attributes(): List<JvmAttribute> {

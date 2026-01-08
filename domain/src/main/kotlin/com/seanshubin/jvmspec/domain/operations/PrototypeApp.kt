@@ -21,10 +21,9 @@ object PrototypeApp {
     }
 
     fun display(jvmClass: JvmClass) {
-        val className = jvmClass.thisClassName
         jvmClass.methods().forEach { method ->
             val methodName = method.name()
-            val javaSignature = method.signature().javaFormatUnqualified(className, methodName)
+            val javaSignature = method.signature().javaFormatUnqualified()
             val code = method.code()
             if (code == null) {
                 println("no code for $javaSignature")

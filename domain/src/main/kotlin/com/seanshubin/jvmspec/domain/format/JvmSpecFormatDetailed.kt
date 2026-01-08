@@ -1,7 +1,5 @@
 package com.seanshubin.jvmspec.domain.format
 
-import com.seanshubin.jvmspec.domain.descriptor.Signature
-import com.seanshubin.jvmspec.domain.descriptor.SignatureType
 import com.seanshubin.jvmspec.domain.jvm.*
 import com.seanshubin.jvmspec.domain.primitive.AccessFlag
 import com.seanshubin.jvmspec.domain.primitive.ConstantPoolTag
@@ -143,11 +141,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     }
 
     private fun fieldOrMethodTree(caption: String, index: Int, fieldOrMethod: JvmFieldOrMethod): Tree {
-        val formattedSignature = formatSignature(
-            fieldOrMethod.className().replace("/", "."),
-            fieldOrMethod.name(),
-            fieldOrMethod.signature()
-        )
+        val formattedSignature = fieldOrMethod.signature().javaFormat()
         val children = listOf(
             Tree("access flags = ${formatAccessFlags(fieldOrMethod.accessFlags())}"),
             Tree("signature = $formattedSignature"),
@@ -271,19 +265,6 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
                 return Tree("${arg.name}(${arg.code.toHexString().uppercase()})")
             }
         }
-    }
-
-    private fun formatSignature(className: String, methodName: String, signature: Signature): String {
-        val formattedReturnType = formatSignatureType(signature.returnType)
-        val formattedArgumentList =
-            signature.parameters?.joinToString(", ", "(", ")", transform = ::formatSignatureType) ?: ""
-        return "$formattedReturnType $className.$methodName$formattedArgumentList"
-    }
-
-    private fun formatSignatureType(signatureType: SignatureType): String {
-        val name = signatureType.name.replace("/", ".")
-        val array = "[]".repeat(signatureType.dimensions)
-        return name + array
     }
 
     fun formatAccessFlags(accessFlags: Set<AccessFlag>): String {

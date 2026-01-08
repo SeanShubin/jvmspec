@@ -57,8 +57,9 @@ class ClassAnalyzerImpl(
         val className = constant.className
         val methodName = constant.jvmNameAndType.name
         val methodDescriptor = constant.jvmNameAndType.descriptor
-        val signature = DescriptorParser.build(methodDescriptor)
-        val invocationType = checkInvocationType(className, methodName, signature)
+        val descriptor = DescriptorParser.build(methodDescriptor)
+        val signature = Signature(className, methodName, descriptor)
+        val invocationType = checkInvocationType(signature)
         return InvocationAnalysis(
             className,
             methodName,
@@ -68,8 +69,8 @@ class ClassAnalyzerImpl(
         )
     }
 
-    private fun checkInvocationType(className: String, methodName: String, signature: Signature): InvocationType {
-        val compact = signature.compactFormat(className, methodName)
+    private fun checkInvocationType(signature: Signature): InvocationType {
+        val compact = signature.compactFormat()
         val invocationType = when (coreBoundaryMatcher.match(compact)) {
             RegexMatcher.MatchResult.NEITHER -> InvocationType.UNKNOWN
             RegexMatcher.MatchResult.INCLUDE_ONLY -> InvocationType.CORE

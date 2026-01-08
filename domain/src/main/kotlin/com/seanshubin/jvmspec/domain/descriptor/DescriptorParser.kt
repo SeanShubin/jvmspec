@@ -1,26 +1,24 @@
 package com.seanshubin.jvmspec.domain.descriptor
 
-import kotlin.collections.plus
-
 interface DescriptorParser {
     fun parseCharacter(c: Char): DescriptorParser
-    fun build(): Signature
+    fun build(): Descriptor
 
     companion object {
-        fun build(descriptor: String): Signature {
-            return descriptor.fold(Start(descriptor, 0), ::nextCharacter).build()
+        fun build(descriptorString: String): Descriptor {
+            return descriptorString.fold(Start(descriptorString, 0), ::nextCharacter).build()
         }
 
         fun nextCharacter(acc: DescriptorParser, c: Char): DescriptorParser = acc.parseCharacter(c)
-        class Start(val descriptor: String, val index: Int) : DescriptorParser {
+        class Start(val descriptorString: String, val index: Int) : DescriptorParser {
             override fun parseCharacter(c: Char): DescriptorParser {
                 return when (c) {
-                    '(' -> ParameterList(descriptor, index + 1, emptyList(), 0)
-                    else -> ReturnType(descriptor, index + 1, null, 0).parseCharacter(c)
+                    '(' -> ParameterList(descriptorString, index + 1, emptyList(), 0)
+                    else -> ReturnType(descriptorString, index + 1, null, 0).parseCharacter(c)
                 }
             }
 
-            override fun build(): Signature = throwMustBeInEndStateToBuild(descriptor, index)
+            override fun build(): Descriptor = throwMustBeInEndStateToBuild(descriptorString, index)
         }
 
         class ParameterList(
@@ -45,7 +43,7 @@ interface DescriptorParser {
                 }
             }
 
-            override fun build(): Signature {
+            override fun build(): Descriptor {
                 throwMustBeInEndStateToBuild(descriptor, index)
             }
         }
@@ -65,7 +63,7 @@ interface DescriptorParser {
                 }
             }
 
-            override fun build(): Signature {
+            override fun build(): Descriptor {
                 throwMustBeInEndStateToBuild(descriptor, index)
             }
         }
@@ -91,7 +89,7 @@ interface DescriptorParser {
                 }
             }
 
-            override fun build(): Signature {
+            override fun build(): Descriptor {
                 throwMustBeInEndStateToBuild(descriptor, index)
             }
         }
@@ -111,23 +109,23 @@ interface DescriptorParser {
                 }
             }
 
-            override fun build(): Signature {
+            override fun build(): Descriptor {
                 throwMustBeInEndStateToBuild(descriptor, index)
             }
         }
 
         class FullSignature(
-            val descriptor: String,
+            val descriptorString: String,
             val index: Int,
             val parameters: List<SignatureType>?,
             val returnType: SignatureType
         ) : DescriptorParser {
             override fun parseCharacter(c: Char): DescriptorParser {
-                throwParseError(descriptor, index, c, javaClass.simpleName)
+                throwParseError(descriptorString, index, c, javaClass.simpleName)
             }
 
-            override fun build(): Signature {
-                return Signature(descriptor, parameters, returnType)
+            override fun build(): Descriptor {
+                return Descriptor(descriptorString, parameters, returnType)
             }
         }
 

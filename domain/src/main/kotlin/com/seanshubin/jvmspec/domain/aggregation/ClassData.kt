@@ -53,11 +53,11 @@ data class ClassData(
         val staticInvocations = staticInvocations.toList().sortedByDescending { (_, quantity) ->
             quantity
         }.map { (method, quantity) ->
-            "    ($quantity) ${method.javaFormat()}"
+            "    ($quantity) ${method.signature.javaFormat()}"
         }
         val categoryHeader = listOf("  categories, method")
         val methodCategoryLines = methodCategories.map { (method, categories) ->
-            "    $categories ${method.javaFormat()}"
+            "    $categories ${method.signature.javaFormat()}"
         }
         return header + staticHeader + staticInvocations + categoryHeader + methodCategoryLines
     }

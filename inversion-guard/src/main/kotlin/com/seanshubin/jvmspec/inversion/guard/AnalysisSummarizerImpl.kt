@@ -30,7 +30,7 @@ class AnalysisSummarizerImpl(
     }
 
     private fun methodReport(methodAnalysis: MethodAnalysis): Tree {
-        val javaSyntax = methodAnalysis.signature.javaFormat(methodAnalysis.className, methodAnalysis.methodName)
+        val javaSyntax = methodAnalysis.signature.javaFormat()
         val complexity = methodAnalysis.complexity
         val boundaryString = if (methodAnalysis.boundaryLogicCategories.isEmpty()) {
             "does not match category allowed at boundary"
@@ -50,7 +50,7 @@ class AnalysisSummarizerImpl(
 
     private fun invocationReport(invocationAnalysis: InvocationAnalysis): Tree {
         val compactSyntax =
-            invocationAnalysis.signature.compactFormat(invocationAnalysis.className, invocationAnalysis.methodName)
+            invocationAnalysis.signature.compactFormat()
         val opcodeName = invocationAnalysis.invocationOpcodeName
         val invocationTypeName = invocationAnalysis.invocationType.name
         return Tree("$invocationTypeName $opcodeName $compactSyntax")
