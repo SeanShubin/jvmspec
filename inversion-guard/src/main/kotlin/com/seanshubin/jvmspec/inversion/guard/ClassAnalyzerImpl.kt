@@ -2,10 +2,11 @@ package com.seanshubin.jvmspec.inversion.guard
 
 import com.seanshubin.jvmspec.domain.descriptor.DescriptorParser
 import com.seanshubin.jvmspec.domain.descriptor.Signature
-import com.seanshubin.jvmspec.domain.jvm.*
-import com.seanshubin.jvmspec.domain.tree.Tree
+import com.seanshubin.jvmspec.domain.jvm.JvmArgument
+import com.seanshubin.jvmspec.domain.jvm.JvmClass
+import com.seanshubin.jvmspec.domain.jvm.JvmConstant
+import com.seanshubin.jvmspec.domain.jvm.JvmMethod
 import com.seanshubin.jvmspec.rules.RuleInterpreter
-import java.nio.file.Path
 
 class ClassAnalyzerImpl(
     private val coreBoundaryMatcher: RegexMatcher,
@@ -28,9 +29,6 @@ class ClassAnalyzerImpl(
         val signature = method.signature()
         val complexity = method.complexity()
         val boundaryLogicCategories = boundaryLogicCategories(method)
-        if (boundaryLogicCategories.isNotEmpty()) {
-            println("Boundary logic in $className.$methodName")
-        }
         val staticInvocations = staticInvocations(method)
         return MethodAnalysis(
             className,
@@ -85,48 +83,5 @@ class ClassAnalyzerImpl(
             else -> InvocationType.BOUNDARY
         }
         return invocationType
-    }
-
-    private fun createAnalysisCommands(baseFileName: String, jvmClass: JvmClass): List<Command> {
-        val outputFile = Path.of("$baseFileName-analysis.txt")
-        val complexity = jvmClass.complexity()
-        val summaryRoots = listOf(
-            Tree("Class: ${jvmClass.thisClassName}"),
-            Tree("Origin: ${jvmClass.origin}"),
-            Tree("Complexity: $complexity")
-        )
-        val methodChildren: List<Tree> = jvmClass.methods().mapIndexed { index, method ->
-            val instructionMap = method.instructions().groupBy { it.name() }
-            val invokeStaticNodes = createInstructionNode(instructionMap, "invokestatic")
-            val putStaticNodes = createInstructionNode(instructionMap, "getstatic")
-            val getStaticNodes = createInstructionNode(instructionMap, "putstatic")
-            val staticNodes = invokeStaticNodes + putStaticNodes + getStaticNodes
-            val methodHeader = "[$index]: complexity(${method.complexity()}) ${method.javaSignature()}"
-            val methodRoot = Tree(methodHeader, staticNodes)
-            methodRoot
-        }
-        val methodsHeader = "Methods(${jvmClass.methods().size}):"
-        val methodsRoot: Tree = Tree(methodsHeader, methodChildren)
-        val methodRoots = listOf(methodsRoot)
-        val roots: List<Tree> = summaryRoots + methodRoots
-        val command = CreateFileCommand(outputFile, roots)
-        return listOf(command)
-    }
-
-    private fun createInstructionNode(instructionMap: Map<String, List<JvmInstruction>>, name: String): List<Tree> {
-        val relevant = instructionMap[name] ?: return emptyList()
-        val root = "$name (${relevant.size})"
-        val children = relevant.map {
-            val args = it.args()
-            val firstArg = args[0] as JvmArgument.Constant
-            val constant = firstArg.value as JvmConstant.JvmConstantRef
-            val className = constant.className
-            val methodName = constant.jvmNameAndType.name
-            val methodDescriptor = constant.jvmNameAndType.descriptor
-            val signature = DescriptorParser.build(methodDescriptor)
-            val javaSignature = signature.javaFormat(className, methodName)
-            Tree(javaSignature)
-        }
-        return listOf(Tree(root, children))
     }
 }
