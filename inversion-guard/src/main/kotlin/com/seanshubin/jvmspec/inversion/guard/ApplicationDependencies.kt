@@ -16,6 +16,7 @@ class ApplicationDependencies(
     private val exclude: List<String>,
     private val core: List<String>,
     private val boundary: List<String>,
+    private val failOnUnknown: Boolean,
     private val categoryRuleSet: Map<String, CategoryRule>
 ) {
     private val emit: (Any?) -> Unit = ::println
@@ -28,7 +29,8 @@ class ApplicationDependencies(
     private val regexMatcher: RegexMatcher = RegexMatcher(core, boundary)
     private val classAnalyzer: ClassAnalyzer = ClassAnalyzerImpl(
         regexMatcher,
-        ruleInterpreter
+        ruleInterpreter,
+        failOnUnknown
     )
     private val classProcessor: ClassProcessor = ClassProcessorImpl(
         baseDir,
@@ -59,6 +61,7 @@ class ApplicationDependencies(
                 configuration.exclude,
                 configuration.core,
                 configuration.boundary,
+                configuration.failOnUnknown,
                 configuration.categoryRuleSet
             ).runner
         }

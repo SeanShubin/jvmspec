@@ -7,7 +7,8 @@ import com.seanshubin.jvmspec.rules.RuleInterpreter
 
 class ClassAnalyzerImpl(
     private val coreBoundaryMatcher: RegexMatcher,
-    private val ruleInterpreter: RuleInterpreter
+    private val ruleInterpreter: RuleInterpreter,
+    private val failOnUnknown: Boolean
 ) : ClassAnalyzer {
     override fun analyzeClass(jvmClass: JvmClass): ClassAnalysis {
         val methodAnalysisList: List<MethodAnalysis> = analyzeMethods(jvmClass)
@@ -72,7 +73,10 @@ class ClassAnalyzerImpl(
     private fun checkInvocationType(signature: Signature): InvocationType {
         val compact = signature.compactFormat()
         val invocationType = when (coreBoundaryMatcher.match(compact)) {
-            RegexMatcher.MatchResult.NEITHER -> InvocationType.UNKNOWN
+            RegexMatcher.MatchResult.NEITHER -> {
+                if (failOnUnknown) throw RuntimeException("Unknown invocation: $compact")
+                InvocationType.UNKNOWN
+            }
             RegexMatcher.MatchResult.INCLUDE_ONLY -> InvocationType.CORE
             else -> InvocationType.BOUNDARY
         }

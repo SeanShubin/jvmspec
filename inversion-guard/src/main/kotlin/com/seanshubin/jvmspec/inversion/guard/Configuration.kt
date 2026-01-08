@@ -10,5 +10,6 @@ data class Configuration(
     val exclude: List<String>,
     val core: List<String>,
     val boundary: List<String>,
+    val failOnUnknown: Boolean,
     val categoryRuleSet: Map<String, CategoryRule>
 )
