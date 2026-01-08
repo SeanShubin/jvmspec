@@ -2,10 +2,7 @@ package com.seanshubin.jvmspec.inversion.guard
 
 import com.seanshubin.jvmspec.domain.descriptor.DescriptorParser
 import com.seanshubin.jvmspec.domain.descriptor.Signature
-import com.seanshubin.jvmspec.domain.jvm.JvmArgument
-import com.seanshubin.jvmspec.domain.jvm.JvmClass
-import com.seanshubin.jvmspec.domain.jvm.JvmConstant
-import com.seanshubin.jvmspec.domain.jvm.JvmMethod
+import com.seanshubin.jvmspec.domain.jvm.*
 import com.seanshubin.jvmspec.rules.RuleInterpreter
 
 class ClassAnalyzerImpl(
@@ -48,31 +45,29 @@ class ClassAnalyzerImpl(
     }
 
     private fun staticInvocations(method: JvmMethod): List<InvocationAnalysis> {
-        val invocationAnalysisList = mutableListOf<InvocationAnalysis>()
         val relevantOpcodeNames = setOf("invokestatic", "getstatic", "putstatic")
-        method.instructions().forEach { instruction ->
-            val opcodeName = instruction.name()
-            if (relevantOpcodeNames.contains(opcodeName)) {
-                val args = instruction.args()
-                val firstArg = args[0] as JvmArgument.Constant
-                val constant = firstArg.value as JvmConstant.JvmConstantRef
-                val className = constant.className
-                val methodName = constant.jvmNameAndType.name
-                val methodDescriptor = constant.jvmNameAndType.descriptor
-                val signature = DescriptorParser.build(methodDescriptor)
-                val invocationType = checkInvocationType(className, methodName, signature)
-                invocationAnalysisList.add(
-                    InvocationAnalysis(
-                        className,
-                        methodName,
-                        signature,
-                        opcodeName,
-                        invocationType
-                    )
-                )
-            }
-        }
-        return invocationAnalysisList
+        return method.instructions()
+            .filter { relevantOpcodeNames.contains(it.name()) }
+            .map { createInvocationAnalysis(it) }
+    }
+
+    private fun createInvocationAnalysis(instruction: JvmInstruction): InvocationAnalysis {
+        val opcodeName = instruction.name()
+        val args = instruction.args()
+        val firstArg = args[0] as JvmArgument.Constant
+        val constant = firstArg.value as JvmConstant.JvmConstantRef
+        val className = constant.className
+        val methodName = constant.jvmNameAndType.name
+        val methodDescriptor = constant.jvmNameAndType.descriptor
+        val signature = DescriptorParser.build(methodDescriptor)
+        val invocationType = checkInvocationType(className, methodName, signature)
+        return InvocationAnalysis(
+            className,
+            methodName,
+            signature,
+            opcodeName,
+            invocationType
+        )
     }
 
     private fun checkInvocationType(className: String, methodName: String, signature: Signature): InvocationType {

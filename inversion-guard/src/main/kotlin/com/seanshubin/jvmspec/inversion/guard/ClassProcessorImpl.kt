@@ -22,46 +22,65 @@ class ClassProcessorImpl(
 
     private fun createAnalysisCommands(baseFileName: String, classAnalysis: ClassAnalysis): List<Command> {
         val outputFile = Path.of("$baseFileName-analysis.txt")
-        val methodNodes = classAnalysis.methodAnalysisList.mapIndexed { index, methodAnalysis ->
-            val javaMethod = methodAnalysis.signature.javaFormat(methodAnalysis.className, methodAnalysis.methodName)
-            val compactMethod =
-                methodAnalysis.signature.compactFormat(methodAnalysis.className, methodAnalysis.methodName)
-            val staticInvocationChildren = methodAnalysis.staticInvocations.mapIndexed { index, invocationAnalysis ->
-                val invocationJava =
-                    invocationAnalysis.signature.javaFormat(invocationAnalysis.className, invocationAnalysis.methodName)
-                val invocationCompact = invocationAnalysis.signature.compactFormat(
-                    invocationAnalysis.className,
-                    invocationAnalysis.methodName
-                )
-                val invocationNodes = listOf(
-                    Tree("java: $invocationJava"),
-                    Tree("compact: $invocationCompact"),
-                    Tree("invocationOpcodeName: ${invocationAnalysis.invocationOpcodeName}"),
-                    Tree("invocationType: ${invocationAnalysis.invocationType}")
-                )
-                Tree("Invocation[$index]", invocationNodes)
-            }
-            val methodChildren = listOf(
-                Tree("java: $javaMethod"),
-                Tree("compact: $compactMethod"),
-                Tree("complexity: ${methodAnalysis.complexity}"),
-                Tree("categories: ${methodAnalysis.boundaryLogicCategories.joinToString(",")}"),
-                Tree(
-                    "staticInvocations(${methodAnalysis.staticInvocations.size}): ${methodAnalysis.methodName}",
-                    staticInvocationChildren
-                ),
-                Tree("isBoundaryLogic: ${methodAnalysis.isBoundaryLogic()}")
-            )
-            Tree("Method[$index]", methodChildren)
-        }
-        val summaryRoots = listOf(
+        val summaryTrees = createAnalysisSummaryTrees(classAnalysis)
+        val command = CreateFileCommand(outputFile, summaryTrees)
+        return listOf(command)
+    }
+
+    private fun createAnalysisSummaryTrees(classAnalysis: ClassAnalysis): List<Tree> {
+        val methodTrees = createMethodAnalysisTrees(classAnalysis.methodAnalysisList)
+        return listOf(
             Tree("Class: ${classAnalysis.name}"),
             Tree("Origin: ${classAnalysis.path}"),
             Tree("Complexity: ${classAnalysis.complexity()}"),
-            Tree("Methods(${classAnalysis.methodAnalysisList.size})", methodNodes)
+            Tree("Methods(${classAnalysis.methodAnalysisList.size})", methodTrees)
         )
-        val command = CreateFileCommand(outputFile, summaryRoots)
-        return listOf(command)
+    }
+
+    private fun createMethodAnalysisTrees(methodAnalysisList: List<MethodAnalysis>): List<Tree> {
+        return methodAnalysisList.mapIndexed { index, methodAnalysis ->
+            createMethodAnalysisTree(index, methodAnalysis)
+        }
+    }
+
+    private fun createMethodAnalysisTree(index: Int, methodAnalysis: MethodAnalysis): Tree {
+        val javaMethod = methodAnalysis.signature.javaFormat(methodAnalysis.className, methodAnalysis.methodName)
+        val compactMethod = methodAnalysis.signature.compactFormat(methodAnalysis.className, methodAnalysis.methodName)
+        val invocationTrees = createInvocationAnalysisTrees(methodAnalysis.staticInvocations)
+        val methodChildren = listOf(
+            Tree("java: $javaMethod"),
+            Tree("compact: $compactMethod"),
+            Tree("complexity: ${methodAnalysis.complexity}"),
+            Tree("categories: ${methodAnalysis.boundaryLogicCategories.joinToString(",")}"),
+            Tree(
+                "staticInvocations(${methodAnalysis.staticInvocations.size}): ${methodAnalysis.methodName}",
+                invocationTrees
+            ),
+            Tree("isBoundaryLogic: ${methodAnalysis.isBoundaryLogic()}")
+        )
+        return Tree("Method[$index]", methodChildren)
+    }
+
+    private fun createInvocationAnalysisTrees(invocationAnalysisList: List<InvocationAnalysis>): List<Tree> {
+        return invocationAnalysisList.mapIndexed { index, invocationAnalysis ->
+            createInvocationAnalysisTree(index, invocationAnalysis)
+        }
+    }
+
+    private fun createInvocationAnalysisTree(index: Int, invocationAnalysis: InvocationAnalysis): Tree {
+        val invocationJava =
+            invocationAnalysis.signature.javaFormat(invocationAnalysis.className, invocationAnalysis.methodName)
+        val invocationCompact = invocationAnalysis.signature.compactFormat(
+            invocationAnalysis.className,
+            invocationAnalysis.methodName
+        )
+        val invocationNodes = listOf(
+            Tree("java: $invocationJava"),
+            Tree("compact: $invocationCompact"),
+            Tree("invocationOpcodeName: ${invocationAnalysis.invocationOpcodeName}"),
+            Tree("invocationType: ${invocationAnalysis.invocationType}")
+        )
+        return Tree("Invocation[$index]", invocationNodes)
     }
 
     private fun createDisassemblyCommands(baseFileName: String, jvmClass: JvmClass): List<Command> {
