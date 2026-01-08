@@ -2,6 +2,7 @@ package com.seanshubin.jvmspec.inversion.guard
 
 import com.seanshubin.jvmspec.configuration.FixedPathJsonFileKeyValueStoreFactory
 import com.seanshubin.jvmspec.contract.FilesContract
+import com.seanshubin.jvmspec.domain.util.TypeSafety.toTypedList
 import com.seanshubin.jvmspec.rules.RuleLoader
 import java.nio.file.Path
 
@@ -23,14 +24,15 @@ class ConfiguredRunnerFactory(
             keyValueStore.loadOrCreateDefault(
                 listOf("classes", "include"),
                 listOf(".*/target/.*\\.class")
-            ) as List<String>
-        val excludeClasses =
-            keyValueStore.loadOrCreateDefault(listOf("classes", "exclude"), emptyList<String>()) as List<String>
+            ).toTypedList<String>()
         val rulesFileName = keyValueStore.loadOrCreateDefault(listOf("rules"), "inversion-guard-rules.json") as String
+        val excludeClasses =
+            keyValueStore.loadOrCreateDefault(listOf("classes", "exclude"), emptyList<String>()).toTypedList<String>()
         val localCore =
-            keyValueStore.loadOrCreateDefault(listOf("localRules", "core"), emptyList<String>()) as List<String>
+            keyValueStore.loadOrCreateDefault(listOf("localRules", "core"), emptyList<String>()).toTypedList<String>()
         val localBoundary =
-            keyValueStore.loadOrCreateDefault(listOf("localRules", "boundary"), emptyList<String>()) as List<String>
+            keyValueStore.loadOrCreateDefault(listOf("localRules", "boundary"), emptyList<String>())
+                .toTypedList<String>()
         val baseDir = Path.of(baseDirName)
         val outputDir = Path.of(outputDirName)
         val rulesFile = Path.of(rulesFileName)

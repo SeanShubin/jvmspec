@@ -1,6 +1,7 @@
 package com.seanshubin.jvmspec.domain.operations
 
 import com.seanshubin.jvmspec.domain.dynamic.KeyValueStore
+import com.seanshubin.jvmspec.domain.util.TypeSafety.toTypedList
 import java.nio.file.Path
 
 class ConfigurationReader(
@@ -12,8 +13,8 @@ class ConfigurationReader(
         val inputDir = Path.of(inputDirName)
         val outputDirName = keyValueStore.load(listOf("outputDir")) as String
         val outputDir = Path.of(outputDirName)
-        val include = keyValueStore.load(listOf("include")) as List<String>
-        val exclude = keyValueStore.load(listOf("exclude")) as List<String>
+        val include = keyValueStore.load(listOf("include")).toTypedList<String>()
+        val exclude = keyValueStore.load(listOf("exclude")).toTypedList<String>()
         val configuration = Configuration(
             inputDir,
             outputDir,
