@@ -1,18 +1,13 @@
 package com.seanshubin.jvmspec.domain.operations
 
 import com.seanshubin.jvmspec.contract.FilesContract
-import com.seanshubin.jvmspec.domain.aggregation.AggregateData
-import com.seanshubin.jvmspec.domain.aggregation.AggregatorImpl
 import com.seanshubin.jvmspec.domain.command.Command
 import com.seanshubin.jvmspec.domain.command.CreateDirectories
 import com.seanshubin.jvmspec.domain.data.ClassFile
-import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
-import com.seanshubin.jvmspec.domain.jvm.JvmRef
 import com.seanshubin.jvmspec.domain.jvmimpl.JvmClassImpl
 import com.seanshubin.jvmspec.domain.util.FilterResult
 import com.seanshubin.jvmspec.domain.util.RegexUtil
 import java.io.DataInputStream
-import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Clock
 
@@ -21,16 +16,10 @@ class ReportGenerator(
     private val outputDir: Path,
     private val include: List<String>,
     private val exclude: List<String>,
-    private val methodWhitelist: List<String>,
-    private val methodBlacklist: List<String>,
-    private val classWhitelist: List<String>,
-    private val classBlacklist: List<String>,
     private val files: FilesContract,
     private val clock: Clock,
     private val events: Events,
-    private val disassembleReport: Report,
-    private val format: JvmSpecFormat,
-    private val indent: (String) -> String
+    private val disassembleReport: Report
 ) : Runnable {
     override fun run() {
         withTimer {
@@ -40,52 +29,12 @@ class ReportGenerator(
                 val result = acceptFile(fileName)
                 result == FilterResult.WHITELIST_ONLY
             }
-            val acceptMethodKey = RegexUtil.createMatchFunctionFromList(methodWhitelist, methodBlacklist)
-            val acceptMethod = { method: JvmRef ->
-                acceptMethodKey(method.signature.compactFormat())
-            }
-            val acceptClass = RegexUtil.createMatchFunctionFromList(classWhitelist, classBlacklist)
-            val initialAggregateData = AggregateData.create(acceptMethod, acceptClass)
-            val aggregator = AggregatorImpl(initialAggregateData)
-            val methodReport: Report = MethodReport(aggregator, format, indent)
-            val compositeReport: Report = CompositeReport(
-                listOf(
-                    disassembleReport,
-                    methodReport
-                )
-            )
             files.walk(inputDir).forEach { inputFile ->
                 if (acceptFileBoolean(inputFile)) {
-                    processFile(compositeReport, inputDir, outputDir, inputFile)
+                    processFile(disassembleReport, inputDir, outputDir, inputFile)
                 }
             }
-            files.write(newFile(outputDir, "summary-static.txt"), aggregator.summaryDescendingStaticReferenceCount())
-            files.write(newFile(outputDir, "summary-total.txt"), aggregator.summaryTotal())
-            files.write(
-                newFile(outputDir, "summary-complexity.txt"),
-                aggregator.summaryDescendingCyclomaticComplexity()
-            )
-            files.write(
-                newFile(outputDir, "summary-origin.txt"),
-                aggregator.summaryOrigin()
-            )
-            FilterResult.entries.forEach { matchEnum ->
-                files.write(
-                    newFile(outputDir, "summary-methods-$matchEnum.txt"),
-                    aggregator.summaryMethodNames(matchEnum)
-                )
-                files.write(
-                    newFile(outputDir, "summary-classes-$matchEnum.txt"),
-                    aggregator.summaryClassNames(matchEnum)
-                )
-            }
         }
-    }
-
-    private fun newFile(dir: Path, name: String): Path {
-        val file = dir.resolve(name)
-        Files.deleteIfExists(file)
-        return file
     }
 
     fun withTimer(f: () -> Unit) {

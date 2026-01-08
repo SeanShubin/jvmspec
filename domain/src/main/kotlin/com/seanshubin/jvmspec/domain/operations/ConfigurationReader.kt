@@ -14,19 +14,11 @@ class ConfigurationReader(
         val outputDir = Path.of(outputDirName)
         val include = keyValueStore.load(listOf("include")) as List<String>
         val exclude = keyValueStore.load(listOf("exclude")) as List<String>
-        val methodWhitelist = keyValueStore.load(listOf("methodWhitelist")) as List<String>
-        val methodBlacklist = keyValueStore.load(listOf("methodBlacklist")) as List<String>
-        val classWhitelist = keyValueStore.load(listOf("classWhitelist")) as List<String>
-        val classBlacklist = keyValueStore.load(listOf("classBlacklist")) as List<String>
         val configuration = Configuration(
             inputDir,
             outputDir,
             include,
-            exclude,
-            methodWhitelist,
-            methodBlacklist,
-            classWhitelist,
-            classBlacklist
+            exclude
         )
         createFromConfig(configuration).run()
     }

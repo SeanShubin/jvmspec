@@ -26,15 +26,9 @@ class DependenciesWithConfiguration(private val configuration: Configuration) {
         configuration.outputDir,
         configuration.include,
         configuration.exclude,
-        configuration.methodWhitelist,
-        configuration.methodBlacklist,
-        configuration.classWhitelist,
-        configuration.classBlacklist,
         files,
         clock,
         notifications,
-        disassembleReport,
-        format,
-        indent
+        disassembleReport
     )
 }
