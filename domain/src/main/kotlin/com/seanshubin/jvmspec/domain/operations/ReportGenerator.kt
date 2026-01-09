@@ -4,30 +4,28 @@ import com.seanshubin.jvmspec.contract.FilesContract
 import com.seanshubin.jvmspec.domain.command.Command
 import com.seanshubin.jvmspec.domain.command.CreateDirectories
 import com.seanshubin.jvmspec.domain.data.ClassFile
+import com.seanshubin.jvmspec.domain.filter.Filter
+import com.seanshubin.jvmspec.domain.filter.FilterResult
 import com.seanshubin.jvmspec.domain.jvmimpl.JvmClassImpl
-import com.seanshubin.jvmspec.domain.util.FilterResult
-import com.seanshubin.jvmspec.domain.util.RegexUtil
+import com.seanshubin.jvmspec.domain.util.Timer
 import java.io.DataInputStream
 import java.nio.file.Path
-import java.time.Clock
 
 class ReportGenerator(
     private val inputDir: Path,
     private val outputDir: Path,
-    private val include: List<String>,
-    private val exclude: List<String>,
+    private val classFileNameFilter: Filter,
     private val files: FilesContract,
-    private val clock: Clock,
+    private val timer: Timer,
     private val events: Events,
     private val disassembleReport: Report
 ) : Runnable {
     override fun run() {
-        withTimer {
-            val acceptFile = RegexUtil.createMatchFunctionFromList(include, exclude)
+        val durationMillis = timer.withTimerMilliseconds {
             val acceptFileBoolean = { file: Path ->
                 val fileName = file.toString()
-                val result = acceptFile(fileName)
-                result == FilterResult.WHITELIST_ONLY
+                val result = classFileNameFilter.match(fileName)
+                result == FilterResult.INCLUDE_ONLY
             }
             files.walk(inputDir).forEach { inputFile ->
                 if (acceptFileBoolean(inputFile)) {
@@ -35,13 +33,6 @@ class ReportGenerator(
                 }
             }
         }
-    }
-
-    fun withTimer(f: () -> Unit) {
-        val startTime = clock.millis()
-        f()
-        val endTime = clock.millis()
-        val durationMillis = endTime - startTime
         events.timeTakenMillis(durationMillis)
     }
 

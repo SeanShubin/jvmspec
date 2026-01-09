@@ -1,5 +1,6 @@
 {
   "core": [
+    "Short:valueOf:.*",
     "java.time.Period:ofDays:.*",
     "java.time.Period:of:.*",
     "java.util.Arrays:copyOfRange:.*",
@@ -147,7 +148,9 @@
     "Math:log:.*",
     "Boolean:toString:.*",
     "Byte:valueOf:.*",
-    "javax.mail.internet.InternetAddress:toString:.*"
+    "javax.mail.internet.InternetAddress:toString:.*",
+    "java.util.Arrays:copyOf:.*",
+    "java.nio.file.Path:of:.*"
   ],
   "boundary": [
     "System:setIn:.*",
@@ -224,6 +227,12 @@
     "java.nio.charset.Charset:defaultCharset:.*",
     "javax.xml.transform.TransformerFactory:newInstance:.*",
     "java.util.Arrays:hashCode:.*",
+    "Integer:hashCode:.*",
+    "Boolean:hashCode:.*",
+    "Long:hashCode:.*",
+    "Float:hashCode:.*",
+    "Double:hashCode:.*",
+    "Short:hashCode:.*",
     "java.text.NumberFormat:getInstance:.*",
     "javax.crypto.Cipher:getInstance:.*",
     "javax.crypto.KeyGenerator:getInstance:.*",

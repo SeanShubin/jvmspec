@@ -1,12 +1,15 @@
 package com.seanshubin.jvmspec.inversion.guard
 
 import com.seanshubin.jvmspec.contract.FilesContract
+import com.seanshubin.jvmspec.domain.filter.Filter
+import com.seanshubin.jvmspec.domain.filter.RegexFilter
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormatDetailed
-import com.seanshubin.jvmspec.domain.util.FilterResult
+import com.seanshubin.jvmspec.domain.util.Timer
 import com.seanshubin.jvmspec.rules.CategoryRule
 import com.seanshubin.jvmspec.rules.RuleInterpreter
 import java.nio.file.Path
+import java.time.Clock
 
 class ApplicationDependencies(
     private val files: FilesContract,
@@ -19,16 +22,17 @@ class ApplicationDependencies(
     private val failOnUnknown: Boolean,
     private val categoryRuleSet: Map<String, CategoryRule>
 ) {
+    private val clock: Clock = Clock.systemUTC()
     private val emit: (Any?) -> Unit = ::println
     private val notifications: Notifications = LineEmittingNotifications(emit)
-    private val filter: (Path) -> FilterResult =
-        FilterImpl(include, exclude, notifications::filterEvent)
+    private val filter: Filter =
+        RegexFilter(include, exclude)
     private val fileSelector: FileSelector = FileSelectorImpl(baseDir, files, filter)
     private val jvmSpecFormat: JvmSpecFormat = JvmSpecFormatDetailed()
     private val ruleInterpreter: RuleInterpreter = RuleInterpreter(categoryRuleSet)
-    private val regexMatcher: RegexMatcher = RegexMatcher(core, boundary)
+    private val coreBoundaryFilter: Filter = RegexFilter(core, boundary)
     private val classAnalyzer: ClassAnalyzer = ClassAnalyzerImpl(
-        regexMatcher,
+        coreBoundaryFilter,
         ruleInterpreter,
         failOnUnknown
     )
@@ -38,17 +42,24 @@ class ApplicationDependencies(
         jvmSpecFormat
     )
     private val environment: Environment = EnvironmentImpl(files)
-    private val commandRunner: CommandRunner = CommandRunnerImpl(environment)
+    private val commandRunner: CommandRunner = CommandRunnerImpl(
+        environment,
+        notifications::executingCommand
+    )
     private val analysisSummarizer: AnalysisSummarizer = AnalysisSummarizerImpl(
         outputDir
     )
+
+    private val timer: Timer = Timer(clock)
     val runner: Runnable = Runner(
         files,
         fileSelector,
         classAnalyzer,
         analysisSummarizer,
         classProcessor,
-        commandRunner
+        commandRunner,
+        timer,
+        notifications::timeTakenMillis
     )
 
     companion object {

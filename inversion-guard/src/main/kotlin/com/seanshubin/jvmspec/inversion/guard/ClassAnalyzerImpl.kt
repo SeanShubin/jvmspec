@@ -2,11 +2,13 @@ package com.seanshubin.jvmspec.inversion.guard
 
 import com.seanshubin.jvmspec.domain.descriptor.DescriptorParser
 import com.seanshubin.jvmspec.domain.descriptor.Signature
+import com.seanshubin.jvmspec.domain.filter.Filter
+import com.seanshubin.jvmspec.domain.filter.FilterResult
 import com.seanshubin.jvmspec.domain.jvm.*
 import com.seanshubin.jvmspec.rules.RuleInterpreter
 
 class ClassAnalyzerImpl(
-    private val coreBoundaryMatcher: RegexMatcher,
+    private val coreBoundaryFilter: Filter,
     private val ruleInterpreter: RuleInterpreter,
     private val failOnUnknown: Boolean
 ) : ClassAnalyzer {
@@ -72,12 +74,13 @@ class ClassAnalyzerImpl(
 
     private fun checkInvocationType(signature: Signature): InvocationType {
         val compact = signature.compactFormat()
-        val invocationType = when (coreBoundaryMatcher.match(compact)) {
-            RegexMatcher.MatchResult.NEITHER -> {
+        val invocationType = when (coreBoundaryFilter.match(compact)) {
+            FilterResult.NEITHER -> {
                 if (failOnUnknown) throw RuntimeException("Unknown invocation: $compact")
                 InvocationType.UNKNOWN
             }
-            RegexMatcher.MatchResult.INCLUDE_ONLY -> InvocationType.CORE
+
+            FilterResult.INCLUDE_ONLY -> InvocationType.CORE
             else -> InvocationType.BOUNDARY
         }
         return invocationType

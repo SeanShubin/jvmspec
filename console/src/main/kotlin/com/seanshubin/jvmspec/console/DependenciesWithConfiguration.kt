@@ -6,9 +6,11 @@ import com.seanshubin.jvmspec.domain.command.CommandRunner
 import com.seanshubin.jvmspec.domain.command.CommandRunnerImpl
 import com.seanshubin.jvmspec.domain.command.Environment
 import com.seanshubin.jvmspec.domain.command.EnvironmentImpl
+import com.seanshubin.jvmspec.domain.filter.RegexFilter
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormatDetailed
 import com.seanshubin.jvmspec.domain.operations.*
+import com.seanshubin.jvmspec.domain.util.Timer
 import java.time.Clock
 
 class DependenciesWithConfiguration(private val configuration: Configuration) {
@@ -20,14 +22,14 @@ class DependenciesWithConfiguration(private val configuration: Configuration) {
     val clock: Clock = Clock.systemUTC()
     val format: JvmSpecFormat = JvmSpecFormatDetailed()
     val disassembleReport: Report = DisassembleReport(format)
-    val indent: (String) -> String = { it.padStart(it.length + 2) }
+    val classFileNameFilter: RegexFilter = RegexFilter(configuration.include, configuration.exclude)
+    val timer: Timer = Timer(clock)
     val runner: Runnable = ReportGenerator(
         configuration.inputDir,
         configuration.outputDir,
-        configuration.include,
-        configuration.exclude,
+        classFileNameFilter,
         files,
-        clock,
+        timer,
         notifications,
         disassembleReport
     )

@@ -1,12 +1,19 @@
 package com.seanshubin.jvmspec.inversion.guard
 
-import com.seanshubin.jvmspec.domain.util.FilterResult
-import java.nio.file.Path
+import com.seanshubin.jvmspec.domain.durationformat.DurationFormat
 
 class LineEmittingNotifications(
     private val emit: (Any?) -> Unit
 ) : Notifications {
-    override fun filterEvent(file: Path, filterResult: FilterResult) {
-//        emit("$filterResult $file")
+    override fun timeTakenMillis(millis: Long) {
+        DurationFormat.milliseconds.format(millis).let { formattedDuration ->
+            emit("Time taken: $formattedDuration")
+        }
+    }
+
+    override fun executingCommand(command: Command) {
+        when (command) {
+            is CreateFileCommand -> emit("Create file ${command.path}")
+        }
     }
 }
