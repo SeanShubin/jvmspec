@@ -14,7 +14,7 @@ import com.seanshubin.jvmspec.domain.util.Timer
 import java.time.Clock
 
 class DependenciesWithConfiguration(private val configuration: Configuration) {
-    val files: FilesContract = FilesDelegate
+    val files: FilesContract = FilesDelegate.defaultInstance()
     val emit: (Any?) -> Unit = ::println
     val environment: Environment = EnvironmentImpl(files)
     val commandRunner: CommandRunner = CommandRunnerImpl(environment)

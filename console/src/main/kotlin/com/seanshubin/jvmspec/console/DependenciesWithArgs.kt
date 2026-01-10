@@ -11,7 +11,7 @@ import java.nio.file.Paths
 class DependenciesWithArgs(args: Array<String>) {
     val configFileName = args.getOrNull(0) ?: "config.json"
     val configFilePath = Paths.get(configFileName)
-    val files: FilesContract = FilesDelegate
+    val files: FilesContract = FilesDelegate.defaultInstance()
     val keyValueStore: KeyValueStore = JsonFileKeyValueStore(configFilePath, files)
     val createRunner: (Configuration) -> Runnable = { configuration ->
         DependenciesWithConfiguration(configuration).runner

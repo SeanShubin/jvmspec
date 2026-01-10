@@ -45,13 +45,19 @@
       "jackson-time",
       "contract"
     ],
+    "samples": [
+      "contract"
+    ],
     "console": [
       "domain"
     ],
-    "inversion-guard": [
+    "inversion-guard-domain": [
       "domain",
       "rules",
       "configuration"
+    ],
+    "inversion-guard-app": [
+      "inversion-guard-domain"
     ],
     "rules": [
       "jackson",

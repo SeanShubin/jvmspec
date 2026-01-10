@@ -1,0 +1,60 @@
+package com.seanshubin.jvmspec.inversion.guard.domain
+
+import com.seanshubin.jvmspec.configuration.FixedPathJsonFileKeyValueStoreFactory
+import com.seanshubin.jvmspec.contract.FilesContract
+import com.seanshubin.jvmspec.domain.util.TypeSafety.toTypedList
+import com.seanshubin.jvmspec.rules.RuleLoader
+import java.nio.file.Path
+
+class ConfiguredRunnerFactory(
+    private val args: Array<String>,
+    private val createRunner: (FilesContract, Configuration) -> Runnable,
+    private val keyValueStoreFactory: FixedPathJsonFileKeyValueStoreFactory,
+    private val ruleLoader: RuleLoader,
+    private val files: FilesContract,
+) {
+    fun createConfiguredRunner(): Runnable {
+        val configPathName = args.getOrNull(0) ?: "inversion-guard-config.json"
+        val configPath = Path.of(configPathName)
+        val keyValueStore = keyValueStoreFactory.create(configPath)
+        val baseDirName = keyValueStore.loadOrCreateDefault(listOf("inputDir"), ".") as String
+        val outputDirName =
+            keyValueStore.loadOrCreateDefault(listOf("outputDir"), "generated/inversion-guard-report") as String
+        val includeClasses =
+            keyValueStore.loadOrCreateDefault(
+                listOf("classes", "include"),
+                listOf(".*/target/.*\\.class")
+            ).toTypedList<String>()
+        val rulesFileName =
+            keyValueStore.loadOrCreateDefault(listOf("globalRules"), "inversion-guard-rules.json") as String
+        val excludeClasses =
+            keyValueStore.loadOrCreateDefault(listOf("classes", "exclude"), emptyList<String>()).toTypedList<String>()
+        val localCore =
+            keyValueStore.loadOrCreateDefault(listOf("localRules", "core"), emptyList<String>()).toTypedList<String>()
+        val localBoundary =
+            keyValueStore.loadOrCreateDefault(listOf("localRules", "boundary"), emptyList<String>())
+                .toTypedList<String>()
+        val failOnUnknown = keyValueStore.loadOrCreateDefault(listOf("failOnUnknown"), false) as Boolean
+        val baseDir = Path.of(baseDirName)
+        val outputDir = Path.of(outputDirName)
+        val rulesFile = Path.of(rulesFileName)
+        val rulesJson = files.readString(rulesFile)
+        val rulesData = ruleLoader.load(rulesJson)
+        val categories = rulesData.categories
+        val globalCore = rulesData.core
+        val globalBoundary = rulesData.boundary
+        val core = localCore + globalCore
+        val boundary = localBoundary + globalBoundary
+        val configuration = Configuration(
+            baseDir,
+            outputDir,
+            includeClasses,
+            excludeClasses,
+            core,
+            boundary,
+            failOnUnknown,
+            categories
+        )
+        return createRunner(files, configuration)
+    }
+}

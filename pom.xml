@@ -43,8 +43,10 @@
     </dependencyManagement>
     <modules>
         <module>domain</module>
+        <module>samples</module>
         <module>console</module>
-        <module>inversion-guard</module>
+        <module>inversion-guard-domain</module>
+        <module>inversion-guard-app</module>
         <module>rules</module>
         <module>configuration</module>
         <module>contract</module>
