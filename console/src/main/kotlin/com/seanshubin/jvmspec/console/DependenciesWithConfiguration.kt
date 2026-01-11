@@ -25,8 +25,10 @@ class DependenciesWithConfiguration(private val configuration: Configuration) {
     val disassembleReport: Report = DisassembleReport(format)
     val classFileNameFilter: RegexFilter = RegexFilter(
         "class-file-name",
-        configuration.include,
-        configuration.exclude,
+        mapOf(
+            "include" to configuration.include,
+            "exclude" to configuration.exclude
+        ),
         FilterEvent.consumeNop
     )
     val timer: Timer = Timer(clock)

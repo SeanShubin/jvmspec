@@ -31,8 +31,10 @@ class ApplicationDependencies(
     private val stats: Stats = StatsImpl()
     private val filter: Filter = RegexFilter(
         "class-file-name",
-        include,
-        exclude,
+        mapOf(
+            "include" to include,
+            "exclude" to exclude
+        ),
         stats::consumeFilterEvent
     )
     private val fileSelector: FileSelector = FileSelectorImpl(baseDir, files, filter)
@@ -40,8 +42,10 @@ class ApplicationDependencies(
     private val ruleInterpreter: RuleInterpreter = RuleInterpreter(categoryRuleSet)
     private val coreBoundaryFilter: Filter = RegexFilter(
         "core-boundary",
-        core,
-        boundary,
+        mapOf(
+            "include" to core,
+            "exclude" to boundary
+        ),
         stats::consumeFilterEvent
     )
     private val classAnalyzer: ClassAnalyzer = ClassAnalyzerImpl(

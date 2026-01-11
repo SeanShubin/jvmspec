@@ -2,7 +2,6 @@ package com.seanshubin.jvmspec.inversion.guard.domain
 
 import com.seanshubin.jvmspec.contract.FilesContract
 import com.seanshubin.jvmspec.domain.filter.Filter
-import com.seanshubin.jvmspec.domain.filter.FilterResult
 import java.nio.file.Path
 import java.util.stream.Stream
 
@@ -20,7 +19,7 @@ class FileSelectorImpl(
             files.isRegularFile(path)
         }.flatMap { path ->
             val filterResult = classFileNameFilter.match(path.toString())
-            if (filterResult == FilterResult.INCLUDE_ONLY) {
+            if (filterResult == setOf("include")) {
                 f(path).stream()
             } else {
                 Stream.empty<T>()

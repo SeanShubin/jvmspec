@@ -5,7 +5,6 @@ import com.seanshubin.jvmspec.domain.command.Command
 import com.seanshubin.jvmspec.domain.command.CreateDirectories
 import com.seanshubin.jvmspec.domain.data.ClassFile
 import com.seanshubin.jvmspec.domain.filter.Filter
-import com.seanshubin.jvmspec.domain.filter.FilterResult
 import com.seanshubin.jvmspec.domain.jvmimpl.JvmClassImpl
 import com.seanshubin.jvmspec.domain.util.Timer
 import java.io.DataInputStream
@@ -25,7 +24,7 @@ class ReportGenerator(
             val acceptFileBoolean = { file: Path ->
                 val fileName = file.toString()
                 val result = classFileNameFilter.match(fileName)
-                result == FilterResult.INCLUDE_ONLY
+                result == setOf("include")
             }
             files.walk(inputDir).forEach { inputFile ->
                 if (acceptFileBoolean(inputFile)) {
