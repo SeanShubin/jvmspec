@@ -51,24 +51,34 @@ class StatsSummarizerImpl(
     }
 
     // Section 1: multi-type-matches
-    // Flat list: text with types summary
+    // Grouped by types set, then list texts
     private fun buildMultiTypeMatchesSection(events: List<MatchedFilterEvent>): Tree {
         val eventsByText = events.groupBy { it.text }
 
-        val multiTypeTexts = eventsByText.entries
-            .filter { (_, eventsForText) ->
-                // Only include texts that match multiple distinct types
-                val uniqueTypes = eventsForText.map { it.type }.distinct()
-                uniqueTypes.size > 1
-            }
-            .sortedBy { it.key }
-            .map { (text, eventsForText) ->
+        // Filter to only texts with multiple types and group by types set
+        val multiTypeTextsByTypes = eventsByText.entries
+            .mapNotNull { (text, eventsForText) ->
                 val uniqueTypes = eventsForText.map { it.type }.distinct().sorted()
-                val typesLabel = uniqueTypes.joinToString(", ")
-                Tree("$text (${uniqueTypes.size} types: $typesLabel)")
+                if (uniqueTypes.size > 1) {
+                    text to uniqueTypes
+                } else {
+                    null
+                }
+            }
+            .groupBy({ it.second }, { it.first })
+
+        val typesSetTrees = multiTypeTextsByTypes.entries
+            .sortedBy { it.key.joinToString(", ") }
+            .map { (types, texts) ->
+                val typesLabel = types.joinToString(", ")
+                val textChildren = texts.sorted().map { text ->
+                    Tree(text)
+                }
+                Tree("{$typesLabel} (${texts.size} total)", textChildren)
             }
 
-        return Tree("multi-type-matches (${multiTypeTexts.size} total)", multiTypeTexts)
+        val totalMultiTypeTexts = multiTypeTextsByTypes.values.sumOf { it.size }
+        return Tree("multi-type-matches ($totalMultiTypeTexts total)", typesSetTrees)
     }
 
     // Section 2: by-text
