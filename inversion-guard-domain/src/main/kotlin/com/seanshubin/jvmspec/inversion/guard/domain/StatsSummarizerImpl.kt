@@ -35,8 +35,8 @@ class StatsSummarizerImpl(
         matchedEvents: List<MatchedFilterEvent>,
         unmatchedEvents: List<UnmatchedFilterEvent>
     ): Tree {
-        val byPatternSection = buildByPatternSection(matchedEvents)
         val byTextSection = buildByTextSection(matchedEvents)
+        val byPatternSection = buildByPatternSection(matchedEvents)
         val noMatchesSection = buildNoMatchesSection(unmatchedEvents)
 
         val totalMatched = matchedEvents.size
@@ -45,40 +45,11 @@ class StatsSummarizerImpl(
 
         return Tree(
             "$category ($total total: $totalMatched matched, $totalUnmatched unmatched)",
-            listOf(byPatternSection, byTextSection, noMatchesSection)
+            listOf(byTextSection, byPatternSection, noMatchesSection)
         )
     }
 
-    // Section 1: by-pattern
-    // Hierarchy: type, pattern -> quantity, text
-    private fun buildByPatternSection(events: List<MatchedFilterEvent>): Tree {
-        // Group by (type, pattern)
-        data class TypePatternKey(val type: String, val pattern: String)
-
-        val eventsByTypePattern = events.groupBy { TypePatternKey(it.type, it.pattern) }
-
-        val typePatternTrees = eventsByTypePattern.entries
-            .sortedWith(compareBy({ it.key.type }, { it.key.pattern }))
-            .map { (key, eventsForTypePattern) ->
-                // Count occurrences of each text under this (type, pattern)
-                val textCounts = eventsForTypePattern.groupingBy { it.text }.eachCount()
-
-                val textChildren = textCounts.entries
-                    .sortedWith(compareByDescending<Map.Entry<String, Int>> { it.value }
-                        .thenBy { it.key })
-                    .map { (text, count) ->
-                        Tree("$count: $text")
-                    }
-
-                val totalCount = eventsForTypePattern.size
-                Tree("${key.type}, ${key.pattern} ($totalCount total)", textChildren)
-            }
-
-        val totalMatched = events.size
-        return Tree("by-pattern ($totalMatched total)", typePatternTrees)
-    }
-
-    // Section 2: by-text
+    // Section 1: by-text
     // Hierarchy: text -> quantity, type, pattern
     private fun buildByTextSection(events: List<MatchedFilterEvent>): Tree {
         val eventsByText = events.groupBy { it.text }
@@ -109,6 +80,35 @@ class StatsSummarizerImpl(
 
         val totalMatched = events.size
         return Tree("by-text ($totalMatched total)", textTrees)
+    }
+
+    // Section 2: by-pattern
+    // Hierarchy: type, pattern -> quantity, text
+    private fun buildByPatternSection(events: List<MatchedFilterEvent>): Tree {
+        // Group by (type, pattern)
+        data class TypePatternKey(val type: String, val pattern: String)
+
+        val eventsByTypePattern = events.groupBy { TypePatternKey(it.type, it.pattern) }
+
+        val typePatternTrees = eventsByTypePattern.entries
+            .sortedWith(compareBy({ it.key.type }, { it.key.pattern }))
+            .map { (key, eventsForTypePattern) ->
+                // Count occurrences of each text under this (type, pattern)
+                val textCounts = eventsForTypePattern.groupingBy { it.text }.eachCount()
+
+                val textChildren = textCounts.entries
+                    .sortedWith(compareByDescending<Map.Entry<String, Int>> { it.value }
+                        .thenBy { it.key })
+                    .map { (text, count) ->
+                        Tree("$count: $text")
+                    }
+
+                val totalCount = eventsForTypePattern.size
+                Tree("${key.type}, ${key.pattern} ($totalCount total)", textChildren)
+            }
+
+        val totalMatched = events.size
+        return Tree("by-pattern ($totalMatched total)", typePatternTrees)
     }
 
     // Section 3: no-matches

@@ -23,12 +23,12 @@ determined to represent simple delegation rather than logic.
     - text     (the input)
 - the report for each category is in a separate file
 - reports are broken down as follows
-    - by pattern
-        - type, pattern (sorted by type ascending, then pattern ascending)
-            - quantity, text (sorted by quantity descending, text ascending)
     - by text
         - text (sorted ascending)
             - quantity, type, pattern (sorted by quantity descending, type ascending, pattern ascending)
+    - by pattern
+        - type, pattern (sorted by type ascending, then pattern ascending)
+            - quantity, text (sorted by quantity descending, text ascending)
     - no matches
         - text (sorted ascending)
 
