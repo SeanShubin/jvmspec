@@ -5,6 +5,8 @@ import com.seanshubin.jvmspec.domain.filter.Filter
 import com.seanshubin.jvmspec.domain.filter.RegexFilter
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormatDetailed
+import com.seanshubin.jvmspec.domain.stats.Stats
+import com.seanshubin.jvmspec.domain.stats.StatsImpl
 import com.seanshubin.jvmspec.domain.util.Timer
 import com.seanshubin.jvmspec.inversion.guard.domain.*
 import com.seanshubin.jvmspec.rules.CategoryRule
@@ -26,12 +28,22 @@ class ApplicationDependencies(
     private val clock: Clock = Clock.systemUTC()
     private val emit: (Any?) -> Unit = ::println
     private val notifications: Notifications = LineEmittingNotifications(emit)
-    private val filter: Filter =
-        RegexFilter(include, exclude)
+    private val stats: Stats = StatsImpl()
+    private val filter: Filter = RegexFilter(
+        include,
+        exclude,
+        "class-file-name",
+        stats::consumeFilterEvent
+    )
     private val fileSelector: FileSelector = FileSelectorImpl(baseDir, files, filter)
     private val jvmSpecFormat: JvmSpecFormat = JvmSpecFormatDetailed()
     private val ruleInterpreter: RuleInterpreter = RuleInterpreter(categoryRuleSet)
-    private val coreBoundaryFilter: Filter = RegexFilter(core, boundary)
+    private val coreBoundaryFilter: Filter = RegexFilter(
+        core,
+        boundary,
+        "core-boundary",
+        stats::consumeFilterEvent
+    )
     private val classAnalyzer: ClassAnalyzer = ClassAnalyzerImpl(
         coreBoundaryFilter,
         ruleInterpreter,
@@ -51,12 +63,18 @@ class ApplicationDependencies(
         outputDir
     )
 
+    private val statsSummarizer: StatsSummarizer = StatsSummarizerImpl(
+        outputDir
+    )
+
     private val timer: Timer = Timer(clock)
     val runner: Runnable = Runner(
         files,
         fileSelector,
         classAnalyzer,
         analysisSummarizer,
+        statsSummarizer,
+        stats,
         classProcessor,
         commandRunner,
         timer,

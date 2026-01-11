@@ -6,6 +6,7 @@ import com.seanshubin.jvmspec.domain.command.CommandRunner
 import com.seanshubin.jvmspec.domain.command.CommandRunnerImpl
 import com.seanshubin.jvmspec.domain.command.Environment
 import com.seanshubin.jvmspec.domain.command.EnvironmentImpl
+import com.seanshubin.jvmspec.domain.filter.FilterEvent
 import com.seanshubin.jvmspec.domain.filter.RegexFilter
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormatDetailed
@@ -22,7 +23,12 @@ class DependenciesWithConfiguration(private val configuration: Configuration) {
     val clock: Clock = Clock.systemUTC()
     val format: JvmSpecFormat = JvmSpecFormatDetailed()
     val disassembleReport: Report = DisassembleReport(format)
-    val classFileNameFilter: RegexFilter = RegexFilter(configuration.include, configuration.exclude)
+    val classFileNameFilter: RegexFilter = RegexFilter(
+        configuration.include,
+        configuration.exclude,
+        "class-file-name",
+        FilterEvent.consumeNop
+    )
     val timer: Timer = Timer(clock)
     val runner: Runnable = ReportGenerator(
         configuration.inputDir,

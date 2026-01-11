@@ -2,6 +2,7 @@ package com.seanshubin.jvmspec.inversion.guard.domain
 
 import com.seanshubin.jvmspec.contract.FilesContract
 import com.seanshubin.jvmspec.domain.converter.toJvmClass
+import com.seanshubin.jvmspec.domain.stats.Stats
 import com.seanshubin.jvmspec.domain.util.Timer
 
 class Runner(
@@ -9,6 +10,8 @@ class Runner(
     private val fileSelector: FileSelector,
     private val classAnalyzer: ClassAnalyzer,
     private val analysisSummarizer: AnalysisSummarizer,
+    private val statsSummarizer: StatsSummarizer,
+    private val stats: Stats,
     private val classProcessor: ClassProcessor,
     private val commandRunner: CommandRunner,
     private val timer: Timer,
@@ -22,7 +25,7 @@ class Runner(
             }
             val commands = analysisList.flatMap { analysis ->
                 classProcessor.processClass(analysis)
-            } + analysisSummarizer.summarize(analysisList)
+            } + analysisSummarizer.summarize(analysisList) + statsSummarizer.summarize(stats)
             commands.forEach { command ->
                 commandRunner.runCommand(command)
             }

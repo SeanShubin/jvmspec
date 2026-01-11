@@ -2,11 +2,23 @@ package com.seanshubin.jvmspec.domain.filter
 
 class RegexFilter(
     private val includePatterns: List<String>,
-    private val excludePatterns: List<String>
+    private val excludePatterns: List<String>,
+    private val category: String,
+    private val filterEvent: (FilterEvent) -> Unit
 ) : Filter {
     val includeRegexList = includePatterns.map { Regex(it) }
     val excludeRegexList = excludePatterns.map { Regex(it) }
     override fun match(text: String): FilterResult {
+        includeRegexList.forEach {
+            if (it.matches(text)) {
+                filterEvent(FilterEvent(category, "include", it.pattern, text))
+            }
+        }
+        excludeRegexList.forEach {
+            if (it.matches(text)) {
+                filterEvent(FilterEvent(category, "exclude", it.pattern, text))
+            }
+        }
         val matchesInclude = includeRegexList.any { it.matches(text) }
         val matchesExclude = excludeRegexList.any { it.matches(text) }
         return when {

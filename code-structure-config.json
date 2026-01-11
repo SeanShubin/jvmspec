@@ -1,28 +1,28 @@
 {
-  "countAsErrors" : {
-    "inDirectCycle" : true,
-    "inGroupCycle" : true,
-    "ancestorDependsOnDescendant" : true,
-    "descendantDependsOnAncestor" : true
+  "countAsErrors": {
+    "inDirectCycle": true,
+    "inGroupCycle": true,
+    "ancestorDependsOnDescendant": true,
+    "descendantDependsOnAncestor": true
   },
-  "maximumAllowedErrorCount" : 0,
-  "inputDir" : ".",
-  "outputDir" : "generated/code-structure",
-  "useObservationsCache" : false,
-  "includeJvmDynamicInvocations" : false,
-  "sourcePrefix" : "https://github.com/SeanShubin/jvmspec/blob/master/",
-  "sourceFileRegexPatterns" : {
+  "maximumAllowedErrorCount": 0,
+  "inputDir": ".",
+  "outputDir": "generated/code-structure",
+  "useObservationsCache": false,
+  "includeJvmDynamicInvocations": false,
+  "sourcePrefix": "https://github.com/SeanShubin/jvmspec/blob/master/",
+  "sourceFileRegexPatterns": {
     "include": [
       ".*/src/main/kotlin/.*\\.kt"
     ],
-    "exclude" : [ ]
+    "exclude": []
   },
-  "nodeLimitForGraph" : 100,
-  "binaryFileRegexPatterns" : {
+  "nodeLimitForGraph": 100,
+  "binaryFileRegexPatterns": {
     "include": [
       ".*/target/.*\\.class"
     ],
-    "exclude" : [ ]
+    "exclude": []
   },
   "documentation": {
     "countAsErrors": {
