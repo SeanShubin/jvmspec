@@ -24,9 +24,9 @@ class DependenciesWithConfiguration(private val configuration: Configuration) {
     val format: JvmSpecFormat = JvmSpecFormatDetailed()
     val disassembleReport: Report = DisassembleReport(format)
     val classFileNameFilter: RegexFilter = RegexFilter(
+        "class-file-name",
         configuration.include,
         configuration.exclude,
-        "class-file-name",
         FilterEvent.consumeNop
     )
     val timer: Timer = Timer(clock)

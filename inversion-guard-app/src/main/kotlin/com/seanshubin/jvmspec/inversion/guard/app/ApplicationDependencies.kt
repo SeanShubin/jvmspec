@@ -30,18 +30,18 @@ class ApplicationDependencies(
     private val notifications: Notifications = LineEmittingNotifications(emit)
     private val stats: Stats = StatsImpl()
     private val filter: Filter = RegexFilter(
+        "class-file-name",
         include,
         exclude,
-        "class-file-name",
         stats::consumeFilterEvent
     )
     private val fileSelector: FileSelector = FileSelectorImpl(baseDir, files, filter)
     private val jvmSpecFormat: JvmSpecFormat = JvmSpecFormatDetailed()
     private val ruleInterpreter: RuleInterpreter = RuleInterpreter(categoryRuleSet)
     private val coreBoundaryFilter: Filter = RegexFilter(
+        "core-boundary",
         core,
         boundary,
-        "core-boundary",
         stats::consumeFilterEvent
     )
     private val classAnalyzer: ClassAnalyzer = ClassAnalyzerImpl(

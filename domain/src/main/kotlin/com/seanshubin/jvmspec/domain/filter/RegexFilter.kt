@@ -1,9 +1,9 @@
 package com.seanshubin.jvmspec.domain.filter
 
 class RegexFilter(
+    private val category: String,
     private val includePatterns: List<String>,
     private val excludePatterns: List<String>,
-    private val category: String,
     private val filterEvent: (FilterEvent) -> Unit
 ) : Filter {
     val includeRegexList = includePatterns.map { Regex(it) }
