@@ -35,7 +35,8 @@ class ApplicationDependencies(
             "include" to include,
             "exclude" to exclude
         ),
-        stats::consumeFilterEvent
+        stats::consumeMatchedFilterEvent,
+        stats::consumeUnmatchedFilterEvent
     )
     private val fileSelector: FileSelector = FileSelectorImpl(baseDir, files, filter)
     private val jvmSpecFormat: JvmSpecFormat = JvmSpecFormatDetailed()
@@ -46,7 +47,8 @@ class ApplicationDependencies(
             "core" to core,
             "boundary" to boundary
         ),
-        stats::consumeFilterEvent
+        stats::consumeMatchedFilterEvent,
+        stats::consumeUnmatchedFilterEvent
     )
     private val classAnalyzer: ClassAnalyzer = ClassAnalyzerImpl(
         coreBoundaryFilter,

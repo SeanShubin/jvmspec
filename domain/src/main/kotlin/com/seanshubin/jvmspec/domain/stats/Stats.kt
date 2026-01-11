@@ -1,8 +1,11 @@
 package com.seanshubin.jvmspec.domain.stats
 
-import com.seanshubin.jvmspec.domain.filter.FilterEvent
+import com.seanshubin.jvmspec.domain.filter.MatchedFilterEvent
+import com.seanshubin.jvmspec.domain.filter.UnmatchedFilterEvent
 
 interface Stats {
-    val filterEvents: List<FilterEvent>
-    fun consumeFilterEvent(filterEvent: FilterEvent)
+    val matchedFilterEvents: List<MatchedFilterEvent>
+    val unmatchedFilterEvents: List<UnmatchedFilterEvent>
+    fun consumeMatchedFilterEvent(event: MatchedFilterEvent)
+    fun consumeUnmatchedFilterEvent(event: UnmatchedFilterEvent)
 }

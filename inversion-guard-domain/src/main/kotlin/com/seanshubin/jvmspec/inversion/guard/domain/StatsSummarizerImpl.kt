@@ -1,6 +1,7 @@
 package com.seanshubin.jvmspec.inversion.guard.domain
 
-import com.seanshubin.jvmspec.domain.filter.FilterEvent
+import com.seanshubin.jvmspec.domain.filter.MatchedFilterEvent
+import com.seanshubin.jvmspec.domain.filter.UnmatchedFilterEvent
 import com.seanshubin.jvmspec.domain.stats.Stats
 import com.seanshubin.jvmspec.domain.tree.Tree
 import java.nio.file.Path
@@ -9,98 +10,117 @@ class StatsSummarizerImpl(
     private val outputDir: Path
 ) : StatsSummarizer {
     override fun summarize(stats: Stats): List<Command> {
-        // Level 1: Group by category
-        val eventsByCategory = stats.filterEvents.groupBy { it.category }
+        // Group matched events by category
+        val matchedByCategory = stats.matchedFilterEvents.groupBy { it.category }
+        // Group unmatched events by category
+        val unmatchedByCategory = stats.unmatchedFilterEvents.groupBy { it.category }
 
-        // Create a separate file command for each category
-        val commands = eventsByCategory.entries
-            .sortedBy { it.key }  // Sort categories alphabetically
-            .map { (category, categoryEvents) ->
-                val categoryTree = buildCategoryTree(category, categoryEvents)
-                val path = outputDir.resolve("stats-$category.txt")
-                CreateFileCommand(path, listOf(categoryTree))
-            }
+        // Get all categories (from both matched and unmatched)
+        val allCategories = (matchedByCategory.keys + unmatchedByCategory.keys).distinct().sorted()
+
+        // Create one file per category
+        val commands = allCategories.map { category ->
+            val matchedEvents = matchedByCategory[category] ?: emptyList()
+            val unmatchedEvents = unmatchedByCategory[category] ?: emptyList()
+            val categoryTree = buildCategoryReport(category, matchedEvents, unmatchedEvents)
+            val path = outputDir.resolve("stats-$category.txt")
+            CreateFileCommand(path, listOf(categoryTree))
+        }
 
         return commands
     }
 
-    private fun buildCategoryTree(category: String, events: List<FilterEvent>): Tree {
-        // Level 2: Group by types set
-        val eventsByTypesSet = events.groupBy { it.types }
+    private fun buildCategoryReport(
+        category: String,
+        matchedEvents: List<MatchedFilterEvent>,
+        unmatchedEvents: List<UnmatchedFilterEvent>
+    ): Tree {
+        val byPatternSection = buildByPatternSection(matchedEvents)
+        val byTextSection = buildByTextSection(matchedEvents)
+        val noMatchesSection = buildNoMatchesSection(unmatchedEvents)
 
-        val typesSetTrees = eventsByTypesSet.entries
-            .sortedBy { formatTypesSet(it.key) }  // Sort by formatted types set
-            .map { (typesSet, typesSetEvents) ->
-                buildTypesSetTree(typesSet, typesSetEvents)
-            }
+        val totalMatched = matchedEvents.size
+        val totalUnmatched = unmatchedEvents.size
+        val total = totalMatched + totalUnmatched
 
-        val totalCount = events.size
-        return Tree("$category ($totalCount total)", typesSetTrees)
+        return Tree(
+            "$category ($total total: $totalMatched matched, $totalUnmatched unmatched)",
+            listOf(byPatternSection, byTextSection, noMatchesSection)
+        )
     }
 
-    private fun buildTypesSetTree(typesSet: Set<String>, events: List<FilterEvent>): Tree {
-        val formattedTypes = formatTypesSet(typesSet)
+    // Section 1: by-pattern
+    // Hierarchy: type, pattern -> quantity, text
+    private fun buildByPatternSection(events: List<MatchedFilterEvent>): Tree {
+        // Group by (type, pattern)
+        data class TypePatternKey(val type: String, val pattern: String)
 
-        // Level 3: Build both branches
-        val byPatternBranch = buildByPatternBranch(events)
-        val byTextBranch = buildByTextBranch(events)
+        val eventsByTypePattern = events.groupBy { TypePatternKey(it.type, it.pattern) }
 
-        val totalCount = events.size
-        return Tree("$formattedTypes ($totalCount total)", listOf(byPatternBranch, byTextBranch))
-    }
-
-    private fun buildByPatternBranch(events: List<FilterEvent>): Tree {
-        // Level 4: Group by pattern
-        val eventsByPattern = events.groupBy { it.pattern }
-
-        val patternTrees = eventsByPattern.entries
-            .sortedBy { it.key }  // Sort patterns alphabetically
-            .map { (pattern, patternEvents) ->
-                // Level 5: Group by text to count occurrences
-                val textCounts = patternEvents.groupingBy { it.text }.eachCount()
+        val typePatternTrees = eventsByTypePattern.entries
+            .sortedWith(compareBy({ it.key.type }, { it.key.pattern }))
+            .map { (key, eventsForTypePattern) ->
+                // Count occurrences of each text under this (type, pattern)
+                val textCounts = eventsForTypePattern.groupingBy { it.text }.eachCount()
 
                 val textChildren = textCounts.entries
                     .sortedWith(compareByDescending<Map.Entry<String, Int>> { it.value }
-                        .thenBy { it.key })  // Sort by count desc, then text asc
+                        .thenBy { it.key })
                     .map { (text, count) ->
                         Tree("$count: $text")
                     }
 
-                val totalCount = patternEvents.size
-                Tree("$pattern ($totalCount total)", textChildren)
+                val totalCount = eventsForTypePattern.size
+                Tree("${key.type}, ${key.pattern} ($totalCount total)", textChildren)
             }
 
-        return Tree("by-pattern", patternTrees)
+        val totalMatched = events.size
+        return Tree("by-pattern ($totalMatched total)", typePatternTrees)
     }
 
-    private fun buildByTextBranch(events: List<FilterEvent>): Tree {
-        // Level 4: Group by text
+    // Section 2: by-text
+    // Hierarchy: text -> quantity, type, pattern
+    private fun buildByTextSection(events: List<MatchedFilterEvent>): Tree {
         val eventsByText = events.groupBy { it.text }
 
         val textTrees = eventsByText.entries
-            .sortedWith(compareByDescending<Map.Entry<String, List<FilterEvent>>> { it.value.size }
-                .thenBy { it.key })  // Sort by count desc, then text asc
-            .map { (text, textEvents) ->
-                // Level 5: Group by pattern to count occurrences
-                val patternCounts = textEvents.groupingBy { it.pattern }.eachCount()
+            .sortedBy { it.key }
+            .map { (text, eventsForText) ->
+                // Count occurrences of each (type, pattern) for this text
+                data class TypePatternKey(val type: String, val pattern: String)
 
-                val patternChildren = patternCounts.entries
-                    .sortedWith(compareByDescending<Map.Entry<String, Int>> { it.value }
-                        .thenBy { it.key })  // Sort by count desc, then pattern asc
-                    .map { (pattern, count) ->
-                        Tree("$count: $pattern")
+                val typePatternCounts = eventsForText
+                    .groupingBy { TypePatternKey(it.type, it.pattern) }
+                    .eachCount()
+
+                val typePatternChildren = typePatternCounts.entries
+                    .sortedWith(
+                        compareByDescending<Map.Entry<TypePatternKey, Int>> { it.value }
+                            .thenBy { it.key.type }
+                            .thenBy { it.key.pattern }
+                    )
+                    .map { (key, count) ->
+                        Tree("$count: ${key.type}, ${key.pattern}")
                     }
 
-                val totalCount = textEvents.size
-                Tree("$text ($totalCount total)", patternChildren)
+                val totalCount = eventsForText.size
+                Tree("$text ($totalCount total)", typePatternChildren)
             }
 
-        return Tree("by-text", textTrees)
+        val totalMatched = events.size
+        return Tree("by-text ($totalMatched total)", textTrees)
     }
 
-    private fun formatTypesSet(types: Set<String>): String {
-        // Sort types alphabetically and format with braces
-        val sortedTypes = types.sorted().joinToString(", ")
-        return "{$sortedTypes}"
+    // Section 3: no-matches
+    // Flat list: text (sorted ascending)
+    private fun buildNoMatchesSection(events: List<UnmatchedFilterEvent>): Tree {
+        val uniqueTexts = events.map { it.text }.distinct().sorted()
+
+        val textTrees = uniqueTexts.map { text ->
+            Tree(text)
+        }
+
+        val totalUnmatched = events.size
+        return Tree("no-matches ($totalUnmatched total)", textTrees)
     }
 }

@@ -6,8 +6,9 @@ import com.seanshubin.jvmspec.domain.command.CommandRunner
 import com.seanshubin.jvmspec.domain.command.CommandRunnerImpl
 import com.seanshubin.jvmspec.domain.command.Environment
 import com.seanshubin.jvmspec.domain.command.EnvironmentImpl
-import com.seanshubin.jvmspec.domain.filter.FilterEvent
+import com.seanshubin.jvmspec.domain.filter.MatchedFilterEvent
 import com.seanshubin.jvmspec.domain.filter.RegexFilter
+import com.seanshubin.jvmspec.domain.filter.UnmatchedFilterEvent
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
 import com.seanshubin.jvmspec.domain.format.JvmSpecFormatDetailed
 import com.seanshubin.jvmspec.domain.operations.*
@@ -29,7 +30,8 @@ class DependenciesWithConfiguration(private val configuration: Configuration) {
             "include" to configuration.include,
             "exclude" to configuration.exclude
         ),
-        FilterEvent.consumeNop
+        { _: MatchedFilterEvent -> }, // nop for matched events
+        { _: UnmatchedFilterEvent -> } // nop for unmatched events
     )
     val timer: Timer = Timer(clock)
     val runner: Runnable = ReportGenerator(
