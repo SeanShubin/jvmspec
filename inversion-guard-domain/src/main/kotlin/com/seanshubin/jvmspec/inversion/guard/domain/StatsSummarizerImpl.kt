@@ -12,15 +12,16 @@ class StatsSummarizerImpl(
         // Level 1: Group by category
         val eventsByCategory = stats.filterEvents.groupBy { it.category }
 
-        val categoryTrees = eventsByCategory.entries
+        // Create a separate file command for each category
+        val commands = eventsByCategory.entries
             .sortedBy { it.key }  // Sort categories alphabetically
             .map { (category, categoryEvents) ->
-                buildCategoryTree(category, categoryEvents)
+                val categoryTree = buildCategoryTree(category, categoryEvents)
+                val path = outputDir.resolve("stats-$category.txt")
+                CreateFileCommand(path, listOf(categoryTree))
             }
 
-        val path = outputDir.resolve("stats.txt")
-        val createFileCommand = CreateFileCommand(path, categoryTrees)
-        return listOf(createFileCommand)
+        return commands
     }
 
     private fun buildCategoryTree(category: String, events: List<FilterEvent>): Tree {
