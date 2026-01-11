@@ -80,7 +80,7 @@ class ClassAnalyzerImpl(
                 InvocationType.UNKNOWN
             }
 
-            filterResult == setOf("include") -> InvocationType.CORE
+            filterResult == setOf("core") -> InvocationType.CORE
             else -> InvocationType.BOUNDARY
         }
         return invocationType

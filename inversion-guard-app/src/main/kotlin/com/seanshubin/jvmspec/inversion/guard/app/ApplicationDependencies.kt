@@ -43,8 +43,8 @@ class ApplicationDependencies(
     private val coreBoundaryFilter: Filter = RegexFilter(
         "core-boundary",
         mapOf(
-            "include" to core,
-            "exclude" to boundary
+            "core" to core,
+            "boundary" to boundary
         ),
         stats::consumeFilterEvent
     )
