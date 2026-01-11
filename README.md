@@ -13,3 +13,22 @@ If there is no logic mixed in with the class containing the static invocations, 
 dependency must have been properly inverted because the logic must be somewhere else.
 We determine "no logic" examining the JVM bytecode and comparing each method call to opcode patterns previously
 determined to represent simple delegation rather than logic.
+
+## Filter Reports
+
+- filter event properties
+    - category (groups related types)
+    - type     (text is grouped by type)
+    - pattern  (associates text with type)
+    - text     (the input)
+- the report for each category is in a separate file
+- reports are broken down as follows
+    - by pattern
+        - type, pattern (sorted by type ascending, then pattern ascending)
+            - quantity, text (sorted by quantity descending, text ascending)
+    - by text
+        - text (sorted ascending)
+            - quantity, type, pattern (sorted by quantity descending, type ascending, pattern ascending)
+    - no matches
+        - text (sorted ascending)
+
