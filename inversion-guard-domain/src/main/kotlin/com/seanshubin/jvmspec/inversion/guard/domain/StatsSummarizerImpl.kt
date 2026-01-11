@@ -35,6 +35,7 @@ class StatsSummarizerImpl(
         matchedEvents: List<MatchedFilterEvent>,
         unmatchedEvents: List<UnmatchedFilterEvent>
     ): Tree {
+        val multiTypeMatchesSection = buildMultiTypeMatchesSection(matchedEvents)
         val byTextSection = buildByTextSection(matchedEvents)
         val byPatternSection = buildByPatternSection(matchedEvents)
         val noMatchesSection = buildNoMatchesSection(unmatchedEvents)
@@ -45,11 +46,32 @@ class StatsSummarizerImpl(
 
         return Tree(
             "$category ($total total: $totalMatched matched, $totalUnmatched unmatched)",
-            listOf(byTextSection, byPatternSection, noMatchesSection)
+            listOf(multiTypeMatchesSection, byTextSection, byPatternSection, noMatchesSection)
         )
     }
 
-    // Section 1: by-text
+    // Section 1: multi-type-matches
+    // Flat list: text with types summary
+    private fun buildMultiTypeMatchesSection(events: List<MatchedFilterEvent>): Tree {
+        val eventsByText = events.groupBy { it.text }
+
+        val multiTypeTexts = eventsByText.entries
+            .filter { (_, eventsForText) ->
+                // Only include texts that match multiple distinct types
+                val uniqueTypes = eventsForText.map { it.type }.distinct()
+                uniqueTypes.size > 1
+            }
+            .sortedBy { it.key }
+            .map { (text, eventsForText) ->
+                val uniqueTypes = eventsForText.map { it.type }.distinct().sorted()
+                val typesLabel = uniqueTypes.joinToString(", ")
+                Tree("$text (${uniqueTypes.size} types: $typesLabel)")
+            }
+
+        return Tree("multi-type-matches (${multiTypeTexts.size} total)", multiTypeTexts)
+    }
+
+    // Section 2: by-text
     // Hierarchy: text -> quantity, type, pattern
     private fun buildByTextSection(events: List<MatchedFilterEvent>): Tree {
         val eventsByText = events.groupBy { it.text }
@@ -75,14 +97,16 @@ class StatsSummarizerImpl(
                     }
 
                 val totalCount = eventsForText.size
-                Tree("$text ($totalCount total)", typePatternChildren)
+                val uniqueTypes = typePatternCounts.keys.map { it.type }.distinct()
+                val typeCountLabel = if (uniqueTypes.size > 1) ", ${uniqueTypes.size} types" else ""
+                Tree("$text ($totalCount total$typeCountLabel)", typePatternChildren)
             }
 
         val totalMatched = events.size
         return Tree("by-text ($totalMatched total)", textTrees)
     }
 
-    // Section 2: by-pattern
+    // Section 3: by-pattern
     // Hierarchy: type, pattern -> quantity, text
     private fun buildByPatternSection(events: List<MatchedFilterEvent>): Tree {
         // Group by (type, pattern)
@@ -111,7 +135,7 @@ class StatsSummarizerImpl(
         return Tree("by-pattern ($totalMatched total)", typePatternTrees)
     }
 
-    // Section 3: no-matches
+    // Section 4: no-matches
     // Flat list: text (sorted ascending)
     private fun buildNoMatchesSection(events: List<UnmatchedFilterEvent>): Tree {
         val uniqueTexts = events.map { it.text }.distinct().sorted()
