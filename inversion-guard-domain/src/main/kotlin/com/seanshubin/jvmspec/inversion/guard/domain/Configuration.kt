@@ -6,8 +6,9 @@ import java.nio.file.Path
 data class Configuration(
     val baseDir: Path,
     val outputDir: Path,
-    val include: List<String>,
-    val exclude: List<String>,
+    val includeFile: List<String>,
+    val excludeFile: List<String>,
+    val skipDir: List<String>,
     val core: List<String>,
     val boundary: List<String>,
     val failOnUnknown: Boolean,

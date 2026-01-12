@@ -18,8 +18,9 @@ class ApplicationDependencies(
     private val files: FilesContract,
     private val baseDir: Path,
     private val outputDir: Path,
-    private val include: List<String>,
-    private val exclude: List<String>,
+    private val includeFile: List<String>,
+    private val excludeFile: List<String>,
+    private val skipDir: List<String>,
     private val core: List<String>,
     private val boundary: List<String>,
     private val failOnUnknown: Boolean,
@@ -29,16 +30,24 @@ class ApplicationDependencies(
     private val emit: (Any?) -> Unit = ::println
     private val notifications: Notifications = LineEmittingNotifications(emit)
     private val stats: Stats = StatsImpl()
-    private val filter: Filter = RegexFilter(
+    private val classFileNameFilter: Filter = RegexFilter(
         "class-file-name",
         mapOf(
-            "include" to include,
-            "exclude" to exclude
+            "includeFile" to includeFile,
+            "excludeFile" to excludeFile
         ),
         stats::consumeMatchedFilterEvent,
         stats::consumeUnmatchedFilterEvent
     )
-    private val fileSelector: FileSelector = FileSelectorImpl(baseDir, files, filter)
+    private val directoryFilter: Filter = RegexFilter(
+        "directory-name",
+        mapOf(
+            "skipDir" to skipDir
+        ),
+        stats::consumeMatchedFilterEvent,
+        stats::consumeUnmatchedFilterEvent
+    )
+    private val fileSelector: FileSelector = FileSelectorImpl(baseDir, files, classFileNameFilter, directoryFilter)
     private val jvmSpecFormat: JvmSpecFormat = JvmSpecFormatDetailed()
     private val ruleInterpreter: RuleInterpreter = RuleInterpreter(categoryRuleSet)
     private val coreBoundaryFilter: Filter = RegexFilter(
@@ -93,8 +102,9 @@ class ApplicationDependencies(
                 files,
                 configuration.baseDir,
                 configuration.outputDir,
-                configuration.include,
-                configuration.exclude,
+                configuration.includeFile,
+                configuration.excludeFile,
+                configuration.skipDir,
                 configuration.core,
                 configuration.boundary,
                 configuration.failOnUnknown,
