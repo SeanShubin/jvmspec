@@ -47,7 +47,11 @@ class ApplicationDependencies(
         stats::consumeMatchedFilterEvent,
         stats::consumeUnmatchedFilterEvent
     )
-    private val fileSelector: FileSelector = FileSelectorImpl(baseDir, files, classFileNameFilter, directoryFilter)
+    private val fileSelectorFileVisitorFactory: FileSelectorFileVisitorFactory = FileSelectorFileVisitorFactoryImpl(
+        directoryFilter,
+        classFileNameFilter
+    )
+    private val fileSelector: FileSelector = FileSelectorImpl(baseDir, files, fileSelectorFileVisitorFactory)
     private val jvmSpecFormat: JvmSpecFormat = JvmSpecFormatDetailed()
     private val ruleInterpreter: RuleInterpreter = RuleInterpreter(categoryRuleSet)
     private val coreBoundaryFilter: Filter = RegexFilter(
