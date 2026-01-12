@@ -8,14 +8,16 @@ import java.io.DataInput
 import java.io.DataInputStream
 import java.nio.file.Path
 
-fun Path.toDataInput(files: FilesContract): DataInput {
-    val inputStream = files.newInputStream(this)
-    return DataInputStream(inputStream)
+object Converter {
+    fun Path.toDataInput(files: FilesContract): DataInput {
+        val inputStream = files.newInputStream(this)
+        return DataInputStream(inputStream)
+    }
+
+    fun DataInput.toClassFile(origin: Path): ClassFile = ClassFile.fromDataInput(origin, this)
+
+    fun ClassFile.toJvmClass(): JvmClass = JvmClassImpl(this)
+
+    fun Path.toJvmClass(files: FilesContract, origin: Path): JvmClass =
+        toDataInput(files).toClassFile(origin).toJvmClass()
 }
-
-fun DataInput.toClassFile(origin: Path): ClassFile = ClassFile.fromDataInput(origin, this)
-
-fun ClassFile.toJvmClass(): JvmClass = JvmClassImpl(this)
-
-fun Path.toJvmClass(files: FilesContract, origin: Path): JvmClass =
-    toDataInput(files).toClassFile(origin).toJvmClass()

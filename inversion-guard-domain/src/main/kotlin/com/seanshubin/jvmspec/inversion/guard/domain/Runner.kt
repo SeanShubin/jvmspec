@@ -1,7 +1,7 @@
 package com.seanshubin.jvmspec.inversion.guard.domain
 
 import com.seanshubin.jvmspec.contract.FilesContract
-import com.seanshubin.jvmspec.domain.converter.toJvmClass
+import com.seanshubin.jvmspec.domain.converter.Converter.toJvmClass
 import com.seanshubin.jvmspec.domain.stats.Stats
 import com.seanshubin.jvmspec.domain.util.Timer
 
