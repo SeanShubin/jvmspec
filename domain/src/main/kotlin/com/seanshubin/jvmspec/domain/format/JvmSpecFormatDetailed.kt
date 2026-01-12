@@ -52,53 +52,56 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
 
     private fun constantsTree(constants: SortedMap<UShort, JvmConstant>): Tree {
         val children = constants.map { (index, constant) ->
-            constantTree(constant)
+            val tree = constantTree(constant)
+            val hexIndex = "0x%04X".format(index.toInt())
+            Tree("[$index($hexIndex)] ${tree.node}", tree.children)
         }
         val parent = Tree("constants(${children.size})", children)
         return parent
     }
 
     private fun constantTree(constant: JvmConstant): Tree {
+        val tagLabel = "${constant.tag.name}_${constant.tag.id}"
         return when (constant) {
             is JvmConstant.Utf8 -> {
-                Tree(constant.value.toSanitizedString())
+                Tree(tagLabel, listOf(Tree(constant.value.toSanitizedString())))
             }
 
             is JvmConstant.IntegerConstant -> {
-                Tree("${constant.value}")
+                Tree(tagLabel, listOf(Tree("${constant.value}")))
             }
 
             is JvmConstant.FloatConstant -> {
-                Tree("${constant.value}")
+                Tree(tagLabel, listOf(Tree("${constant.value}")))
             }
 
             is JvmConstant.LongConstant -> {
-                Tree("${constant.value}")
+                Tree(tagLabel, listOf(Tree("${constant.value}")))
             }
 
             is JvmConstant.DoubleConstant -> {
-                Tree("${constant.value}")
+                Tree(tagLabel, listOf(Tree("${constant.value}")))
             }
 
             is JvmConstant.Class -> {
-                Tree("class", listOf(constantTree(constant.nameUtf8)))
+                Tree(tagLabel, listOf(constantTree(constant.nameUtf8)))
             }
 
             is JvmConstant.StringConstant -> {
-                Tree("string", listOf(constantTree(constant.valueUtf8)))
+                Tree(tagLabel, listOf(constantTree(constant.valueUtf8)))
             }
 
             is JvmConstant.Module -> {
-                Tree("module", listOf(constantTree(constant.moduleNameUtf8)))
+                Tree(tagLabel, listOf(constantTree(constant.moduleNameUtf8)))
             }
 
             is JvmConstant.Package -> {
-                Tree("package", listOf(constantTree(constant.packageNameUtf8)))
+                Tree(tagLabel, listOf(constantTree(constant.packageNameUtf8)))
             }
 
             is JvmConstant.NameAndType -> {
                 Tree(
-                    "name-and-type", listOf(
+                    tagLabel, listOf(
                         constantTree(constant.nameUtf8),
                         constantTree(constant.descriptorUtf8)
                     )
@@ -107,7 +110,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
 
             is JvmConstant.Ref -> {
                 Tree(
-                    constant.tag.name.lowercase(), listOf(
+                    tagLabel, listOf(
                         constantTree(constant.jvmClass),
                         constantTree(constant.jvmNameAndType)
                     )
@@ -115,12 +118,12 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
             }
 
             is JvmConstant.MethodType -> {
-                Tree("method-type", listOf(constantTree(constant.descriptorUtf8)))
+                Tree(tagLabel, listOf(constantTree(constant.descriptorUtf8)))
             }
 
             is JvmConstant.MethodHandle -> {
                 Tree(
-                    "method-handle", listOf(
+                    tagLabel, listOf(
                         Tree("${constant.referenceKind.name}(${constant.referenceKind.code})"),
                         constantTree(constant.reference)
                     )
@@ -129,7 +132,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
 
             is JvmConstant.Dynamic -> {
                 Tree(
-                    constant.tag.name.lowercase(), listOf(
+                    tagLabel, listOf(
                         Tree("bootstrap-method: ${constant.bootstrapMethodAttrIndex}"),
                         constantTree(constant.nameAndType)
                     )
