@@ -15,7 +15,6 @@ class RegexFilter(
         val matchedTypes = mutableSetOf<String>()
         var hasMatch = false
 
-        // Collect all matches and emit one event per (type, pattern, text) combination
         regexesByType.forEach { (type, regexList) ->
             regexList.forEach { regex ->
                 if (regex.matches(text)) {
@@ -26,12 +25,10 @@ class RegexFilter(
             }
         }
 
-        // If no patterns matched, emit unmatched event
         if (!hasMatch) {
             unmatchedFilterEvent(UnmatchedFilterEvent(category, text))
         }
 
         return matchedTypes
     }
-
 }
