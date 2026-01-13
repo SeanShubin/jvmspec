@@ -16,7 +16,7 @@ data class ClassAnalysis(
         val potentiallyBoundaryInvocationCount = boundaryStaticInvocationCount + unknownStaticInvocationCount
         val nonBoundaryLogicCount = countNonBoundaryLogic()
         return if (potentiallyBoundaryInvocationCount > 0 && nonBoundaryLogicCount > 0) {
-            potentiallyBoundaryInvocationCount + nonBoundaryLogicCount
+            potentiallyBoundaryInvocationCount
         } else if (unknownStaticInvocationCount > 0) {
             unknownStaticInvocationCount
         } else {
