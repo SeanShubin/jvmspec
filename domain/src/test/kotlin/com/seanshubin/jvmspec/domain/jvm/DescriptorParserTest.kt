@@ -1,7 +1,7 @@
 package com.seanshubin.jvmspec.domain.jvm
 
-import com.seanshubin.jvmspec.domain.descriptor.DescriptorParser
-import com.seanshubin.jvmspec.domain.descriptor.SignatureType
+import com.seanshubin.jvmspec.domain.classfile.descriptor.DescriptorParser
+import com.seanshubin.jvmspec.domain.classfile.descriptor.SignatureType
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

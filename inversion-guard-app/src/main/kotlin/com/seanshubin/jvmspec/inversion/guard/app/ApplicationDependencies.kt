@@ -1,13 +1,13 @@
 package com.seanshubin.jvmspec.inversion.guard.app
 
 import com.seanshubin.jvmspec.contract.FilesContract
-import com.seanshubin.jvmspec.domain.filter.Filter
-import com.seanshubin.jvmspec.domain.filter.RegexFilter
-import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
-import com.seanshubin.jvmspec.domain.format.JvmSpecFormatDetailed
-import com.seanshubin.jvmspec.domain.stats.Stats
-import com.seanshubin.jvmspec.domain.stats.StatsImpl
-import com.seanshubin.jvmspec.domain.util.Timer
+import com.seanshubin.jvmspec.domain.analysis.filtering.Filter
+import com.seanshubin.jvmspec.domain.analysis.filtering.RegexFilter
+import com.seanshubin.jvmspec.domain.analysis.statistics.Stats
+import com.seanshubin.jvmspec.domain.analysis.statistics.StatsImpl
+import com.seanshubin.jvmspec.domain.infrastructure.time.Timer
+import com.seanshubin.jvmspec.domain.output.formatting.JvmSpecFormat
+import com.seanshubin.jvmspec.domain.output.formatting.JvmSpecFormatDetailed
 import com.seanshubin.jvmspec.inversion.guard.domain.*
 import com.seanshubin.jvmspec.rules.CategoryRule
 import com.seanshubin.jvmspec.rules.RuleInterpreter

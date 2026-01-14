@@ -1,6 +1,6 @@
 package com.seanshubin.jvmspec.inversion.guard.domain
 
-import com.seanshubin.jvmspec.domain.durationformat.DurationFormat
+import com.seanshubin.jvmspec.domain.infrastructure.time.DurationFormat
 
 class LineEmittingNotifications(
     private val emit: (Any?) -> Unit

@@ -1,6 +1,6 @@
 package com.seanshubin.jvmspec.inversion.guard.domain
 
-import com.seanshubin.jvmspec.domain.data.ClassFile
+import com.seanshubin.jvmspec.domain.classfile.structure.ClassFile
 
 class ClassSelectorImpl(
 

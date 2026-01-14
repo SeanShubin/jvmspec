@@ -2,7 +2,7 @@ package com.seanshubin.jvmspec.inversion.guard.domain
 
 import com.seanshubin.jvmspec.configuration.FixedPathJsonFileKeyValueStoreFactory
 import com.seanshubin.jvmspec.contract.FilesContract
-import com.seanshubin.jvmspec.domain.util.TypeSafety.toTypedList
+import com.seanshubin.jvmspec.domain.infrastructure.types.TypeSafety.toTypedList
 import com.seanshubin.jvmspec.rules.RuleLoader
 import java.nio.file.Path
 

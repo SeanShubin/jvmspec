@@ -1,9 +1,9 @@
 package com.seanshubin.jvmspec.inversion.guard.domain
 
-import com.seanshubin.jvmspec.domain.descriptor.DescriptorParser
-import com.seanshubin.jvmspec.domain.descriptor.Signature
-import com.seanshubin.jvmspec.domain.filter.Filter
-import com.seanshubin.jvmspec.domain.jvm.*
+import com.seanshubin.jvmspec.domain.analysis.filtering.Filter
+import com.seanshubin.jvmspec.domain.classfile.descriptor.DescriptorParser
+import com.seanshubin.jvmspec.domain.classfile.descriptor.Signature
+import com.seanshubin.jvmspec.domain.model.api.*
 import com.seanshubin.jvmspec.rules.RuleInterpreter
 
 class ClassAnalyzerImpl(

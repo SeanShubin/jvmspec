@@ -2,17 +2,22 @@ package com.seanshubin.jvmspec.console
 
 import com.seanshubin.jvmspec.contract.FilesContract
 import com.seanshubin.jvmspec.contract.FilesDelegate
-import com.seanshubin.jvmspec.domain.command.CommandRunner
-import com.seanshubin.jvmspec.domain.command.CommandRunnerImpl
-import com.seanshubin.jvmspec.domain.command.Environment
-import com.seanshubin.jvmspec.domain.command.EnvironmentImpl
-import com.seanshubin.jvmspec.domain.filter.MatchedFilterEvent
-import com.seanshubin.jvmspec.domain.filter.RegexFilter
-import com.seanshubin.jvmspec.domain.filter.UnmatchedFilterEvent
-import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
-import com.seanshubin.jvmspec.domain.format.JvmSpecFormatDetailed
-import com.seanshubin.jvmspec.domain.operations.*
-import com.seanshubin.jvmspec.domain.util.Timer
+import com.seanshubin.jvmspec.domain.analysis.filtering.MatchedFilterEvent
+import com.seanshubin.jvmspec.domain.analysis.filtering.RegexFilter
+import com.seanshubin.jvmspec.domain.analysis.filtering.UnmatchedFilterEvent
+import com.seanshubin.jvmspec.domain.infrastructure.command.CommandRunner
+import com.seanshubin.jvmspec.domain.infrastructure.command.CommandRunnerImpl
+import com.seanshubin.jvmspec.domain.infrastructure.command.Environment
+import com.seanshubin.jvmspec.domain.infrastructure.command.EnvironmentImpl
+import com.seanshubin.jvmspec.domain.infrastructure.time.Timer
+import com.seanshubin.jvmspec.domain.output.formatting.JvmSpecFormat
+import com.seanshubin.jvmspec.domain.output.formatting.JvmSpecFormatDetailed
+import com.seanshubin.jvmspec.domain.output.reporting.DisassembleReport
+import com.seanshubin.jvmspec.domain.output.reporting.Report
+import com.seanshubin.jvmspec.domain.runtime.application.LineEmittingNotifications
+import com.seanshubin.jvmspec.domain.runtime.application.Notifications
+import com.seanshubin.jvmspec.domain.runtime.application.ReportGenerator
+import com.seanshubin.jvmspec.domain.runtime.configuration.Configuration
 import java.time.Clock
 
 class DependenciesWithConfiguration(private val configuration: Configuration) {

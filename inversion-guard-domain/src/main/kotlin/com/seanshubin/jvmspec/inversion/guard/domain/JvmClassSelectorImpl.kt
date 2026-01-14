@@ -1,7 +1,7 @@
 package com.seanshubin.jvmspec.inversion.guard.domain
 
-import com.seanshubin.jvmspec.domain.converter.Converter.toJvmClass
-import com.seanshubin.jvmspec.domain.jvm.JvmClass
+import com.seanshubin.jvmspec.domain.model.api.JvmClass
+import com.seanshubin.jvmspec.domain.model.conversion.Converter.toJvmClass
 
 class JvmClassSelectorImpl(
     private val classSelector: ClassSelector

@@ -1,6 +1,6 @@
 package com.seanshubin.jvmspec.inversion.guard.domain
 
-import com.seanshubin.jvmspec.domain.filter.Filter
+import com.seanshubin.jvmspec.domain.analysis.filtering.Filter
 import java.nio.file.FileVisitResult
 import java.nio.file.Path
 import java.nio.file.SimpleFileVisitor

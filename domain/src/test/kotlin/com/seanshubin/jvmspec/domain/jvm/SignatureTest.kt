@@ -1,6 +1,6 @@
 package com.seanshubin.jvmspec.domain.jvm
 
-import com.seanshubin.jvmspec.domain.descriptor.DescriptorParser
+import com.seanshubin.jvmspec.domain.classfile.descriptor.DescriptorParser
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

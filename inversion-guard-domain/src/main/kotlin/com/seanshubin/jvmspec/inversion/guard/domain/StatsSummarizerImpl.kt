@@ -1,9 +1,9 @@
 package com.seanshubin.jvmspec.inversion.guard.domain
 
-import com.seanshubin.jvmspec.domain.filter.MatchedFilterEvent
-import com.seanshubin.jvmspec.domain.filter.UnmatchedFilterEvent
-import com.seanshubin.jvmspec.domain.stats.Stats
-import com.seanshubin.jvmspec.domain.tree.Tree
+import com.seanshubin.jvmspec.domain.analysis.filtering.MatchedFilterEvent
+import com.seanshubin.jvmspec.domain.analysis.filtering.UnmatchedFilterEvent
+import com.seanshubin.jvmspec.domain.analysis.statistics.Stats
+import com.seanshubin.jvmspec.domain.infrastructure.collections.Tree
 import java.nio.file.Path
 
 class StatsSummarizerImpl(

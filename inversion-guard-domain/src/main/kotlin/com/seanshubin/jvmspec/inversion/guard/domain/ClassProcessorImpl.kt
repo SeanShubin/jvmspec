@@ -1,9 +1,9 @@
 package com.seanshubin.jvmspec.inversion.guard.domain
 
-import com.seanshubin.jvmspec.domain.format.JvmSpecFormat
-import com.seanshubin.jvmspec.domain.jvm.JvmClass
-import com.seanshubin.jvmspec.domain.tree.Tree
-import com.seanshubin.jvmspec.domain.util.PathUtil.removeExtension
+import com.seanshubin.jvmspec.domain.infrastructure.collections.Tree
+import com.seanshubin.jvmspec.domain.infrastructure.filesystem.PathUtil.removeExtension
+import com.seanshubin.jvmspec.domain.model.api.JvmClass
+import com.seanshubin.jvmspec.domain.output.formatting.JvmSpecFormat
 import java.nio.file.Path
 
 class ClassProcessorImpl(
