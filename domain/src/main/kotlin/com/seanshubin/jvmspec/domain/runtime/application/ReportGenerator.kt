@@ -2,13 +2,11 @@ package com.seanshubin.jvmspec.domain.runtime.application
 
 import com.seanshubin.jvmspec.contract.FilesContract
 import com.seanshubin.jvmspec.domain.analysis.filtering.Filter
-import com.seanshubin.jvmspec.domain.classfile.structure.ClassFile
 import com.seanshubin.jvmspec.domain.infrastructure.command.Command
 import com.seanshubin.jvmspec.domain.infrastructure.command.CreateDirectories
 import com.seanshubin.jvmspec.domain.infrastructure.time.Timer
-import com.seanshubin.jvmspec.domain.model.implementation.JvmClassImpl
+import com.seanshubin.jvmspec.domain.model.conversion.Converter.toJvmClass
 import com.seanshubin.jvmspec.domain.output.reporting.Report
-import java.io.DataInputStream
 import java.nio.file.Path
 
 class ReportGenerator(
@@ -41,11 +39,7 @@ class ReportGenerator(
         val fileName = inputFile.fileName.toString()
         val outputDir = baseOutputDir.resolve(relativePath).parent
         events.processingFile(inputFile, outputDir)
-        val javaFile = files.newInputStream(inputFile).use { inputStream ->
-            val input = DataInputStream(inputStream)
-            ClassFile.fromDataInput(inputFile, input)
-        }
-        val jvmClass = JvmClassImpl(javaFile)
+        val jvmClass = inputFile.toJvmClass(files, inputFile)
         events.executeCommand(CreateDirectories(outputDir))
         report.reportCommands(fileName, outputDir, jvmClass).forEach { command ->
             events.executeCommand(command)
