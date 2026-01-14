@@ -23,9 +23,10 @@ class AnalysisSummarizerImpl(
     private fun classReport(analysis: ClassAnalysis): Tree {
         val problemCount = analysis.countProblems()
         val className = analysis.jvmClass.thisClassName
+        val classComplexity = analysis.complexity()
         val methodNodes = analysis.methodAnalysisList.map(::methodReport)
         val problemString = if (problemCount == 1) "problem" else "problems"
-        val header = "$problemCount $problemString in $className"
+        val header = "$problemCount $problemString in $className (complexity=$classComplexity)"
         return Tree(header, methodNodes)
     }
 
