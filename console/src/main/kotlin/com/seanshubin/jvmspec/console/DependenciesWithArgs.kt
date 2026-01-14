@@ -9,7 +9,7 @@ import com.seanshubin.jvmspec.domain.runtime.storage.KeyValueStore
 import java.nio.file.Paths
 
 class DependenciesWithArgs(args: Array<String>) {
-    val configFileName = args.getOrNull(0) ?: "config.json"
+    val configFileName = ConfigFileNameResolver.resolveConfigFileName(args)
     val configFilePath = Paths.get(configFileName)
     val files: FilesContract = FilesDelegate.defaultInstance()
     val keyValueStore: KeyValueStore = JsonFileKeyValueStore(configFilePath, files)

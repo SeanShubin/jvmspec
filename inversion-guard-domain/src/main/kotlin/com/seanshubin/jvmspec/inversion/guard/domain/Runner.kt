@@ -3,7 +3,7 @@ package com.seanshubin.jvmspec.inversion.guard.domain
 import com.seanshubin.jvmspec.contract.FilesContract
 import com.seanshubin.jvmspec.domain.analysis.statistics.Stats
 import com.seanshubin.jvmspec.domain.infrastructure.time.Timer
-import com.seanshubin.jvmspec.domain.model.conversion.Converter.toJvmClass
+import com.seanshubin.jvmspec.domain.model.conversion.Converter
 
 class Runner(
     private val files: FilesContract,
@@ -15,12 +15,13 @@ class Runner(
     private val classProcessor: ClassProcessor,
     private val commandRunner: CommandRunner,
     private val timer: Timer,
-    private val timeTakenEvent: (Long) -> Unit
+    private val timeTakenEvent: (Long) -> Unit,
+    private val converter: Converter
 ) : Runnable {
     override fun run() {
         val durationMillis = timer.withTimerMilliseconds {
             val analysisList = fileSelector.map { file ->
-                val jvmClass = file.toJvmClass(files, file)
+                val jvmClass = with(converter) { file.toJvmClass(files, file) }
                 classAnalyzer.analyzeClass(jvmClass)
             }
             val commands = analysisList.flatMap { analysis ->

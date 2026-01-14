@@ -6,6 +6,15 @@ import com.seanshubin.jvmspec.domain.analysis.filtering.RegexFilter
 import com.seanshubin.jvmspec.domain.analysis.statistics.Stats
 import com.seanshubin.jvmspec.domain.analysis.statistics.StatsImpl
 import com.seanshubin.jvmspec.domain.infrastructure.time.Timer
+import com.seanshubin.jvmspec.domain.model.api.JvmAttributeFactory
+import com.seanshubin.jvmspec.domain.model.api.JvmClassFactory
+import com.seanshubin.jvmspec.domain.model.api.JvmFieldFactory
+import com.seanshubin.jvmspec.domain.model.api.JvmMethodFactory
+import com.seanshubin.jvmspec.domain.model.conversion.Converter
+import com.seanshubin.jvmspec.domain.model.implementation.JvmAttributeFactoryImpl
+import com.seanshubin.jvmspec.domain.model.implementation.JvmClassFactoryImpl
+import com.seanshubin.jvmspec.domain.model.implementation.JvmFieldFactoryImpl
+import com.seanshubin.jvmspec.domain.model.implementation.JvmMethodFactoryImpl
 import com.seanshubin.jvmspec.domain.output.formatting.JvmSpecFormat
 import com.seanshubin.jvmspec.domain.output.formatting.JvmSpecFormatDetailed
 import com.seanshubin.jvmspec.inversion.guard.domain.*
@@ -30,6 +39,11 @@ class ApplicationDependencies(
     private val emit: (Any?) -> Unit = ::println
     private val notifications: Notifications = LineEmittingNotifications(emit)
     private val stats: Stats = StatsImpl()
+    private val attributeFactory: JvmAttributeFactory = JvmAttributeFactoryImpl()
+    private val methodFactory: JvmMethodFactory = JvmMethodFactoryImpl(attributeFactory)
+    private val fieldFactory: JvmFieldFactory = JvmFieldFactoryImpl(attributeFactory)
+    private val classFactory: JvmClassFactory = JvmClassFactoryImpl(methodFactory, fieldFactory, attributeFactory)
+    private val converter: Converter = Converter(classFactory)
     private val classFileNameFilter: Filter = RegexFilter(
         "class-file-name",
         mapOf(
@@ -97,7 +111,8 @@ class ApplicationDependencies(
         classProcessor,
         commandRunner,
         timer,
-        notifications::timeTakenMillis
+        notifications::timeTakenMillis,
+        converter
     )
 
     companion object {

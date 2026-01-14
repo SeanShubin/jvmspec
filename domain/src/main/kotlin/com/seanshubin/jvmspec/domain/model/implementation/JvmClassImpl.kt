@@ -6,7 +6,12 @@ import com.seanshubin.jvmspec.domain.model.api.*
 import java.nio.file.Path
 import java.util.*
 
-class JvmClassImpl(private val classFile: ClassFile) : JvmClass {
+class JvmClassImpl(
+    private val classFile: ClassFile,
+    private val methodFactory: JvmMethodFactory,
+    private val fieldFactory: JvmFieldFactory,
+    private val attributeFactory: JvmAttributeFactory
+) : JvmClass {
     override val constants: SortedMap<UShort, JvmConstant> = classFile.constantPool.associate {
         it.index to JvmConstantFactory.createByIndex(classFile.constantPoolMap, it.index)
     }.toSortedMap()
@@ -27,9 +32,10 @@ class JvmClassImpl(private val classFile: ClassFile) : JvmClass {
         }
 
     override fun methods(): List<JvmMethod> {
-        return classFile.methods.map {
-            JvmMethodImpl(this, it)
+        val toJvmMethod = { methodInfo: com.seanshubin.jvmspec.domain.classfile.structure.MethodInfo ->
+            methodFactory.createMethod(this, methodInfo)
         }
+        return classFile.methods.map(toJvmMethod)
     }
 
     override fun interfaces(): List<JvmConstant> {
@@ -39,16 +45,18 @@ class JvmClassImpl(private val classFile: ClassFile) : JvmClass {
     }
 
     override fun fields(): List<JvmField> {
-        return classFile.fields.map {
-            JvmFieldImpl(this, it)
+        val toJvmField = { fieldInfo: com.seanshubin.jvmspec.domain.classfile.structure.FieldInfo ->
+            fieldFactory.createField(this, fieldInfo)
         }
+        return classFile.fields.map(toJvmField)
     }
 
     override val accessFlags: Set<AccessFlag> = classFile.accessFlags
 
     override fun attributes(): List<JvmAttribute> {
-        return classFile.attributes.map {
-            JvmAttributeImpl(this, it)
+        val toJvmAttribute = { attributeInfo: com.seanshubin.jvmspec.domain.classfile.structure.AttributeInfo ->
+            attributeFactory.createAttribute(this, attributeInfo)
         }
+        return classFile.attributes.map(toJvmAttribute)
     }
 }

@@ -2,13 +2,13 @@ package com.seanshubin.jvmspec.domain.model.implementation
 
 import com.seanshubin.jvmspec.domain.classfile.descriptor.Signature
 import com.seanshubin.jvmspec.domain.classfile.specification.AccessFlag
-import com.seanshubin.jvmspec.domain.classfile.structure.AttributeCodeInfo
 import com.seanshubin.jvmspec.domain.classfile.structure.MethodInfo
 import com.seanshubin.jvmspec.domain.model.api.*
 
 class JvmMethodImpl(
     private val jvmClass: JvmClass,
-    private val methodInfo: MethodInfo
+    private val methodInfo: MethodInfo,
+    private val attributeFactory: JvmAttributeFactory
 ) : JvmMethod {
     override fun accessFlags(): Set<AccessFlag> {
         return methodInfo.accessFlags
@@ -31,10 +31,7 @@ class JvmMethodImpl(
 
     override fun attributes(): List<JvmAttribute> {
         val toJvmAttribute = { attribute: com.seanshubin.jvmspec.domain.classfile.structure.AttributeInfo ->
-            when (attribute) {
-                is AttributeCodeInfo -> JvmCodeAttributeImpl(jvmClass, attribute)
-                else -> JvmAttributeImpl(jvmClass, attribute)
-            }
+            attributeFactory.createAttribute(jvmClass, attribute)
         }
         return methodInfo.attributes.map(toJvmAttribute)
     }

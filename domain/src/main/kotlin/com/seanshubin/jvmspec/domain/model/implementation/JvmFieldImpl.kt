@@ -4,12 +4,14 @@ import com.seanshubin.jvmspec.domain.classfile.descriptor.Signature
 import com.seanshubin.jvmspec.domain.classfile.specification.AccessFlag
 import com.seanshubin.jvmspec.domain.classfile.structure.FieldInfo
 import com.seanshubin.jvmspec.domain.model.api.JvmAttribute
+import com.seanshubin.jvmspec.domain.model.api.JvmAttributeFactory
 import com.seanshubin.jvmspec.domain.model.api.JvmClass
 import com.seanshubin.jvmspec.domain.model.api.JvmField
 
 class JvmFieldImpl(
     private val jvmClass: JvmClass,
-    private val fieldInfo: FieldInfo
+    private val fieldInfo: FieldInfo,
+    private val attributeFactory: JvmAttributeFactory
 ) : JvmField {
     override fun accessFlags(): Set<AccessFlag> {
         return fieldInfo.accessFlags
@@ -32,8 +34,9 @@ class JvmFieldImpl(
     }
 
     override fun attributes(): List<JvmAttribute> {
-        return fieldInfo.attributes.map {
-            JvmAttributeImpl(jvmClass, it)
+        val toJvmAttribute = { attributeInfo: com.seanshubin.jvmspec.domain.classfile.structure.AttributeInfo ->
+            attributeFactory.createAttribute(jvmClass, attributeInfo)
         }
+        return fieldInfo.attributes.map(toJvmAttribute)
     }
 }
