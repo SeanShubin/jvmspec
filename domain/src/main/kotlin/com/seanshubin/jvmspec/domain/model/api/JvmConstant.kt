@@ -74,7 +74,6 @@ interface JvmConstant {
         val packageName: String
     }
 
-    // Data class implementations
     data class Utf8(
         override val tag: ConstantPoolTag,
         override val value: String

@@ -11,7 +11,6 @@ enum class ReferenceKind(val code: UByte) {
     NEW_INVOKE_SPECIAL(8u),
     INVOKE_INTERFACE(9u);
 
-    // TODO: remove
     fun line(): String = "${this.name}($code)"
 
     companion object {

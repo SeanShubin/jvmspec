@@ -100,9 +100,8 @@ data class JvmInstructionImpl(
 
     private fun lookupSwitchArgs(): List<JvmArgument> {
         instruction as InstructionLookupSwitch
-        val pairs = instruction.pairs.map { (first, second) ->
-            first to second
-        }
+        val toPair = { matchOffset: MatchOffset -> matchOffset.match to matchOffset.offset }
+        val pairs = instruction.pairs.map(toPair)
         return listOf(JvmArgument.LookupSwitch(instruction.default, pairs))
     }
 

@@ -96,38 +96,39 @@ data class Dynamic(val o: Any?) {
 
     fun flattenListAt(path: List<Any?>): List<Dynamic> {
         val theList = get(path).o as List<Any?>
-        return theList.map { element ->
-            set(path, element)
-        }
+        val setAtPath = { element: Any? -> set(path, element) }
+        return theList.map(setAtPath)
     }
 
     fun flattenListWithIndex(path: List<Any?>, valueKey: Any?, indexKey: Any?): List<Dynamic> {
         val theList = get(path).o as List<Any?>
-        return theList.mapIndexed { index, element ->
+        val setWithIndex = { index: Int, element: Any? ->
             set(path + valueKey, element).set(path + indexKey, index)
         }
+        return theList.mapIndexed(setWithIndex)
     }
 
     fun flattenMap(combineKeys: (Any?, Any?) -> Any?): Dynamic {
         return when (o) {
             is Map<*, *> -> {
-                Dynamic(o.flatMap { (key, value) ->
+                val flattenMapEntry = { (key, value): Map.Entry<Any?, Any?> ->
                     val flattenedInner = Dynamic(value).flattenMap(combineKeys).o
                     if (flattenedInner is Map<*, *>) {
-                        flattenedInner.map { (innerKey, innerValue) ->
+                        val combineInnerKeys = { (innerKey, innerValue): Map.Entry<Any?, Any?> ->
                             val newKey = combineKeys(key, innerKey)
                             newKey to innerValue
                         }
+                        flattenedInner.map(combineInnerKeys)
                     } else {
                         listOf(key to flattenedInner)
                     }
-                }.toMap())
+                }
+                Dynamic(o.flatMap(flattenMapEntry).toMap())
             }
 
             is List<*> -> {
-                val asMap = o.mapIndexed { index, value ->
-                    index to value
-                }.toMap()
+                val toIndexPair = { index: Int, value: Any? -> index to value }
+                val asMap = o.mapIndexed(toIndexPair).toMap()
                 Dynamic(asMap).flattenMap(combineKeys)
             }
 
@@ -145,9 +146,8 @@ data class Dynamic(val o: Any?) {
         val combineKeys = { a: Any?, b: Any? -> "$a.$b" }
         val flat = flattenMap(combineKeys).o
         if (flat !is Map<*, *>) return listOf(histogramEntry("", this)).toMap()
-        val result = flat.map { (key, value) ->
-            histogramEntry(key, value)
-        }.toMap()
+        val toHistogramEntry = { (key, value): Map.Entry<Any?, Any?> -> histogramEntry(key, value) }
+        val result = flat.map(toHistogramEntry).toMap()
         return result
     }
 

@@ -25,11 +25,12 @@ class ReportGenerator(
                 val result = classFileNameFilter.match(fileName)
                 result == setOf("include")
             }
-            files.walk(inputDir).forEach { inputFile ->
+            val processAcceptedFile = { inputFile: Path ->
                 if (acceptFileBoolean(inputFile)) {
                     processFile(disassembleReport, inputDir, outputDir, inputFile)
                 }
             }
+            files.walk(inputDir).forEach(processAcceptedFile)
         }
         events.timeTakenMillis(durationMillis)
     }

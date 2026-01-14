@@ -37,9 +37,8 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     }
 
     private fun interfacesTree(interfaces: List<JvmConstant>): Tree {
-        val children = interfaces.map { constant ->
-            constantTree(constant)
-        }
+        val toConstantTree = { constant: JvmConstant -> constantTree(constant) }
+        val children = interfaces.map(toConstantTree)
         val parent = Tree("interfaces(${children.size})", children)
         return parent
     }
@@ -63,85 +62,75 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     private fun constantTree(constant: JvmConstant): Tree {
         val tagLabel = "${constant.tag.name}_${constant.tag.id}"
         return when (constant) {
-            is JvmConstant.Utf8 -> {
-                Tree(tagLabel, listOf(Tree(constant.value.toSanitizedString())))
-            }
-
-            is JvmConstant.IntegerConstant -> {
-                Tree(tagLabel, listOf(Tree("${constant.value}")))
-            }
-
-            is JvmConstant.FloatConstant -> {
-                Tree(tagLabel, listOf(Tree("${constant.value}")))
-            }
-
-            is JvmConstant.LongConstant -> {
-                Tree(tagLabel, listOf(Tree("${constant.value}")))
-            }
-
-            is JvmConstant.DoubleConstant -> {
-                Tree(tagLabel, listOf(Tree("${constant.value}")))
-            }
-
-            is JvmConstant.Class -> {
-                Tree(tagLabel, listOf(constantTree(constant.nameUtf8)))
-            }
-
-            is JvmConstant.StringConstant -> {
-                Tree(tagLabel, listOf(constantTree(constant.valueUtf8)))
-            }
-
-            is JvmConstant.Module -> {
-                Tree(tagLabel, listOf(constantTree(constant.moduleNameUtf8)))
-            }
-
-            is JvmConstant.Package -> {
-                Tree(tagLabel, listOf(constantTree(constant.packageNameUtf8)))
-            }
-
-            is JvmConstant.NameAndType -> {
-                Tree(
-                    tagLabel, listOf(
-                        constantTree(constant.nameUtf8),
-                        constantTree(constant.descriptorUtf8)
-                    )
-                )
-            }
-
-            is JvmConstant.Ref -> {
-                Tree(
-                    tagLabel, listOf(
-                        constantTree(constant.jvmClass),
-                        constantTree(constant.jvmNameAndType)
-                    )
-                )
-            }
-
-            is JvmConstant.MethodType -> {
-                Tree(tagLabel, listOf(constantTree(constant.descriptorUtf8)))
-            }
-
-            is JvmConstant.MethodHandle -> {
-                Tree(
-                    tagLabel, listOf(
-                        Tree("${constant.referenceKind.name}(${constant.referenceKind.code})"),
-                        constantTree(constant.reference)
-                    )
-                )
-            }
-
-            is JvmConstant.Dynamic -> {
-                Tree(
-                    tagLabel, listOf(
-                        Tree("bootstrap-method: ${constant.bootstrapMethodAttrIndex}"),
-                        constantTree(constant.nameAndType)
-                    )
-                )
-            }
-
+            is JvmConstant.Utf8 -> utf8ConstantTree(tagLabel, constant)
+            is JvmConstant.IntegerConstant -> integerConstantTree(tagLabel, constant)
+            is JvmConstant.FloatConstant -> floatConstantTree(tagLabel, constant)
+            is JvmConstant.LongConstant -> longConstantTree(tagLabel, constant)
+            is JvmConstant.DoubleConstant -> doubleConstantTree(tagLabel, constant)
+            is JvmConstant.Class -> classConstantTree(tagLabel, constant)
+            is JvmConstant.StringConstant -> stringConstantTree(tagLabel, constant)
+            is JvmConstant.Module -> moduleConstantTree(tagLabel, constant)
+            is JvmConstant.Package -> packageConstantTree(tagLabel, constant)
+            is JvmConstant.NameAndType -> nameAndTypeConstantTree(tagLabel, constant)
+            is JvmConstant.Ref -> refConstantTree(tagLabel, constant)
+            is JvmConstant.MethodType -> methodTypeConstantTree(tagLabel, constant)
+            is JvmConstant.MethodHandle -> methodHandleConstantTree(tagLabel, constant)
+            is JvmConstant.Dynamic -> dynamicConstantTree(tagLabel, constant)
             else -> Tree("unknown-constant-type: ${constant::class.simpleName}")
         }
     }
+
+    private fun utf8ConstantTree(tagLabel: String, constant: JvmConstant.Utf8): Tree =
+        Tree(tagLabel, listOf(Tree(constant.value.toSanitizedString())))
+
+    private fun integerConstantTree(tagLabel: String, constant: JvmConstant.IntegerConstant): Tree =
+        Tree(tagLabel, listOf(Tree("${constant.value}")))
+
+    private fun floatConstantTree(tagLabel: String, constant: JvmConstant.FloatConstant): Tree =
+        Tree(tagLabel, listOf(Tree("${constant.value}")))
+
+    private fun longConstantTree(tagLabel: String, constant: JvmConstant.LongConstant): Tree =
+        Tree(tagLabel, listOf(Tree("${constant.value}")))
+
+    private fun doubleConstantTree(tagLabel: String, constant: JvmConstant.DoubleConstant): Tree =
+        Tree(tagLabel, listOf(Tree("${constant.value}")))
+
+    private fun classConstantTree(tagLabel: String, constant: JvmConstant.Class): Tree =
+        Tree(tagLabel, listOf(constantTree(constant.nameUtf8)))
+
+    private fun stringConstantTree(tagLabel: String, constant: JvmConstant.StringConstant): Tree =
+        Tree(tagLabel, listOf(constantTree(constant.valueUtf8)))
+
+    private fun moduleConstantTree(tagLabel: String, constant: JvmConstant.Module): Tree =
+        Tree(tagLabel, listOf(constantTree(constant.moduleNameUtf8)))
+
+    private fun packageConstantTree(tagLabel: String, constant: JvmConstant.Package): Tree =
+        Tree(tagLabel, listOf(constantTree(constant.packageNameUtf8)))
+
+    private fun nameAndTypeConstantTree(tagLabel: String, constant: JvmConstant.NameAndType): Tree =
+        Tree(tagLabel, listOf(constantTree(constant.nameUtf8), constantTree(constant.descriptorUtf8)))
+
+    private fun refConstantTree(tagLabel: String, constant: JvmConstant.Ref): Tree =
+        Tree(tagLabel, listOf(constantTree(constant.jvmClass), constantTree(constant.jvmNameAndType)))
+
+    private fun methodTypeConstantTree(tagLabel: String, constant: JvmConstant.MethodType): Tree =
+        Tree(tagLabel, listOf(constantTree(constant.descriptorUtf8)))
+
+    private fun methodHandleConstantTree(tagLabel: String, constant: JvmConstant.MethodHandle): Tree =
+        Tree(
+            tagLabel, listOf(
+                Tree("${constant.referenceKind.name}(${constant.referenceKind.code})"),
+                constantTree(constant.reference)
+            )
+        )
+
+    private fun dynamicConstantTree(tagLabel: String, constant: JvmConstant.Dynamic): Tree =
+        Tree(
+            tagLabel, listOf(
+                Tree("bootstrap-method: ${constant.bootstrapMethodAttrIndex}"),
+                constantTree(constant.nameAndType)
+            )
+        )
 
     private fun fieldOrMethodTree(caption: String, index: Int, fieldOrMethod: JvmFieldOrMethod): Tree {
         val formattedSignature = fieldOrMethod.signature().javaFormat()
@@ -178,9 +167,8 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     }
 
     private fun codeTree(codeAttribute: JvmCodeAttribute): Tree {
-        val instructionsChildren = codeAttribute.instructions().map { instruction ->
-            instructionTree(instruction)
-        }
+        val toInstructionTree = { instruction: JvmInstruction -> instructionTree(instruction) }
+        val instructionsChildren = codeAttribute.instructions().map(toInstructionTree)
         val maxStackTree = Tree("maxStack: ${codeAttribute.maxStack.formatDecimalHex()}")
         val maxLocalsTree = Tree("maxLocals: ${codeAttribute.maxLocals.formatDecimalHex()}")
         val codeLengthTree = Tree("codeLength: ${codeAttribute.codeLength.formatDecimalHex()}")
@@ -196,9 +184,8 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     }
 
     private fun exceptionTableListTree(exceptions: List<JvmExceptionTable>): Tree {
-        val children = exceptions.map { exception ->
-            exceptionTableTree(exception)
-        }
+        val toExceptionTableTree = { exception: JvmExceptionTable -> exceptionTableTree(exception) }
+        val children = exceptions.map(toExceptionTableTree)
         val parent = Tree("exceptions(${children.size})", children)
         return parent
     }
@@ -232,43 +219,45 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
 
     private fun argsTree(arg: JvmArgument): Tree {
         return when (arg) {
-            is JvmArgument.Constant -> {
-                constantTree(arg.value)
-            }
-
-            is JvmArgument.IntValue -> {
-                Tree(arg.value.toString())
-            }
-
-            is JvmArgument.ArrayTypeValue -> {
-                Tree("${arg.value.name}(${arg.value.code})")
-            }
-
-            is JvmArgument.LookupSwitch -> {
-                val default = Tree("default: ${arg.default.toString()}")
-                val pairs = arg.lookup.map { (match, offset) ->
-                    Tree("$match:$offset")
-                }
-                val pairsTree = Tree("pairs(${pairs.size})", pairs)
-                val children = listOf(default) + pairsTree
-                Tree("switch", children)
-            }
-
-            is JvmArgument.TableSwitch -> {
-                val defaultTree = Tree("default", listOf(Tree(arg.default.toString())))
-                val lowTree = Tree("low", listOf(Tree(arg.low.toString())))
-                val highTree = Tree("high", listOf(Tree(arg.high.toString())))
-                val jumpOffsetChildren = arg.jumpOffsets.map { Tree(it.toString()) }
-                val jumpOffsetTree = Tree("jump_offsets(${arg.jumpOffsets.size})", jumpOffsetChildren)
-                val children = listOf(defaultTree, lowTree, highTree, jumpOffsetTree)
-                Tree("switch", children)
-            }
-
-            is JvmArgument.OpCodeValue -> {
-                return Tree("${arg.name}(${arg.code.toHexString().uppercase()})")
-            }
+            is JvmArgument.Constant -> constantArgTree(arg)
+            is JvmArgument.IntValue -> intValueArgTree(arg)
+            is JvmArgument.ArrayTypeValue -> arrayTypeValueArgTree(arg)
+            is JvmArgument.LookupSwitch -> lookupSwitchArgTree(arg)
+            is JvmArgument.TableSwitch -> tableSwitchArgTree(arg)
+            is JvmArgument.OpCodeValue -> opCodeValueArgTree(arg)
         }
     }
+
+    private fun constantArgTree(arg: JvmArgument.Constant): Tree =
+        constantTree(arg.value)
+
+    private fun intValueArgTree(arg: JvmArgument.IntValue): Tree =
+        Tree(arg.value.toString())
+
+    private fun arrayTypeValueArgTree(arg: JvmArgument.ArrayTypeValue): Tree =
+        Tree("${arg.value.name}(${arg.value.code})")
+
+    private fun lookupSwitchArgTree(arg: JvmArgument.LookupSwitch): Tree {
+        val default = Tree("default: ${arg.default.toString()}")
+        val toPairTree = { (match, offset): Pair<Int, Int> -> Tree("$match:$offset") }
+        val pairs = arg.lookup.map(toPairTree)
+        val pairsTree = Tree("pairs(${pairs.size})", pairs)
+        val children = listOf(default) + pairsTree
+        return Tree("switch", children)
+    }
+
+    private fun tableSwitchArgTree(arg: JvmArgument.TableSwitch): Tree {
+        val defaultTree = Tree("default", listOf(Tree(arg.default.toString())))
+        val lowTree = Tree("low", listOf(Tree(arg.low.toString())))
+        val highTree = Tree("high", listOf(Tree(arg.high.toString())))
+        val jumpOffsetChildren = arg.jumpOffsets.map { Tree(it.toString()) }
+        val jumpOffsetTree = Tree("jump_offsets(${arg.jumpOffsets.size})", jumpOffsetChildren)
+        val children = listOf(defaultTree, lowTree, highTree, jumpOffsetTree)
+        return Tree("switch", children)
+    }
+
+    private fun opCodeValueArgTree(arg: JvmArgument.OpCodeValue): Tree =
+        Tree("${arg.name}(${arg.code.toHexString().uppercase()})")
 
     fun formatAccessFlags(accessFlags: Set<AccessFlag>): String {
         return accessFlags.joinToString(", ", "[", "]") { it.displayName.uppercase() }

@@ -19,7 +19,6 @@ enum class ConstantPoolTag(val id: UByte, val entriesTaken: Int) {
     MODULE(19u, 1),
     PACKAGE(20u, 1);
 
-    // TODO: remove
     fun line(): String {
         return "$name($id)"
     }

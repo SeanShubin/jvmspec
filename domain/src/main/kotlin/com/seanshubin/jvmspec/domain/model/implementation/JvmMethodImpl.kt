@@ -30,12 +30,13 @@ class JvmMethodImpl(
     }
 
     override fun attributes(): List<JvmAttribute> {
-        return methodInfo.attributes.map { attribute ->
+        val toJvmAttribute = { attribute: com.seanshubin.jvmspec.domain.classfile.structure.AttributeInfo ->
             when (attribute) {
                 is AttributeCodeInfo -> JvmCodeAttributeImpl(jvmClass, attribute)
                 else -> JvmAttributeImpl(jvmClass, attribute)
             }
         }
+        return methodInfo.attributes.map(toJvmAttribute)
     }
 
     override fun code(): JvmCodeAttribute? {
