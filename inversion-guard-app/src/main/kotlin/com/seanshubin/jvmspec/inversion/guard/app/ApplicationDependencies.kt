@@ -104,6 +104,10 @@ class ApplicationDependencies(
         outputDir
     )
 
+    private val qualityMetricsDetailSummarizer: QualityMetricsDetailSummarizer = QualityMetricsDetailSummarizerImpl(
+        outputDir
+    )
+
     private val timer: Timer = Timer(clock)
     val runner: Runnable = Runner(
         files,
@@ -112,6 +116,7 @@ class ApplicationDependencies(
         analysisSummarizer,
         statsSummarizer,
         qualityMetricsSummarizer,
+        qualityMetricsDetailSummarizer,
         stats,
         classProcessor,
         commandRunner,

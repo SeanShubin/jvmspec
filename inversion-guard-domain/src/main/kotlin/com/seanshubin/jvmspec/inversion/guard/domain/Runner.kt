@@ -12,6 +12,7 @@ class Runner(
     private val analysisSummarizer: AnalysisSummarizer,
     private val statsSummarizer: StatsSummarizer,
     private val qualityMetricsSummarizer: QualityMetricsSummarizer,
+    private val qualityMetricsDetailSummarizer: QualityMetricsDetailSummarizer,
     private val stats: Stats,
     private val classProcessor: ClassProcessor,
     private val commandRunner: CommandRunner,
@@ -29,7 +30,7 @@ class Runner(
                 classProcessor.processClass(analysis)
             } + analysisSummarizer.summarize(analysisList) + statsSummarizer.summarize(stats) + qualityMetricsSummarizer.summarize(
                 analysisList
-            )
+            ) + qualityMetricsDetailSummarizer.summarize(analysisList)
             commands.forEach { command ->
                 commandRunner.runCommand(command)
             }
