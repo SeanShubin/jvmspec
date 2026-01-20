@@ -108,6 +108,10 @@ class ApplicationDependencies(
         outputDir
     )
 
+    private val htmlReportSummarizer: HtmlReportSummarizer = HtmlReportSummarizerImpl(
+        outputDir
+    )
+
     private val timer: Timer = Timer(clock)
     val runner: Runnable = Runner(
         files,
@@ -117,6 +121,7 @@ class ApplicationDependencies(
         statsSummarizer,
         qualityMetricsSummarizer,
         qualityMetricsDetailSummarizer,
+        htmlReportSummarizer,
         stats,
         classProcessor,
         commandRunner,
