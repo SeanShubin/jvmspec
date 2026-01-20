@@ -11,6 +11,7 @@ class Runner(
     private val classAnalyzer: ClassAnalyzer,
     private val analysisSummarizer: AnalysisSummarizer,
     private val statsSummarizer: StatsSummarizer,
+    private val qualityMetricsSummarizer: QualityMetricsSummarizer,
     private val stats: Stats,
     private val classProcessor: ClassProcessor,
     private val commandRunner: CommandRunner,
@@ -26,7 +27,9 @@ class Runner(
             }
             val commands = analysisList.flatMap { analysis ->
                 classProcessor.processClass(analysis)
-            } + analysisSummarizer.summarize(analysisList) + statsSummarizer.summarize(stats)
+            } + analysisSummarizer.summarize(analysisList) + statsSummarizer.summarize(stats) + qualityMetricsSummarizer.summarize(
+                analysisList
+            )
             commands.forEach { command ->
                 commandRunner.runCommand(command)
             }
