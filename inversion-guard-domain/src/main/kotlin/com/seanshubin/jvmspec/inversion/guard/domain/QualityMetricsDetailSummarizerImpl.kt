@@ -22,14 +22,6 @@ class QualityMetricsDetailSummarizerImpl(
                                     signature = invocation.signature.compactFormat()
                                 )
                             }
-                            .sortedWith(
-                                compareBy(
-                                { it.invocationType },
-                                { it.opcode },
-                                { it.className },
-                                { it.methodName },
-                                { it.signature }
-                            ))
 
                         QualityMetricsMethodDetail(
                             methodSignature = formatMethodSignature(methodAnalysis),
