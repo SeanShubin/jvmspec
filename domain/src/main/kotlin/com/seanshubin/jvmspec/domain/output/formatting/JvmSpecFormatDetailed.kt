@@ -8,11 +8,13 @@ import java.util.*
 
 class JvmSpecFormatDetailed : JvmSpecFormat {
     override fun classTreeList(jvmClass: JvmClass): List<Tree> {
+        val minorHex = String.format("0x%04X", jvmClass.minorVersion.toInt())
+        val majorHex = String.format("0x%04X", jvmClass.majorVersion.toInt())
         return listOf(
             Tree("origin: ${jvmClass.origin}"),
             Tree("magic: ${hexUpper(jvmClass.magic)}"),
-            Tree("minor version: ${jvmClass.minorVersion}"),
-            Tree("major version: ${jvmClass.majorVersion}"),
+            Tree("minor_version: ${jvmClass.minorVersion}($minorHex)"),
+            Tree("major_version: ${jvmClass.majorVersion}($majorHex)"),
             accessFlagsTree(jvmClass.accessFlags),
             Tree("this_class: ${jvmClass.thisClassName}"),
             Tree("super_class: ${jvmClass.superClassName}"),
@@ -80,66 +82,111 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         }
     }
 
-    private fun utf8ConstantTree(tagLabel: String, constant: JvmConstant.Utf8): Tree =
-        Tree(tagLabel, listOf(Tree(constant.value.toSanitizedString())))
+    private fun utf8ConstantTree(tagLabel: String, constant: JvmConstant.Utf8): Tree {
+        val sanitized = constant.value.toSanitizedString()
+        return Tree("$tagLabel: $sanitized")
+    }
 
-    private fun integerConstantTree(tagLabel: String, constant: JvmConstant.IntegerConstant): Tree =
-        Tree(tagLabel, listOf(Tree("${constant.value}")))
+    private fun integerConstantTree(tagLabel: String, constant: JvmConstant.IntegerConstant): Tree {
+        val hex = String.format("0x%08X", constant.value)
+        return Tree("$tagLabel: ${constant.value} ($hex)")
+    }
 
-    private fun floatConstantTree(tagLabel: String, constant: JvmConstant.FloatConstant): Tree =
-        Tree(tagLabel, listOf(Tree("${constant.value}")))
+    private fun floatConstantTree(tagLabel: String, constant: JvmConstant.FloatConstant): Tree {
+        val hex = String.format("0x%08X", constant.value.toRawBits())
+        return Tree("$tagLabel: ${constant.value} ($hex)")
+    }
 
-    private fun longConstantTree(tagLabel: String, constant: JvmConstant.LongConstant): Tree =
-        Tree(tagLabel, listOf(Tree("${constant.value}")))
+    private fun longConstantTree(tagLabel: String, constant: JvmConstant.LongConstant): Tree {
+        val hex = String.format("0x%016X", constant.value)
+        return Tree("$tagLabel: ${constant.value} ($hex)")
+    }
 
-    private fun doubleConstantTree(tagLabel: String, constant: JvmConstant.DoubleConstant): Tree =
-        Tree(tagLabel, listOf(Tree("${constant.value}")))
+    private fun doubleConstantTree(tagLabel: String, constant: JvmConstant.DoubleConstant): Tree {
+        val hex = String.format("0x%016X", constant.value.toRawBits())
+        return Tree("$tagLabel: ${constant.value} ($hex)")
+    }
 
-    private fun classConstantTree(tagLabel: String, constant: JvmConstant.Class): Tree =
-        Tree(tagLabel, listOf(constantTree(constant.nameUtf8)))
+    private fun classConstantTree(tagLabel: String, constant: JvmConstant.Class): Tree {
+        val className = (constant.nameUtf8 as? JvmConstant.Utf8)?.value?.toSanitizedString() ?: "?"
+        return Tree("$tagLabel: $className", listOf(constantTree(constant.nameUtf8)))
+    }
 
-    private fun stringConstantTree(tagLabel: String, constant: JvmConstant.StringConstant): Tree =
-        Tree(tagLabel, listOf(constantTree(constant.valueUtf8)))
+    private fun stringConstantTree(tagLabel: String, constant: JvmConstant.StringConstant): Tree {
+        val stringValue = (constant.valueUtf8 as? JvmConstant.Utf8)?.value?.toSanitizedString() ?: "?"
+        return Tree("$tagLabel: $stringValue", listOf(constantTree(constant.valueUtf8)))
+    }
 
-    private fun moduleConstantTree(tagLabel: String, constant: JvmConstant.Module): Tree =
-        Tree(tagLabel, listOf(constantTree(constant.moduleNameUtf8)))
+    private fun moduleConstantTree(tagLabel: String, constant: JvmConstant.Module): Tree {
+        val moduleName = (constant.moduleNameUtf8 as? JvmConstant.Utf8)?.value?.toSanitizedString() ?: "?"
+        return Tree("$tagLabel: $moduleName", listOf(constantTree(constant.moduleNameUtf8)))
+    }
 
-    private fun packageConstantTree(tagLabel: String, constant: JvmConstant.Package): Tree =
-        Tree(tagLabel, listOf(constantTree(constant.packageNameUtf8)))
+    private fun packageConstantTree(tagLabel: String, constant: JvmConstant.Package): Tree {
+        val packageName = (constant.packageNameUtf8 as? JvmConstant.Utf8)?.value?.toSanitizedString() ?: "?"
+        return Tree("$tagLabel: $packageName", listOf(constantTree(constant.packageNameUtf8)))
+    }
 
-    private fun nameAndTypeConstantTree(tagLabel: String, constant: JvmConstant.NameAndType): Tree =
-        Tree(tagLabel, listOf(constantTree(constant.nameUtf8), constantTree(constant.descriptorUtf8)))
+    private fun nameAndTypeConstantTree(tagLabel: String, constant: JvmConstant.NameAndType): Tree {
+        val name = (constant.nameUtf8 as? JvmConstant.Utf8)?.value?.toSanitizedString() ?: "?"
+        val descriptor = (constant.descriptorUtf8 as? JvmConstant.Utf8)?.value?.toSanitizedString() ?: "?"
+        return Tree(
+            "$tagLabel: $name:$descriptor",
+            listOf(constantTree(constant.nameUtf8), constantTree(constant.descriptorUtf8))
+        )
+    }
 
-    private fun refConstantTree(tagLabel: String, constant: JvmConstant.Ref): Tree =
-        Tree(tagLabel, listOf(constantTree(constant.jvmClass), constantTree(constant.jvmNameAndType)))
+    private fun refConstantTree(tagLabel: String, constant: JvmConstant.Ref): Tree {
+        val className = (constant.jvmClass as? JvmConstant.Class)?.let {
+            (it.nameUtf8 as? JvmConstant.Utf8)?.value?.toSanitizedString()
+        } ?: "?"
+        val nameAndType = (constant.jvmNameAndType as? JvmConstant.NameAndType)?.let {
+            val name = (it.nameUtf8 as? JvmConstant.Utf8)?.value?.toSanitizedString() ?: "?"
+            val descriptor = (it.descriptorUtf8 as? JvmConstant.Utf8)?.value?.toSanitizedString() ?: "?"
+            "$name:$descriptor"
+        } ?: "?"
+        return Tree(
+            "$tagLabel: $className.$nameAndType",
+            listOf(constantTree(constant.jvmClass), constantTree(constant.jvmNameAndType))
+        )
+    }
 
-    private fun methodTypeConstantTree(tagLabel: String, constant: JvmConstant.MethodType): Tree =
-        Tree(tagLabel, listOf(constantTree(constant.descriptorUtf8)))
+    private fun methodTypeConstantTree(tagLabel: String, constant: JvmConstant.MethodType): Tree {
+        val descriptor = (constant.descriptorUtf8 as? JvmConstant.Utf8)?.value?.toSanitizedString() ?: "?"
+        return Tree("$tagLabel: $descriptor", listOf(constantTree(constant.descriptorUtf8)))
+    }
 
-    private fun methodHandleConstantTree(tagLabel: String, constant: JvmConstant.MethodHandle): Tree =
-        Tree(
-            tagLabel, listOf(
-                Tree("${constant.referenceKind.name}(${constant.referenceKind.code})"),
+    private fun methodHandleConstantTree(tagLabel: String, constant: JvmConstant.MethodHandle): Tree {
+        val kindName = constant.referenceKind.name
+        val kindCode = constant.referenceKind.code
+        return Tree(
+            "$tagLabel: $kindName($kindCode)", listOf(
+                Tree("reference_kind: $kindName($kindCode)"),
                 constantTree(constant.reference)
             )
         )
+    }
 
-    private fun dynamicConstantTree(tagLabel: String, constant: JvmConstant.Dynamic): Tree =
-        Tree(
-            tagLabel, listOf(
-                Tree("bootstrap-method: ${constant.bootstrapMethodAttrIndex}"),
+    private fun dynamicConstantTree(tagLabel: String, constant: JvmConstant.Dynamic): Tree {
+        val index = constant.bootstrapMethodAttrIndex
+        val hexIndex = String.format("0x%04X", index.toInt())
+        return Tree(
+            "$tagLabel: bootstrap=$index($hexIndex)", listOf(
+                Tree("bootstrap_method_attr_index: $index($hexIndex)"),
                 constantTree(constant.nameAndType)
             )
         )
+    }
 
     private fun fieldOrMethodTree(caption: String, index: Int, fieldOrMethod: JvmFieldOrMethod): Tree {
+        val hexIndex = String.format("0x%04X", index)
         val formattedSignature = fieldOrMethod.signature().javaFormat()
         val children = listOf(
-            Tree("access flags = ${formatAccessFlags(fieldOrMethod.accessFlags())}"),
-            Tree("signature = $formattedSignature"),
+            Tree("access_flags: ${formatAccessFlags(fieldOrMethod.accessFlags())}"),
+            Tree("signature: $formattedSignature"),
             attributesTree(fieldOrMethod.attributes())
         )
-        val parent = Tree("$caption[$index]", children)
+        val parent = Tree("$caption[$index($hexIndex)]: $formattedSignature", children)
         return parent
     }
 
@@ -150,12 +197,14 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     }
 
     private fun attributeTree(index: Int, attribute: JvmAttribute): Tree {
+        val hexIndex = String.format("0x%04X", index)
+        val name = attribute.name()
         val bytesNode = listOf(
             Tree(attribute.bytes().toHexString()),
             Tree(attribute.bytes().toSanitizedString())
         )
         val children = listOf(
-            Tree("name: ${attribute.name()}"),
+            Tree("name: $name"),
             Tree("bytes(${attribute.bytes().size})", bytesNode),
         )
         val codeList = if (attribute is JvmCodeAttribute) {
@@ -163,7 +212,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         } else {
             emptyList()
         }
-        return Tree("attribute[$index]", children + codeList)
+        return Tree("attribute[$index($hexIndex)]: $name", children + codeList)
     }
 
     private fun codeTree(codeAttribute: JvmCodeAttribute): Tree {
@@ -184,22 +233,23 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     }
 
     private fun exceptionTableListTree(exceptions: List<JvmExceptionTable>): Tree {
-        val toExceptionTableTree = { exception: JvmExceptionTable -> exceptionTableTree(exception) }
-        val children = exceptions.map(toExceptionTableTree)
-        val parent = Tree("exceptions(${children.size})", children)
+        val children = exceptions.mapIndexed { index, exception -> exceptionTableTree(index, exception) }
+        val parent = Tree("exception_table(${children.size})", children)
         return parent
     }
 
-    private fun exceptionTableTree(exception: JvmExceptionTable): Tree {
-        exception.let {
-            val children = listOf(
-                Tree("start_pc: ${it.startProgramCounter}"),
-                Tree("end_pc: ${it.endProgramCounter}"),
-                Tree("handler_pc: ${it.handlerProgramCounter}"),
-                Tree("catch_type: ${it.catchType}")
-            )
-            return Tree("exception", children)
-        }
+    private fun exceptionTableTree(index: Int, exception: JvmExceptionTable): Tree {
+        val hexIndex = String.format("0x%04X", index)
+        val startPc = exception.startProgramCounter.formatDecimalHex()
+        val endPc = exception.endProgramCounter.formatDecimalHex()
+        val handlerPc = exception.handlerProgramCounter.formatDecimalHex()
+        val children = listOf(
+            Tree("start_pc: $startPc"),
+            Tree("end_pc: $endPc"),
+            Tree("handler_pc: $handlerPc"),
+            Tree("catch_type: ${exception.catchType}")
+        )
+        return Tree("exception[$index($hexIndex)]", children)
     }
 
     override fun instructionTree(jvmInstruction: JvmInstruction): Tree {
@@ -231,33 +281,55 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     private fun constantArgTree(arg: JvmArgument.Constant): Tree =
         constantTree(arg.value)
 
-    private fun intValueArgTree(arg: JvmArgument.IntValue): Tree =
-        Tree(arg.value.toString())
+    private fun intValueArgTree(arg: JvmArgument.IntValue): Tree {
+        val value = arg.value
+        val hex = when {
+            value >= -128 && value <= 255 -> String.format("0x%02X", value and 0xFF)
+            value >= -32768 && value <= 65535 -> String.format("0x%04X", value and 0xFFFF)
+            else -> String.format("0x%08X", value)
+        }
+        return Tree("$value($hex)")
+    }
 
-    private fun arrayTypeValueArgTree(arg: JvmArgument.ArrayTypeValue): Tree =
-        Tree("${arg.value.name}(${arg.value.code})")
+    private fun arrayTypeValueArgTree(arg: JvmArgument.ArrayTypeValue): Tree {
+        val hex = String.format("0x%02X", arg.value.code)
+        return Tree("${arg.value.name}($hex)")
+    }
 
     private fun lookupSwitchArgTree(arg: JvmArgument.LookupSwitch): Tree {
-        val default = Tree("default: ${arg.default.toString()}")
-        val toPairTree = { (match, offset): Pair<Int, Int> -> Tree("$match:$offset") }
+        val defaultHex = String.format("0x%08X", arg.default)
+        val default = Tree("default: ${arg.default}($defaultHex)")
+        val toPairTree = { (match, offset): Pair<Int, Int> ->
+            val matchHex = String.format("0x%08X", match)
+            val offsetHex = String.format("0x%08X", offset)
+            Tree("match=$match($matchHex) offset=$offset($offsetHex)")
+        }
         val pairs = arg.lookup.map(toPairTree)
         val pairsTree = Tree("pairs(${pairs.size})", pairs)
-        val children = listOf(default) + pairsTree
-        return Tree("switch", children)
+        val children = listOf(default, pairsTree)
+        return Tree("lookupswitch", children)
     }
 
     private fun tableSwitchArgTree(arg: JvmArgument.TableSwitch): Tree {
-        val defaultTree = Tree("default", listOf(Tree(arg.default.toString())))
-        val lowTree = Tree("low", listOf(Tree(arg.low.toString())))
-        val highTree = Tree("high", listOf(Tree(arg.high.toString())))
-        val jumpOffsetChildren = arg.jumpOffsets.map { Tree(it.toString()) }
+        val defaultHex = String.format("0x%08X", arg.default)
+        val lowHex = String.format("0x%08X", arg.low)
+        val highHex = String.format("0x%08X", arg.high)
+        val defaultTree = Tree("default: ${arg.default}($defaultHex)")
+        val lowTree = Tree("low: ${arg.low}($lowHex)")
+        val highTree = Tree("high: ${arg.high}($highHex)")
+        val jumpOffsetChildren = arg.jumpOffsets.map {
+            val hex = String.format("0x%08X", it)
+            Tree("$it($hex)")
+        }
         val jumpOffsetTree = Tree("jump_offsets(${arg.jumpOffsets.size})", jumpOffsetChildren)
         val children = listOf(defaultTree, lowTree, highTree, jumpOffsetTree)
-        return Tree("switch", children)
+        return Tree("tableswitch", children)
     }
 
-    private fun opCodeValueArgTree(arg: JvmArgument.OpCodeValue): Tree =
-        Tree("${arg.name}(${arg.code.toHexString().uppercase()})")
+    private fun opCodeValueArgTree(arg: JvmArgument.OpCodeValue): Tree {
+        val hex = arg.code.toHexString().uppercase()
+        return Tree("${arg.name}(0x$hex)")
+    }
 
     fun formatAccessFlags(accessFlags: Set<AccessFlag>): String {
         return accessFlags.joinToString(", ", "[", "]") { it.displayName.uppercase() }
