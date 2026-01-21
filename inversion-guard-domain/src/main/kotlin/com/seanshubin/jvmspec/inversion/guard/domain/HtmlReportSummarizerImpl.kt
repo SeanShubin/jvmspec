@@ -27,14 +27,17 @@ class HtmlReportSummarizerImpl(
         val indexHtml = generateIndexHtml(staticInvocationsThatShouldBeInverted, detailReport, classPathMap)
         val indexCommand = CreateTextFileCommand(outputDir.resolve("index.html"), indexHtml)
 
-        val classPageCommands = detailReport.classes.flatMap { classDetail ->
-            generateClassDisassemblyPage(classDetail, analysisList)
+        val disassemblyIndexHtml = generateDisassemblyIndexHtml(analysisList, classPathMap)
+        val disassemblyIndexCommand = CreateTextFileCommand(outputDir.resolve("disassembly.html"), disassemblyIndexHtml)
+
+        val classPageCommands = analysisList.map { analysis ->
+            generateClassDisassemblyPage(analysis)
         }
 
         val cssCommand = loadResourceAsCommand("quality-metrics.css")
         val redirectCommand = loadResourceAsCommand("_index.html")
 
-        return listOf(indexCommand) + classPageCommands + listOf(cssCommand, redirectCommand)
+        return listOf(indexCommand, disassemblyIndexCommand) + classPageCommands + listOf(cssCommand, redirectCommand)
     }
 
     private fun generateIndexHtml(
@@ -53,6 +56,81 @@ class HtmlReportSummarizerImpl(
         val doctype = "<!DOCTYPE html>"
         val htmlLines = html.toLines()
         return (listOf(doctype) + htmlLines).joinToString("\n")
+    }
+
+    private fun generateDisassemblyIndexHtml(
+        analysisList: List<ClassAnalysis>,
+        classPathMap: Map<String, Path>
+    ): String {
+        val sortedAnalyses = analysisList.sortedBy { it.jvmClass.origin.toString() }
+
+        val classListItems = sortedAnalyses.map { analysis ->
+            val className = analysis.jvmClass.thisClassName
+            val origin = baseDir.relativize(analysis.jvmClass.origin).toString()
+            val relativePath = classPathMap[className]?.toString() ?: "$className-disassembly.html"
+
+            Tag(
+                "li",
+                Tag(
+                    "a",
+                    attributes = listOf("href" to relativePath, "class" to "class-link"),
+                    children = listOf(Text(origin))
+                )
+            )
+        }
+
+        val html = Tag(
+            "html",
+            attributes = listOf("lang" to "en"),
+            children = listOf(
+                createDisassemblyIndexHead(),
+                createDisassemblyIndexBody(classListItems)
+            )
+        )
+
+        val doctype = "<!DOCTYPE html>"
+        val htmlLines = html.toLines()
+        return (listOf(doctype) + htmlLines).joinToString("\n")
+    }
+
+    private fun createDisassemblyIndexHead(): HtmlElement {
+        return Tag(
+            "head",
+            Tag("meta", attributes = listOf("charset" to "UTF-8")),
+            Tag(
+                "meta",
+                attributes = listOf("name" to "viewport", "content" to "width=device-width, initial-scale=1.0")
+            ),
+            text("title", "Disassembly Index"),
+            Tag("link", attributes = listOf("rel" to "stylesheet", "href" to "quality-metrics.css"))
+        )
+    }
+
+    private fun createDisassemblyIndexBody(classListItems: List<HtmlElement>): HtmlElement {
+        return Tag(
+            "body",
+            text("h1", "Disassembly Index"),
+            Tag(
+                "nav",
+                attributes = listOf("class" to "back-navigation"),
+                children = listOf(
+                    Tag(
+                        "a",
+                        attributes = listOf("href" to "index.html"),
+                        children = listOf(Text("← Back to Quality Metrics Report"))
+                    )
+                )
+            ),
+            Tag(
+                "section",
+                text("h2", "All Classes"),
+                Tag(
+                    "ul",
+                    attributes = listOf("class" to "disassembly-index-list"),
+                    children = classListItems
+                )
+            )
+        )
     }
 
     private fun createHead(): HtmlElement {
@@ -93,6 +171,14 @@ class HtmlReportSummarizerImpl(
                         "a",
                         attributes = listOf("href" to "#quality-metrics"),
                         children = listOf(Text("Quality Metrics"))
+                    )
+                ),
+                Tag(
+                    "li",
+                    Tag(
+                        "a",
+                        attributes = listOf("href" to "disassembly.html"),
+                        children = listOf(Text("Disassembly Index"))
                     )
                 )
             )
@@ -304,21 +390,14 @@ class HtmlReportSummarizerImpl(
         }
     }
 
-    private fun generateClassDisassemblyPage(
-        classDetail: QualityMetricsClassDetail,
-        analysisList: List<ClassAnalysis>
-    ): List<Command> {
-        val classAnalysis = analysisList.find {
-            it.jvmClass.thisClassName == classDetail.className
-        } ?: return emptyList()
-
-        val trees = jvmSpecFormat.classTreeList(classAnalysis.jvmClass)
-        val relativePath = calculateDisassemblyPath(classAnalysis.jvmClass)
+    private fun generateClassDisassemblyPage(analysis: ClassAnalysis): Command {
+        val trees = jvmSpecFormat.classTreeList(analysis.jvmClass)
+        val relativePath = calculateDisassemblyPath(analysis.jvmClass)
         val cssPath = calculateCssRelativePath(relativePath)
-        val html = generateClassDisassemblyHtml(classDetail.className, trees, cssPath)
+        val html = generateClassDisassemblyHtml(analysis.jvmClass.thisClassName, trees, cssPath)
 
         val path = outputDir.resolve(relativePath)
-        return listOf(CreateTextFileCommand(path, html))
+        return CreateTextFileCommand(path, html)
     }
 
     private fun generateClassDisassemblyHtml(className: String, trees: List<Tree>, cssPath: String): String {

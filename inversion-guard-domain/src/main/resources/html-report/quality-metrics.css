@@ -278,3 +278,32 @@ tr:hover {
     text-decoration: underline;
     color: #004499;
 }
+
+/* Disassembly index list */
+.disassembly-index-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.disassembly-index-list li {
+    margin: 10px 0;
+}
+
+.disassembly-index-list .class-link {
+    display: block;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-left: 3px solid #007bff;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    color: #0066cc;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.disassembly-index-list .class-link:hover {
+    background-color: #e9ecef;
+    text-decoration: underline;
+    color: #004499;
+}
