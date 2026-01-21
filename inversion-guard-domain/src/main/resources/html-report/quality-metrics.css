@@ -315,6 +315,7 @@ tr:hover {
     color: #333;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    max-width: 400px;
 }
 
 /* Lists in table cells */

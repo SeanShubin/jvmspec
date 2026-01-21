@@ -446,7 +446,7 @@ class HtmlStatsSummarizerImpl(
                 Tag(
                     "tr",
                     Tag("td", Text(key.type)),
-                    Tag("td", Text(key.pattern)),
+                    Tag("td", attributes = listOf("class" to "filter-text"), children = listOf(Text(key.pattern))),
                     Tag("td", Text(eventsForTypePattern.size.toString())),
                     Tag("td", Tag("ul", detailItems))
                 )
