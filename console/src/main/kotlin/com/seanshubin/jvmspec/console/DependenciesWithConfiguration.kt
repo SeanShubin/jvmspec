@@ -1,7 +1,6 @@
 package com.seanshubin.jvmspec.console
 
 import com.seanshubin.jvmspec.contract.FilesContract
-import com.seanshubin.jvmspec.contract.FilesDelegate
 import com.seanshubin.jvmspec.domain.analysis.filtering.RegexFilter
 import com.seanshubin.jvmspec.domain.infrastructure.command.CommandRunner
 import com.seanshubin.jvmspec.domain.infrastructure.command.CommandRunnerImpl
@@ -21,19 +20,23 @@ import com.seanshubin.jvmspec.domain.output.formatting.JvmSpecFormat
 import com.seanshubin.jvmspec.domain.output.formatting.JvmSpecFormatDetailed
 import com.seanshubin.jvmspec.domain.output.reporting.DisassembleReport
 import com.seanshubin.jvmspec.domain.output.reporting.Report
+import com.seanshubin.jvmspec.domain.runtime.application.Integrations
 import com.seanshubin.jvmspec.domain.runtime.application.LineEmittingNotifications
 import com.seanshubin.jvmspec.domain.runtime.application.Notifications
 import com.seanshubin.jvmspec.domain.runtime.application.ReportGenerator
 import com.seanshubin.jvmspec.domain.runtime.configuration.Configuration
 import java.time.Clock
 
-class DependenciesWithConfiguration(private val configuration: Configuration) {
-    val files: FilesContract = FilesDelegate.defaultInstance()
-    val emit: (Any?) -> Unit = ::println
+class DependenciesWithConfiguration(
+    private val configuration: Configuration,
+    private val integrations: Integrations
+) {
+    val files: FilesContract = integrations.files
+    val emit: (Any?) -> Unit = integrations.emit
     val environment: Environment = EnvironmentImpl(files)
     val commandRunner: CommandRunner = CommandRunnerImpl(environment)
     val notifications: Notifications = LineEmittingNotifications(emit, commandRunner)
-    val clock: Clock = Clock.systemUTC()
+    val clock: Clock = integrations.clock
     val format: JvmSpecFormat = JvmSpecFormatDetailed()
     val disassembleReport: Report = DisassembleReport(format)
     val attributeFactory: JvmAttributeFactory = JvmAttributeFactoryImpl()

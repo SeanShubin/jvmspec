@@ -17,6 +17,7 @@ import com.seanshubin.jvmspec.domain.model.implementation.JvmFieldFactoryImpl
 import com.seanshubin.jvmspec.domain.model.implementation.JvmMethodFactoryImpl
 import com.seanshubin.jvmspec.domain.output.formatting.JvmSpecFormat
 import com.seanshubin.jvmspec.domain.output.formatting.JvmSpecFormatDetailed
+import com.seanshubin.jvmspec.domain.runtime.application.Integrations
 import com.seanshubin.jvmspec.inversion.guard.domain.*
 import com.seanshubin.jvmspec.rules.CategoryRule
 import com.seanshubin.jvmspec.rules.RuleInterpreter
@@ -24,19 +25,21 @@ import java.nio.file.Path
 import java.time.Clock
 
 class ApplicationDependencies(
-    private val files: FilesContract,
-    private val baseDir: Path,
-    private val outputDir: Path,
-    private val includeFile: List<String>,
-    private val excludeFile: List<String>,
-    private val skipDir: List<String>,
-    private val core: List<String>,
-    private val boundary: List<String>,
-    private val failOnUnknown: Boolean,
-    private val categoryRuleSet: Map<String, CategoryRule>
+    private val integrations: Integrations,
+    private val configuration: Configuration
 ) {
-    private val clock: Clock = Clock.systemUTC()
-    private val emit: (Any?) -> Unit = ::println
+    private val files: FilesContract = integrations.files
+    private val clock: Clock = integrations.clock
+    private val emit: (Any?) -> Unit = integrations.emit
+    private val baseDir: Path = configuration.baseDir
+    private val outputDir: Path = configuration.outputDir
+    private val includeFile: List<String> = configuration.includeFile
+    private val excludeFile: List<String> = configuration.excludeFile
+    private val skipDir: List<String> = configuration.skipDir
+    private val core: List<String> = configuration.core
+    private val boundary: List<String> = configuration.boundary
+    private val failOnUnknown: Boolean = configuration.failOnUnknown
+    private val categoryRuleSet: Map<String, CategoryRule> = configuration.categoryRuleSet
     private val notifications: Notifications = LineEmittingNotifications(emit)
     private val stats: Stats = StatsImpl()
     private val attributeFactory: JvmAttributeFactory = JvmAttributeFactoryImpl()
@@ -143,19 +146,8 @@ class ApplicationDependencies(
     )
 
     companion object {
-        fun fromConfiguration(files: FilesContract, configuration: Configuration): Runnable {
-            return ApplicationDependencies(
-                files,
-                configuration.baseDir,
-                configuration.outputDir,
-                configuration.includeFile,
-                configuration.excludeFile,
-                configuration.skipDir,
-                configuration.core,
-                configuration.boundary,
-                configuration.failOnUnknown,
-                configuration.categoryRuleSet
-            ).runner
+        fun fromConfiguration(integrations: Integrations, configuration: Configuration): Runnable {
+            return ApplicationDependencies(integrations, configuration).runner
         }
     }
 }

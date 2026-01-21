@@ -1,17 +1,17 @@
 package com.seanshubin.jvmspec.inversion.guard.domain
 
 import com.seanshubin.jvmspec.configuration.FixedPathJsonFileKeyValueStoreFactory
-import com.seanshubin.jvmspec.contract.FilesContract
 import com.seanshubin.jvmspec.domain.infrastructure.types.TypeSafety.toTypedList
+import com.seanshubin.jvmspec.domain.runtime.application.Integrations
 import com.seanshubin.jvmspec.rules.RuleLoader
 import java.nio.file.Path
 
 class ConfiguredRunnerFactory(
     private val args: Array<String>,
-    private val createRunner: (FilesContract, Configuration) -> Runnable,
+    private val createRunner: (Integrations, Configuration) -> Runnable,
     private val keyValueStoreFactory: FixedPathJsonFileKeyValueStoreFactory,
     private val ruleLoader: RuleLoader,
-    private val files: FilesContract,
+    private val integrations: Integrations,
 ) {
     fun createConfiguredRunner(): Runnable {
         val configPathName = args.getOrNull(0) ?: "inversion-guard-config.json"
@@ -41,7 +41,7 @@ class ConfiguredRunnerFactory(
         val baseDir = Path.of(baseDirName)
         val outputDir = Path.of(outputDirName)
         val rulesFile = Path.of(rulesFileName)
-        val rulesJson = files.readString(rulesFile)
+        val rulesJson = integrations.files.readString(rulesFile)
         val rulesData = ruleLoader.load(rulesJson)
         val categories = rulesData.categories
         val globalCore = rulesData.core
@@ -59,6 +59,6 @@ class ConfiguredRunnerFactory(
             failOnUnknown,
             categories
         )
-        return createRunner(files, configuration)
+        return createRunner(integrations, configuration)
     }
 }
