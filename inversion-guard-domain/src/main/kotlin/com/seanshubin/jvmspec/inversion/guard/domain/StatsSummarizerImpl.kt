@@ -22,7 +22,8 @@ class StatsSummarizerImpl(
         val commands = allCategories.map { category ->
             val matchedEvents = matchedByCategory[category] ?: emptyList()
             val unmatchedEvents = unmatchedByCategory[category] ?: emptyList()
-            val categoryTree = buildCategoryReport(category, matchedEvents, unmatchedEvents)
+            val registeredPatterns = stats.registeredPatterns[category] ?: emptyMap()
+            val categoryTree = buildCategoryReport(category, matchedEvents, unmatchedEvents, registeredPatterns)
             val path = outputDir.resolve("stats-$category.txt")
             CreateFileCommand(path, listOf(categoryTree))
         }
@@ -33,13 +34,15 @@ class StatsSummarizerImpl(
     private fun buildCategoryReport(
         category: String,
         matchedEvents: List<MatchedFilterEvent>,
-        unmatchedEvents: List<UnmatchedFilterEvent>
+        unmatchedEvents: List<UnmatchedFilterEvent>,
+        registeredPatterns: Map<String, List<String>>
     ): Tree {
         val multiTypeMatchesSection = buildMultiTypeMatchesSection(matchedEvents)
         val multiPatternMatchesSection = buildMultiPatternMatchesSection(matchedEvents)
         val byTextSection = buildByTextSection(matchedEvents)
         val byPatternSection = buildByPatternSection(matchedEvents)
-        val noMatchesSection = buildNoMatchesSection(unmatchedEvents)
+        val unmatchedTextSection = buildUnmatchedTextSection(unmatchedEvents)
+        val unusedPatternsSection = buildUnusedPatternsSection(matchedEvents, registeredPatterns)
 
         val totalMatched = matchedEvents.size
         val totalUnmatched = unmatchedEvents.size
@@ -52,7 +55,8 @@ class StatsSummarizerImpl(
                 multiPatternMatchesSection,
                 byTextSection,
                 byPatternSection,
-                noMatchesSection
+                unmatchedTextSection,
+                unusedPatternsSection
             )
         )
     }
@@ -183,9 +187,9 @@ class StatsSummarizerImpl(
         return Tree("by-pattern ($totalMatched total)", typePatternTrees)
     }
 
-    // Section 5: no-matches
+    // Section 5: unmatched-text
     // Flat list: text (sorted ascending)
-    private fun buildNoMatchesSection(events: List<UnmatchedFilterEvent>): Tree {
+    private fun buildUnmatchedTextSection(events: List<UnmatchedFilterEvent>): Tree {
         val uniqueTexts = events.map { it.text }.distinct().sorted()
 
         val textTrees = uniqueTexts.map { text ->
@@ -193,6 +197,34 @@ class StatsSummarizerImpl(
         }
 
         val totalUnmatched = events.size
-        return Tree("no-matches ($totalUnmatched total)", textTrees)
+        return Tree("unmatched-text ($totalUnmatched total)", textTrees)
+    }
+
+    // Section 6: unused-patterns
+    // Hierarchical: type -> pattern
+    private fun buildUnusedPatternsSection(
+        events: List<MatchedFilterEvent>,
+        registeredPatterns: Map<String, List<String>>
+    ): Tree {
+        data class TypePatternKey(val type: String, val pattern: String)
+
+        val usedPatterns = events.map { TypePatternKey(it.type, it.pattern) }.toSet()
+
+        val unusedByType = registeredPatterns.mapNotNull { (type, patterns) ->
+            val unusedPatternsForType = patterns.filter { pattern -> TypePatternKey(type, pattern) !in usedPatterns }
+            if (unusedPatternsForType.isNotEmpty()) {
+                type to unusedPatternsForType.sorted()
+            } else {
+                null
+            }
+        }.sortedBy { it.first }
+
+        val typeTrees = unusedByType.map { (type, patterns) ->
+            val patternTrees = patterns.map { pattern -> Tree(pattern) }
+            Tree("$type (${patterns.size})", patternTrees)
+        }
+
+        val totalUnused = unusedByType.sumOf { it.second.size }
+        return Tree("unused-patterns ($totalUnused total)", typeTrees)
     }
 }

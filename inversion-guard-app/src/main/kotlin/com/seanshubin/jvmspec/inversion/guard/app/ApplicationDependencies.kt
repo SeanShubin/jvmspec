@@ -54,7 +54,8 @@ class ApplicationDependencies(
             "excludeFile" to excludeFile
         ),
         stats::consumeMatchedFilterEvent,
-        stats::consumeUnmatchedFilterEvent
+        stats::consumeUnmatchedFilterEvent,
+        stats::registerPatterns
     )
     private val directoryFilter: Filter = RegexFilter(
         "directory-name",
@@ -62,7 +63,8 @@ class ApplicationDependencies(
             "skipDir" to skipDir
         ),
         stats::consumeMatchedFilterEvent,
-        stats::consumeUnmatchedFilterEvent
+        stats::consumeUnmatchedFilterEvent,
+        stats::registerPatterns
     )
     private val fileSelectorFileVisitorFactory: FileSelectorFileVisitorFactory = FileSelectorFileVisitorFactoryImpl(
         directoryFilter,
@@ -78,7 +80,8 @@ class ApplicationDependencies(
             "boundary" to boundary
         ),
         stats::consumeMatchedFilterEvent,
-        stats::consumeUnmatchedFilterEvent
+        stats::consumeUnmatchedFilterEvent,
+        stats::registerPatterns
     )
     private val classAnalyzer: ClassAnalyzer = ClassAnalyzerImpl(
         coreBoundaryFilter,

@@ -25,7 +25,8 @@ class HtmlStatsSummarizerImpl(
         val categoryCommands = allCategories.flatMap { category ->
             val matchedEvents = matchedByCategory[category] ?: emptyList()
             val unmatchedEvents = unmatchedByCategory[category] ?: emptyList()
-            createCategoryPages(category, matchedEvents, unmatchedEvents)
+            val registeredPatterns = stats.registeredPatterns[category] ?: emptyMap()
+            createCategoryPages(category, matchedEvents, unmatchedEvents, registeredPatterns)
         }
 
         return listOf(indexCommand) + categoryCommands
@@ -140,7 +141,8 @@ class HtmlStatsSummarizerImpl(
     private fun createCategoryPages(
         category: String,
         matchedEvents: List<MatchedFilterEvent>,
-        unmatchedEvents: List<UnmatchedFilterEvent>
+        unmatchedEvents: List<UnmatchedFilterEvent>,
+        registeredPatterns: Map<String, List<String>>
     ): List<Command> {
         val sections = listOf(
             Triple(
@@ -155,7 +157,12 @@ class HtmlStatsSummarizerImpl(
             ),
             Triple("by-text", buildByTextTable(matchedEvents), countByText(matchedEvents)),
             Triple("by-pattern", buildByPatternTable(matchedEvents), countByPattern(matchedEvents)),
-            Triple("no-matches", buildNoMatchesTable(unmatchedEvents), countNoMatches(unmatchedEvents))
+            Triple("unmatched-text", buildUnmatchedTextTable(unmatchedEvents), countUnmatchedText(unmatchedEvents)),
+            Triple(
+                "unused-patterns",
+                buildUnusedPatternsTable(matchedEvents, registeredPatterns),
+                countUnusedPatterns(matchedEvents, registeredPatterns)
+            )
         )
 
         val categoryIndexCommand = createCategoryIndexPage(category, sections, matchedEvents, unmatchedEvents)
@@ -471,7 +478,7 @@ class HtmlStatsSummarizerImpl(
         )
     }
 
-    private fun buildNoMatchesTable(events: List<UnmatchedFilterEvent>): HtmlElement {
+    private fun buildUnmatchedTextTable(events: List<UnmatchedFilterEvent>): HtmlElement {
         val uniqueTexts = events.map { it.text }.distinct().sorted()
 
         if (uniqueTexts.isEmpty()) {
@@ -492,6 +499,48 @@ class HtmlStatsSummarizerImpl(
                 Tag(
                     "thead",
                     Tag("tr", text("th", "Text"))
+                ),
+                Tag("tbody", rows)
+            )
+        )
+    }
+
+    private fun buildUnusedPatternsTable(
+        events: List<MatchedFilterEvent>,
+        registeredPatterns: Map<String, List<String>>
+    ): HtmlElement {
+        data class TypePatternKey(val type: String, val pattern: String)
+
+        val usedPatterns = events.map { TypePatternKey(it.type, it.pattern) }.toSet()
+
+        val unusedPatterns = registeredPatterns.flatMap { (type, patterns) ->
+            patterns.filter { pattern -> TypePatternKey(type, pattern) !in usedPatterns }
+                .map { pattern -> TypePatternKey(type, pattern) }
+        }.sortedWith(compareBy({ it.type }, { it.pattern }))
+
+        if (unusedPatterns.isEmpty()) {
+            return Tag("p", Text("All patterns matched at least one item."))
+        }
+
+        val rows = unusedPatterns.map { (type, pattern) ->
+            Tag(
+                "tr",
+                text("td", type),
+                Tag("td", attributes = listOf("class" to "filter-text"), children = listOf(Text(pattern)))
+            )
+        }
+
+        return Tag(
+            "table",
+            attributes = listOf("class" to "detail-table"),
+            children = listOf(
+                Tag(
+                    "thead",
+                    Tag(
+                        "tr",
+                        text("th", "Type"),
+                        text("th", "Pattern")
+                    )
                 ),
                 Tag("tbody", rows)
             )
@@ -521,7 +570,20 @@ class HtmlStatsSummarizerImpl(
         return events.map { TypePatternKey(it.type, it.pattern) }.distinct().size
     }
 
-    private fun countNoMatches(events: List<UnmatchedFilterEvent>): Int {
+    private fun countUnmatchedText(events: List<UnmatchedFilterEvent>): Int {
         return events.map { it.text }.distinct().size
+    }
+
+    private fun countUnusedPatterns(
+        events: List<MatchedFilterEvent>,
+        registeredPatterns: Map<String, List<String>>
+    ): Int {
+        data class TypePatternKey(val type: String, val pattern: String)
+
+        val usedPatterns = events.map { TypePatternKey(it.type, it.pattern) }.toSet()
+
+        return registeredPatterns.flatMap { (type, patterns) ->
+            patterns.filter { pattern -> TypePatternKey(type, pattern) !in usedPatterns }
+        }.size
     }
 }

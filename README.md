@@ -29,6 +29,8 @@ determined to represent simple delegation rather than logic.
     - by pattern
         - type, pattern (sorted by type ascending, then pattern ascending)
             - quantity, text (sorted by quantity descending, text ascending)
-    - no matches
-        - text (sorted ascending)
+  - unmatched text
+      - text (sorted ascending) - text that did not match any pattern
+  - unused patterns
+      - type, pattern (sorted by type ascending, pattern ascending) - patterns that did not match any text
 
