@@ -93,3 +93,109 @@ tr:hover {
 .metric-value.no-problems {
     color: #28a745;
 }
+
+/* Summary table spacing */
+.summary-table {
+    margin-bottom: 30px;
+}
+
+/* Detail table styling */
+.detail-table {
+    margin-top: 20px;
+    font-size: 0.95em;
+}
+
+.detail-table th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Row hierarchy - class level */
+.class-row {
+    background-color: #e3f2fd;
+    font-weight: 600;
+    border-top: 2px solid #007bff;
+}
+
+.class-row:hover {
+    background-color: #bbdefb;
+}
+
+/* Row hierarchy - method level */
+.method-row {
+    background-color: #f5f5f5;
+}
+
+.method-row td:first-child,
+.method-row td:nth-child(2) {
+    padding-left: 30px;
+}
+
+.method-row:hover {
+    background-color: #eeeeee;
+}
+
+/* Row hierarchy - invocation level */
+.invocation-row {
+    font-size: 0.9em;
+}
+
+.invocation-row td:first-child,
+.invocation-row td:nth-child(2) {
+    padding-left: 60px;
+}
+
+/* Invocation type-specific styling */
+.invocation-type-boundary {
+    background-color: #fff3cd;
+}
+
+.invocation-type-boundary:hover {
+    background-color: #ffe69c;
+}
+
+.invocation-type-unknown {
+    background-color: #f8d7da;
+}
+
+.invocation-type-unknown:hover {
+    background-color: #f1aeb5;
+}
+
+.invocation-type-core {
+    background-color: #ffffff;
+}
+
+/* Cell content styling */
+.class-name {
+    font-family: 'Courier New', monospace;
+    color: #0066cc;
+    font-weight: 600;
+}
+
+.method-signature {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    color: #333;
+    word-break: break-all;
+}
+
+.invocation-signature {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85em;
+    color: #666;
+    word-break: break-all;
+}
+
+.problem-count {
+    font-weight: bold;
+    color: #dc3545;
+    text-align: center;
+}
+
+.invocation-details {
+    font-size: 0.85em;
+    color: #666;
+    white-space: nowrap;
+}

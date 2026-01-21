@@ -104,12 +104,17 @@ class ApplicationDependencies(
         outputDir
     )
 
+    private val qualityMetricsDetailReportGenerator: QualityMetricsDetailReportGenerator =
+        QualityMetricsDetailReportGeneratorImpl()
+
     private val qualityMetricsDetailSummarizer: QualityMetricsDetailSummarizer = QualityMetricsDetailSummarizerImpl(
-        outputDir
+        outputDir,
+        qualityMetricsDetailReportGenerator
     )
 
     private val htmlReportSummarizer: HtmlReportSummarizer = HtmlReportSummarizerImpl(
-        outputDir
+        outputDir,
+        qualityMetricsDetailReportGenerator
     )
 
     private val timer: Timer = Timer(clock)
