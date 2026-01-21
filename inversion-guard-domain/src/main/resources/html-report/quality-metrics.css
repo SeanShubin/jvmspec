@@ -307,3 +307,11 @@ tr:hover {
     text-decoration: underline;
     color: #004499;
 }
+
+/* Filter tables */
+.filter-text {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    color: #333;
+    word-break: break-all;
+}

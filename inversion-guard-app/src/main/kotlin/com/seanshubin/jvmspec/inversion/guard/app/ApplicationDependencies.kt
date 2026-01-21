@@ -119,6 +119,10 @@ class ApplicationDependencies(
         jvmSpecFormat
     )
 
+    private val htmlStatsSummarizer: HtmlStatsSummarizer = HtmlStatsSummarizerImpl(
+        outputDir
+    )
+
     private val timer: Timer = Timer(clock)
     val runner: Runnable = Runner(
         files,
@@ -129,6 +133,7 @@ class ApplicationDependencies(
         qualityMetricsSummarizer,
         qualityMetricsDetailSummarizer,
         htmlReportSummarizer,
+        htmlStatsSummarizer,
         stats,
         classProcessor,
         commandRunner,

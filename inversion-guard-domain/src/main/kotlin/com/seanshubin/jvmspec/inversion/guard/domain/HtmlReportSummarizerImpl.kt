@@ -177,6 +177,14 @@ class HtmlReportSummarizerImpl(
                     "li",
                     Tag(
                         "a",
+                        attributes = listOf("href" to "filters.html"),
+                        children = listOf(Text("Filter Statistics"))
+                    )
+                ),
+                Tag(
+                    "li",
+                    Tag(
+                        "a",
                         attributes = listOf("href" to "disassembly.html"),
                         children = listOf(Text("Disassembly Index"))
                     )
