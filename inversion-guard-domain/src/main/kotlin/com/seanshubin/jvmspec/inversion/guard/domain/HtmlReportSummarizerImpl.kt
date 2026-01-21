@@ -62,7 +62,7 @@ class HtmlReportSummarizerImpl(
         analysisList: List<ClassAnalysis>,
         classPathMap: Map<String, Path>
     ): String {
-        val sortedAnalyses = analysisList.sortedBy { it.jvmClass.origin.toString() }
+        val sortedAnalyses = analysisList.sortedBy { baseDir.relativize(it.jvmClass.origin).toString() }
 
         val classListItems = sortedAnalyses.map { analysis ->
             val className = analysis.jvmClass.thisClassName
