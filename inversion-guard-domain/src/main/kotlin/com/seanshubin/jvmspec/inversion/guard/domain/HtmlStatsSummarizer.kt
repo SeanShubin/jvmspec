@@ -143,16 +143,24 @@ class HtmlStatsSummarizerImpl(
         unmatchedEvents: List<UnmatchedFilterEvent>
     ): List<Command> {
         val sections = listOf(
-            "multi-type-matches" to buildMultiTypeMatchesTable(matchedEvents),
-            "multi-pattern-matches" to buildMultiPatternMatchesTable(matchedEvents),
-            "by-text" to buildByTextTable(matchedEvents),
-            "by-pattern" to buildByPatternTable(matchedEvents),
-            "no-matches" to buildNoMatchesTable(unmatchedEvents)
+            Triple(
+                "multi-type-matches",
+                buildMultiTypeMatchesTable(matchedEvents),
+                countMultiTypeMatches(matchedEvents)
+            ),
+            Triple(
+                "multi-pattern-matches",
+                buildMultiPatternMatchesTable(matchedEvents),
+                countMultiPatternMatches(matchedEvents)
+            ),
+            Triple("by-text", buildByTextTable(matchedEvents), countByText(matchedEvents)),
+            Triple("by-pattern", buildByPatternTable(matchedEvents), countByPattern(matchedEvents)),
+            Triple("no-matches", buildNoMatchesTable(unmatchedEvents), countNoMatches(unmatchedEvents))
         )
 
         val categoryIndexCommand = createCategoryIndexPage(category, sections, matchedEvents, unmatchedEvents)
 
-        val sectionCommands = sections.map { (sectionName, table) ->
+        val sectionCommands = sections.map { (sectionName, table, _) ->
             createSectionPage(category, sectionName, table)
         }
 
@@ -161,7 +169,7 @@ class HtmlStatsSummarizerImpl(
 
     private fun createCategoryIndexPage(
         category: String,
-        sections: List<Pair<String, HtmlElement>>,
+        sections: List<Triple<String, HtmlElement, Int>>,
         matchedEvents: List<MatchedFilterEvent>,
         unmatchedEvents: List<UnmatchedFilterEvent>
     ): Command {
@@ -190,13 +198,13 @@ class HtmlStatsSummarizerImpl(
             )
         )
 
-        val sectionLinks = sections.map { (sectionName, _) ->
+        val sectionLinks = sections.map { (sectionName, _, count) ->
             Tag(
                 "li",
                 Tag(
                     "a",
                     attributes = listOf("href" to "filters-$category-$sectionName.html"),
-                    children = listOf(Text(formatSectionName(sectionName)))
+                    children = listOf(Text("${formatSectionName(sectionName)} ($count)"))
                 )
             )
         }
@@ -374,21 +382,21 @@ class HtmlStatsSummarizerImpl(
                     .groupingBy { TypePatternKey(it.type, it.pattern) }
                     .eachCount()
 
-                val details = typePatternCounts.entries
+                val detailItems = typePatternCounts.entries
                     .sortedWith(
                         compareByDescending<Map.Entry<TypePatternKey, Int>> { it.value }
                             .thenBy { it.key.type }
                             .thenBy { it.key.pattern }
                     )
-                    .joinToString("; ") { (key, count) ->
-                        "$count × (${key.type}, ${key.pattern})"
+                    .map { (key, count) ->
+                        Tag("li", Text("$count × (${key.type}, ${key.pattern})"))
                     }
 
                 Tag(
                     "tr",
                     Tag("td", attributes = listOf("class" to "filter-text"), children = listOf(Text(text))),
                     Tag("td", Text(eventsForText.size.toString())),
-                    Tag("td", Text(details))
+                    Tag("td", Tag("ul", detailItems))
                 )
             }
 
@@ -424,11 +432,15 @@ class HtmlStatsSummarizerImpl(
             .map { (key, eventsForTypePattern) ->
                 val textCounts = eventsForTypePattern.groupingBy { it.text }.eachCount()
 
-                val details = textCounts.entries
+                val detailItems = textCounts.entries
                     .sortedWith(compareByDescending<Map.Entry<String, Int>> { it.value }
                         .thenBy { it.key })
-                    .joinToString("; ") { (text, count) ->
-                        "$count × $text"
+                    .map { (text, count) ->
+                        Tag(
+                            "li",
+                            attributes = listOf("class" to "filter-text"),
+                            children = listOf(Text("$count × $text"))
+                        )
                     }
 
                 Tag(
@@ -436,7 +448,7 @@ class HtmlStatsSummarizerImpl(
                     Tag("td", Text(key.type)),
                     Tag("td", Text(key.pattern)),
                     Tag("td", Text(eventsForTypePattern.size.toString())),
-                    Tag("td", Text(details))
+                    Tag("td", Tag("ul", detailItems))
                 )
             }
 
@@ -484,5 +496,32 @@ class HtmlStatsSummarizerImpl(
                 Tag("tbody", rows)
             )
         )
+    }
+
+    private fun countMultiTypeMatches(events: List<MatchedFilterEvent>): Int {
+        val eventsByText = events.groupBy { it.text }
+        return eventsByText.count { (_, eventsForText) ->
+            eventsForText.map { it.type }.distinct().size > 1
+        }
+    }
+
+    private fun countMultiPatternMatches(events: List<MatchedFilterEvent>): Int {
+        val eventsByText = events.groupBy { it.text }
+        return eventsByText.count { (_, eventsForText) ->
+            eventsForText.map { it.pattern }.distinct().size > 1
+        }
+    }
+
+    private fun countByText(events: List<MatchedFilterEvent>): Int {
+        return events.map { it.text }.distinct().size
+    }
+
+    private fun countByPattern(events: List<MatchedFilterEvent>): Int {
+        data class TypePatternKey(val type: String, val pattern: String)
+        return events.map { TypePatternKey(it.type, it.pattern) }.distinct().size
+    }
+
+    private fun countNoMatches(events: List<UnmatchedFilterEvent>): Int {
+        return events.map { it.text }.distinct().size
     }
 }

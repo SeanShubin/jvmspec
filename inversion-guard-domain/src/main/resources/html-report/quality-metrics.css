@@ -313,5 +313,19 @@ tr:hover {
     font-family: 'Courier New', monospace;
     font-size: 0.9em;
     color: #333;
-    word-break: break-all;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Lists in table cells */
+td ul {
+    margin: 0;
+    padding-left: 0;
+    list-style-type: none;
+}
+
+td li {
+    margin: 4px 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
