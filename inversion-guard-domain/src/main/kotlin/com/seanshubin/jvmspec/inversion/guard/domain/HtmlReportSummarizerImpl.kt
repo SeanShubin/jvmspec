@@ -394,19 +394,25 @@ class HtmlReportSummarizerImpl(
         val trees = jvmSpecFormat.classTreeList(analysis.jvmClass)
         val relativePath = calculateDisassemblyPath(analysis.jvmClass)
         val cssPath = calculateCssRelativePath(relativePath)
-        val html = generateClassDisassemblyHtml(analysis.jvmClass.thisClassName, trees, cssPath)
+        val indexPath = calculateCssRelativePath(relativePath).replace("quality-metrics.css", "index.html")
+        val html = generateClassDisassemblyHtml(analysis.jvmClass.thisClassName, trees, cssPath, indexPath)
 
         val path = outputDir.resolve(relativePath)
         return CreateTextFileCommand(path, html)
     }
 
-    private fun generateClassDisassemblyHtml(className: String, trees: List<Tree>, cssPath: String): String {
+    private fun generateClassDisassemblyHtml(
+        className: String,
+        trees: List<Tree>,
+        cssPath: String,
+        indexPath: String
+    ): String {
         val html = Tag(
             "html",
             attributes = listOf("lang" to "en"),
             children = listOf(
                 createClassPageHead(className, cssPath),
-                createClassPageBody(className, trees)
+                createClassPageBody(className, trees, indexPath)
             )
         )
         val doctype = "<!DOCTYPE html>"
@@ -427,13 +433,13 @@ class HtmlReportSummarizerImpl(
         )
     }
 
-    private fun createClassPageBody(className: String, trees: List<Tree>): HtmlElement {
+    private fun createClassPageBody(className: String, trees: List<Tree>, indexPath: String): HtmlElement {
         val treeElements = trees.map { treeToHtml(it) }
 
         return Tag(
             "body",
             text("h1", "Class Disassembly: $className"),
-            createBackLink(),
+            createBackLink(indexPath),
             Tag(
                 "section",
                 attributes = listOf("id" to "disassembly", "class" to "disassembly-section"),
@@ -442,14 +448,14 @@ class HtmlReportSummarizerImpl(
         )
     }
 
-    private fun createBackLink(): HtmlElement {
+    private fun createBackLink(indexPath: String): HtmlElement {
         return Tag(
             "nav",
             attributes = listOf("class" to "back-navigation"),
             children = listOf(
                 Tag(
                     "a",
-                    attributes = listOf("href" to "index.html"),
+                    attributes = listOf("href" to indexPath),
                     children = listOf(Text("← Back to Quality Metrics Report"))
                 )
             )

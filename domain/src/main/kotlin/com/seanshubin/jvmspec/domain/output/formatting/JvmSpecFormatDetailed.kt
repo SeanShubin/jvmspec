@@ -179,14 +179,13 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     }
 
     private fun fieldOrMethodTree(caption: String, index: Int, fieldOrMethod: JvmFieldOrMethod): Tree {
-        val hexIndex = String.format("0x%04X", index)
         val formattedSignature = fieldOrMethod.signature().javaFormat()
         val children = listOf(
             Tree("access_flags: ${formatAccessFlags(fieldOrMethod.accessFlags())}"),
             Tree("signature: $formattedSignature"),
             attributesTree(fieldOrMethod.attributes())
         )
-        val parent = Tree("$caption[$index($hexIndex)]: $formattedSignature", children)
+        val parent = Tree("$caption[$index]: $formattedSignature", children)
         return parent
     }
 
@@ -197,7 +196,6 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     }
 
     private fun attributeTree(index: Int, attribute: JvmAttribute): Tree {
-        val hexIndex = String.format("0x%04X", index)
         val name = attribute.name()
         val bytesNode = listOf(
             Tree(attribute.bytes().toHexString()),
@@ -212,7 +210,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         } else {
             emptyList()
         }
-        return Tree("attribute[$index($hexIndex)]: $name", children + codeList)
+        return Tree("attribute[$index]: $name", children + codeList)
     }
 
     private fun codeTree(codeAttribute: JvmCodeAttribute): Tree {
@@ -239,17 +237,17 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     }
 
     private fun exceptionTableTree(index: Int, exception: JvmExceptionTable): Tree {
-        val hexIndex = String.format("0x%04X", index)
         val startPc = exception.startProgramCounter.formatDecimalHex()
         val endPc = exception.endProgramCounter.formatDecimalHex()
         val handlerPc = exception.handlerProgramCounter.formatDecimalHex()
+        val catchType = exception.catchType.formatDecimalHex()
         val children = listOf(
             Tree("start_pc: $startPc"),
             Tree("end_pc: $endPc"),
             Tree("handler_pc: $handlerPc"),
-            Tree("catch_type: ${exception.catchType}")
+            Tree("catch_type: $catchType")
         )
-        return Tree("exception[$index($hexIndex)]", children)
+        return Tree("exception[$index]", children)
     }
 
     override fun instructionTree(jvmInstruction: JvmInstruction): Tree {
