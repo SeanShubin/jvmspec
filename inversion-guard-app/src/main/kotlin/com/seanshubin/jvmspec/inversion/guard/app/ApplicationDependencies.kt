@@ -113,8 +113,10 @@ class ApplicationDependencies(
     )
 
     private val htmlReportSummarizer: HtmlReportSummarizer = HtmlReportSummarizerImpl(
+        baseDir,
         outputDir,
-        qualityMetricsDetailReportGenerator
+        qualityMetricsDetailReportGenerator,
+        jvmSpecFormat
     )
 
     private val timer: Timer = Timer(clock)

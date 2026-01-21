@@ -199,3 +199,82 @@ tr:hover {
     color: #666;
     white-space: nowrap;
 }
+
+/* Disassembly section */
+.disassembly-section {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    line-height: 1.4;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+/* Details/summary tree */
+.disassembly-section details {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    padding-left: 20px;
+}
+
+.disassembly-section .tree-leaf {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    padding-left: 20px;
+}
+
+/* Remove padding from the summary so it stays aligned with parent */
+.disassembly-section details > summary {
+    margin-left: -20px;
+}
+
+.disassembly-section summary {
+    cursor: pointer;
+    user-select: none;
+    padding: 2px 4px;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+.disassembly-section summary:hover {
+    background-color: #e9ecef;
+}
+
+.disassembly-section summary:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+.disassembly-section details[open] > summary {
+    font-weight: 600;
+    background-color: #e3f2fd;
+}
+
+/* Back navigation */
+.back-navigation {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+
+.back-navigation a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.back-navigation a:hover {
+    text-decoration: underline;
+}
+
+/* Clickable class names */
+.class-name a {
+    color: #0066cc;
+    text-decoration: none;
+}
+
+.class-name a:hover {
+    text-decoration: underline;
+    color: #004499;
+}
