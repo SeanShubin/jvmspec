@@ -11,6 +11,8 @@ data class Configuration(
     val skipDir: List<String>,
     val core: List<String>,
     val boundary: List<String>,
+    val localCore: List<String>,
+    val localBoundary: List<String>,
     val failOnUnknown: Boolean,
     val categoryRuleSet: Map<String, CategoryRule>
 )

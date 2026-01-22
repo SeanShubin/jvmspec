@@ -31,6 +31,8 @@ determined to represent simple delegation rather than logic.
             - quantity, text (sorted by quantity descending, text ascending)
   - unmatched text
       - text (sorted ascending) - text that did not match any pattern
-  - unused patterns
-      - type, pattern (sorted by type ascending, pattern ascending) - patterns that did not match any text
+  - unused local patterns
+      - type, pattern (sorted by type ascending, pattern ascending) - local patterns that did not match any text
+      - local patterns come from localRules in the configuration file
+      - global patterns from globalRules file are not included
 

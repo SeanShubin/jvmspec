@@ -38,6 +38,8 @@ class ApplicationDependencies(
     private val skipDir: List<String> = configuration.skipDir
     private val core: List<String> = configuration.core
     private val boundary: List<String> = configuration.boundary
+    private val localCore: List<String> = configuration.localCore
+    private val localBoundary: List<String> = configuration.localBoundary
     private val failOnUnknown: Boolean = configuration.failOnUnknown
     private val categoryRuleSet: Map<String, CategoryRule> = configuration.categoryRuleSet
     private val notifications: Notifications = LineEmittingNotifications(emit)
@@ -56,7 +58,15 @@ class ApplicationDependencies(
         stats::consumeMatchedFilterEvent,
         stats::consumeUnmatchedFilterEvent,
         stats::registerPatterns
-    )
+    ).also {
+        // All patterns for class-file-name are local (from config)
+        stats.registerLocalPatterns(
+            "class-file-name", mapOf(
+                "includeFile" to includeFile,
+                "excludeFile" to excludeFile
+            )
+        )
+    }
     private val directoryFilter: Filter = RegexFilter(
         "directory-name",
         mapOf(
@@ -65,7 +75,14 @@ class ApplicationDependencies(
         stats::consumeMatchedFilterEvent,
         stats::consumeUnmatchedFilterEvent,
         stats::registerPatterns
-    )
+    ).also {
+        // All patterns for directory-name are local (from config)
+        stats.registerLocalPatterns(
+            "directory-name", mapOf(
+                "skipDir" to skipDir
+            )
+        )
+    }
     private val fileSelectorFileVisitorFactory: FileSelectorFileVisitorFactory = FileSelectorFileVisitorFactoryImpl(
         directoryFilter,
         classFileNameFilter
@@ -82,7 +99,15 @@ class ApplicationDependencies(
         stats::consumeMatchedFilterEvent,
         stats::consumeUnmatchedFilterEvent,
         stats::registerPatterns
-    )
+    ).also {
+        // Only register local patterns for core-boundary
+        stats.registerLocalPatterns(
+            "core-boundary", mapOf(
+                "core" to localCore,
+                "boundary" to localBoundary
+            )
+        )
+    }
     private val classAnalyzer: ClassAnalyzer = ClassAnalyzerImpl(
         coreBoundaryFilter,
         ruleInterpreter,

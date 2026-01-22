@@ -9,6 +9,7 @@ class StatsImpl : Stats {
     private val threadSafeMatchedFilterEvents = ConcurrentLinkedQueue<MatchedFilterEvent>()
     private val threadSafeUnmatchedFilterEvents = ConcurrentLinkedQueue<UnmatchedFilterEvent>()
     private val threadSafeRegisteredPatterns = ConcurrentHashMap<String, Map<String, List<String>>>()
+    private val threadSafeRegisteredLocalPatterns = ConcurrentHashMap<String, Map<String, List<String>>>()
 
     override val matchedFilterEvents: List<MatchedFilterEvent>
         get() = threadSafeMatchedFilterEvents.toList()
@@ -18,6 +19,9 @@ class StatsImpl : Stats {
 
     override val registeredPatterns: Map<String, Map<String, List<String>>>
         get() = threadSafeRegisteredPatterns.toMap()
+
+    override val registeredLocalPatterns: Map<String, Map<String, List<String>>>
+        get() = threadSafeRegisteredLocalPatterns.toMap()
 
     override fun consumeMatchedFilterEvent(event: MatchedFilterEvent) {
         threadSafeMatchedFilterEvents.add(event)
@@ -29,5 +33,9 @@ class StatsImpl : Stats {
 
     override fun registerPatterns(category: String, patternsByType: Map<String, List<String>>) {
         threadSafeRegisteredPatterns[category] = patternsByType
+    }
+
+    override fun registerLocalPatterns(category: String, patternsByType: Map<String, List<String>>) {
+        threadSafeRegisteredLocalPatterns[category] = patternsByType
     }
 }

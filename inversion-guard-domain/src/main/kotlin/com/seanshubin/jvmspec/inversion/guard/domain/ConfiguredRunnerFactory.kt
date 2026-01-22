@@ -56,6 +56,8 @@ class ConfiguredRunnerFactory(
             skipDir,
             core,
             boundary,
+            localCore,
+            localBoundary,
             failOnUnknown,
             categories
         )

@@ -25,8 +25,8 @@ class HtmlStatsSummarizerImpl(
         val categoryCommands = allCategories.flatMap { category ->
             val matchedEvents = matchedByCategory[category] ?: emptyList()
             val unmatchedEvents = unmatchedByCategory[category] ?: emptyList()
-            val registeredPatterns = stats.registeredPatterns[category] ?: emptyMap()
-            createCategoryPages(category, matchedEvents, unmatchedEvents, registeredPatterns)
+            val registeredLocalPatterns = stats.registeredLocalPatterns[category] ?: emptyMap()
+            createCategoryPages(category, matchedEvents, unmatchedEvents, registeredLocalPatterns)
         }
 
         return listOf(indexCommand) + categoryCommands
@@ -142,7 +142,7 @@ class HtmlStatsSummarizerImpl(
         category: String,
         matchedEvents: List<MatchedFilterEvent>,
         unmatchedEvents: List<UnmatchedFilterEvent>,
-        registeredPatterns: Map<String, List<String>>
+        registeredLocalPatterns: Map<String, List<String>>
     ): List<Command> {
         val sections = listOf(
             Triple(
@@ -159,9 +159,9 @@ class HtmlStatsSummarizerImpl(
             Triple("by-pattern", buildByPatternTable(matchedEvents), countByPattern(matchedEvents)),
             Triple("unmatched-text", buildUnmatchedTextTable(unmatchedEvents), countUnmatchedText(unmatchedEvents)),
             Triple(
-                "unused-patterns",
-                buildUnusedPatternsTable(matchedEvents, registeredPatterns),
-                countUnusedPatterns(matchedEvents, registeredPatterns)
+                "unused-local-patterns",
+                buildUnusedLocalPatternsTable(matchedEvents, registeredLocalPatterns),
+                countUnusedLocalPatterns(matchedEvents, registeredLocalPatterns)
             )
         )
 
@@ -505,24 +505,24 @@ class HtmlStatsSummarizerImpl(
         )
     }
 
-    private fun buildUnusedPatternsTable(
+    private fun buildUnusedLocalPatternsTable(
         events: List<MatchedFilterEvent>,
-        registeredPatterns: Map<String, List<String>>
+        registeredLocalPatterns: Map<String, List<String>>
     ): HtmlElement {
         data class TypePatternKey(val type: String, val pattern: String)
 
         val usedPatterns = events.map { TypePatternKey(it.type, it.pattern) }.toSet()
 
-        val unusedPatterns = registeredPatterns.flatMap { (type, patterns) ->
+        val unusedLocalPatterns = registeredLocalPatterns.flatMap { (type, patterns) ->
             patterns.filter { pattern -> TypePatternKey(type, pattern) !in usedPatterns }
                 .map { pattern -> TypePatternKey(type, pattern) }
         }.sortedWith(compareBy({ it.type }, { it.pattern }))
 
-        if (unusedPatterns.isEmpty()) {
-            return Tag("p", Text("All patterns matched at least one item."))
+        if (unusedLocalPatterns.isEmpty()) {
+            return Tag("p", Text("All local patterns matched at least one item."))
         }
 
-        val rows = unusedPatterns.map { (type, pattern) ->
+        val rows = unusedLocalPatterns.map { (type, pattern) ->
             Tag(
                 "tr",
                 text("td", type),
@@ -574,15 +574,15 @@ class HtmlStatsSummarizerImpl(
         return events.map { it.text }.distinct().size
     }
 
-    private fun countUnusedPatterns(
+    private fun countUnusedLocalPatterns(
         events: List<MatchedFilterEvent>,
-        registeredPatterns: Map<String, List<String>>
+        registeredLocalPatterns: Map<String, List<String>>
     ): Int {
         data class TypePatternKey(val type: String, val pattern: String)
 
         val usedPatterns = events.map { TypePatternKey(it.type, it.pattern) }.toSet()
 
-        return registeredPatterns.flatMap { (type, patterns) ->
+        return registeredLocalPatterns.flatMap { (type, patterns) ->
             patterns.filter { pattern -> TypePatternKey(type, pattern) !in usedPatterns }
         }.size
     }
