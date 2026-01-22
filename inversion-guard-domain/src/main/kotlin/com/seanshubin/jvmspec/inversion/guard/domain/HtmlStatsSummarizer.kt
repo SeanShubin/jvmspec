@@ -26,7 +26,8 @@ class HtmlStatsSummarizerImpl(
             val matchedEvents = matchedByCategory[category] ?: emptyList()
             val unmatchedEvents = unmatchedByCategory[category] ?: emptyList()
             val registeredLocalPatterns = stats.registeredLocalPatterns[category] ?: emptyMap()
-            createCategoryPages(category, matchedEvents, unmatchedEvents, registeredLocalPatterns)
+            val registeredPatterns = stats.registeredPatterns[category] ?: emptyMap()
+            createCategoryPages(category, matchedEvents, unmatchedEvents, registeredLocalPatterns, registeredPatterns)
         }
 
         return listOf(indexCommand) + categoryCommands
@@ -142,7 +143,8 @@ class HtmlStatsSummarizerImpl(
         category: String,
         matchedEvents: List<MatchedFilterEvent>,
         unmatchedEvents: List<UnmatchedFilterEvent>,
-        registeredLocalPatterns: Map<String, List<String>>
+        registeredLocalPatterns: Map<String, List<String>>,
+        registeredPatterns: Map<String, List<String>>
     ): List<Command> {
         val sections = listOf(
             Triple(
@@ -162,6 +164,11 @@ class HtmlStatsSummarizerImpl(
                 "unused-local-patterns",
                 buildUnusedLocalPatternsTable(matchedEvents, registeredLocalPatterns),
                 countUnusedLocalPatterns(matchedEvents, registeredLocalPatterns)
+            ),
+            Triple(
+                "unused-global-patterns",
+                buildUnusedGlobalPatternsTable(matchedEvents, registeredLocalPatterns, registeredPatterns),
+                countUnusedGlobalPatterns(matchedEvents, registeredLocalPatterns, registeredPatterns)
             )
         )
 
@@ -583,6 +590,75 @@ class HtmlStatsSummarizerImpl(
         val usedPatterns = events.map { TypePatternKey(it.type, it.pattern) }.toSet()
 
         return registeredLocalPatterns.flatMap { (type, patterns) ->
+            patterns.filter { pattern -> TypePatternKey(type, pattern) !in usedPatterns }
+        }.size
+    }
+
+    private fun buildUnusedGlobalPatternsTable(
+        events: List<MatchedFilterEvent>,
+        registeredLocalPatterns: Map<String, List<String>>,
+        registeredPatterns: Map<String, List<String>>
+    ): HtmlElement {
+        data class TypePatternKey(val type: String, val pattern: String)
+
+        val usedPatterns = events.map { TypePatternKey(it.type, it.pattern) }.toSet()
+
+        // Global patterns = all patterns - local patterns
+        val globalPatternsByType = registeredPatterns.mapValues { (type, allPatterns) ->
+            val localPatterns = registeredLocalPatterns[type] ?: emptyList()
+            allPatterns.filter { it !in localPatterns }
+        }
+
+        val unusedGlobalPatterns = globalPatternsByType.flatMap { (type, patterns) ->
+            patterns.filter { pattern -> TypePatternKey(type, pattern) !in usedPatterns }
+                .map { pattern -> TypePatternKey(type, pattern) }
+        }.sortedWith(compareBy({ it.type }, { it.pattern }))
+
+        if (unusedGlobalPatterns.isEmpty()) {
+            return Tag("p", Text("All global patterns matched at least one item."))
+        }
+
+        val rows = unusedGlobalPatterns.map { (type, pattern) ->
+            Tag(
+                "tr",
+                text("td", type),
+                Tag("td", attributes = listOf("class" to "filter-text"), children = listOf(Text(pattern)))
+            )
+        }
+
+        return Tag(
+            "table",
+            attributes = listOf("class" to "detail-table"),
+            children = listOf(
+                Tag(
+                    "thead",
+                    Tag(
+                        "tr",
+                        text("th", "Type"),
+                        text("th", "Pattern")
+                    )
+                ),
+                Tag("tbody", rows)
+            )
+        )
+    }
+
+    private fun countUnusedGlobalPatterns(
+        events: List<MatchedFilterEvent>,
+        registeredLocalPatterns: Map<String, List<String>>,
+        registeredPatterns: Map<String, List<String>>
+    ): Int {
+        data class TypePatternKey(val type: String, val pattern: String)
+
+        val usedPatterns = events.map { TypePatternKey(it.type, it.pattern) }.toSet()
+
+        // Global patterns = all patterns - local patterns
+        val globalPatternsByType = registeredPatterns.mapValues { (type, allPatterns) ->
+            val localPatterns = registeredLocalPatterns[type] ?: emptyList()
+            allPatterns.filter { it !in localPatterns }
+        }
+
+        return globalPatternsByType.flatMap { (type, patterns) ->
             patterns.filter { pattern -> TypePatternKey(type, pattern) !in usedPatterns }
         }.size
     }

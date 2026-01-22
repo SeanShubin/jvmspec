@@ -34,5 +34,7 @@ determined to represent simple delegation rather than logic.
   - unused local patterns
       - type, pattern (sorted by type ascending, pattern ascending) - local patterns that did not match any text
       - local patterns come from localRules in the configuration file
-      - global patterns from globalRules file are not included
+  - unused global patterns
+      - type, pattern (sorted by type ascending, pattern ascending) - global patterns that did not match any text
+      - global patterns come from the file referenced by globalRules in the configuration file
 
