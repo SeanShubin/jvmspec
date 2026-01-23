@@ -809,12 +809,11 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         val algorithmTree = Tree("algorithm: ${attribute.algorithm()}")
         val modulesCountTree = Tree("modulesCount: ${attribute.modulesCount.formatDecimalHex()}")
         val moduleTrees = attribute.modules.mapIndexed { index, module ->
-            val hashHex = module.hash.joinToString("") { "%02X".format(it) }
             Tree(
                 "module[$index]", listOf(
                     Tree("moduleNameIndex: ${module.moduleNameIndex.formatDecimalHex()}"),
                     Tree("hashLength: ${module.hashLength.formatDecimalHex()}"),
-                    Tree("hash: 0x$hashHex")
+                    Tree("hash: ${module.hash.toHexString()}")
                 )
             )
         }
@@ -989,13 +988,11 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     ): Tree {
         val targetTypeHex = "0x${"%02X".format(typeAnnotation.targetType.toInt())}"
         val targetTypeTree = Tree("targetType: ${typeAnnotation.targetType.toInt()}($targetTypeHex)")
-        val targetInfoHex = typeAnnotation.targetInfo.joinToString("") { "%02X".format(it) }
-        val targetInfoTree = Tree("targetInfo: 0x$targetInfoHex")
+        val targetInfoTree = Tree("targetInfo: ${typeAnnotation.targetInfo.toHexString()}")
         val targetPathLengthHex = "0x${"%02X".format(typeAnnotation.targetPathLength.toInt())}"
         val targetPathLengthTree =
             Tree("targetPathLength: ${typeAnnotation.targetPathLength.toInt()}($targetPathLengthHex)")
-        val targetPathHex = typeAnnotation.targetPath.joinToString("") { "%02X".format(it) }
-        val targetPathTree = Tree("targetPath: 0x$targetPathHex")
+        val targetPathTree = Tree("targetPath: ${typeAnnotation.targetPath.toHexString()}")
         val typeIndexTree = Tree("typeIndex: ${typeAnnotation.typeIndex.formatDecimalHex()}")
         val numPairsTree = Tree("numElementValuePairs: ${typeAnnotation.numElementValuePairs.formatDecimalHex()}")
         val pairTrees = typeAnnotation.elementValuePairs.mapIndexed { index, pair ->

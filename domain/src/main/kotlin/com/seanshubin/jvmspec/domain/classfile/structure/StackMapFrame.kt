@@ -44,6 +44,8 @@ sealed class StackMapFrame {
     ) : StackMapFrame()
 
     companion object {
+        private fun appendFrameLocalCount(frameType: Int): Int = frameType - 251
+
         fun fromDataInput(input: DataInput): StackMapFrame {
             val frameType = input.readUnsignedByte()
             return when (frameType) {
@@ -72,7 +74,7 @@ sealed class StackMapFrame {
 
                 in 252..254 -> {
                     val offsetDelta = input.readUnsignedShort().toUShort()
-                    val numLocals = frameType - 251
+                    val numLocals = appendFrameLocalCount(frameType)
                     val locals = (0 until numLocals).map {
                         VerificationTypeInfo.fromDataInput(input)
                     }
