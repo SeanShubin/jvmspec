@@ -205,12 +205,21 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
             Tree("name: $name"),
             Tree("bytes(${attribute.bytes().size})", bytesNode),
         )
-        val codeList = if (attribute is JvmCodeAttribute) {
-            listOf(codeTree(attribute))
-        } else {
-            emptyList()
+        val detailList = when (attribute) {
+            is JvmCodeAttribute -> listOf(codeTree(attribute))
+            is JvmSourceFileAttribute -> listOf(sourceFileTree(attribute))
+            is JvmConstantValueAttribute -> listOf(constantValueTree(attribute))
+            is JvmDeprecatedAttribute -> listOf(deprecatedTree(attribute))
+            is JvmSyntheticAttribute -> listOf(syntheticTree(attribute))
+            is JvmSignatureAttribute -> listOf(signatureTree(attribute))
+            is JvmExceptionsAttribute -> listOf(exceptionsTree(attribute))
+            is JvmLineNumberTableAttribute -> listOf(lineNumberTableTree(attribute))
+            is JvmLocalVariableTableAttribute -> listOf(localVariableTableTree(attribute))
+            is JvmLocalVariableTypeTableAttribute -> listOf(localVariableTypeTableTree(attribute))
+            is JvmSourceDebugExtensionAttribute -> listOf(sourceDebugExtensionTree(attribute))
+            else -> emptyList()
         }
-        return Tree("attribute[$index]: $name", children + codeList)
+        return Tree("attribute[$index]: $name", children + detailList)
     }
 
     private fun codeTree(codeAttribute: JvmCodeAttribute): Tree {
@@ -357,5 +366,105 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     }
     private fun ConstantPoolTag.formatNameId(): String {
         return "${name}_$id"
+    }
+
+    private fun sourceFileTree(attribute: JvmSourceFileAttribute): Tree {
+        val sourceFileIndexTree = Tree("sourceFileIndex: ${attribute.sourceFileIndex.formatDecimalHex()}")
+        val sourceFileNameTree = Tree("sourceFileName: ${attribute.sourceFileName()}")
+        return Tree("sourceFile", listOf(sourceFileIndexTree, sourceFileNameTree))
+    }
+
+    private fun constantValueTree(attribute: JvmConstantValueAttribute): Tree {
+        val constantValueIndexTree = Tree("constantValueIndex: ${attribute.constantValueIndex.formatDecimalHex()}")
+        val constantValueTree = Tree("constantValue: ${attribute.constantValue()}")
+        return Tree("constantValue", listOf(constantValueIndexTree, constantValueTree))
+    }
+
+    private fun deprecatedTree(attribute: JvmDeprecatedAttribute): Tree {
+        return Tree("deprecated (marker attribute)")
+    }
+
+    private fun syntheticTree(attribute: JvmSyntheticAttribute): Tree {
+        return Tree("synthetic (marker attribute)")
+    }
+
+    private fun signatureTree(attribute: JvmSignatureAttribute): Tree {
+        val signatureIndexTree = Tree("signatureIndex: ${attribute.signatureIndex.formatDecimalHex()}")
+        val signatureTree = Tree("signature: ${attribute.signature()}")
+        return Tree("signature", listOf(signatureIndexTree, signatureTree))
+    }
+
+    private fun exceptionsTree(attribute: JvmExceptionsAttribute): Tree {
+        val numberOfExceptionsTree = Tree("numberOfExceptions: ${attribute.numberOfExceptions.formatDecimalHex()}")
+        val exceptionClassNames = attribute.exceptionClassNames()
+        val exceptionTrees = attribute.exceptionIndexTable.mapIndexed { index, exceptionIndex ->
+            Tree(
+                "exception[$index]: ${exceptionClassNames[index]}", listOf(
+                    Tree("classIndex: ${exceptionIndex.formatDecimalHex()}")
+                )
+            )
+        }
+        val exceptionTableTree = Tree("exceptionIndexTable(${exceptionTrees.size})", exceptionTrees)
+        return Tree("exceptions", listOf(numberOfExceptionsTree, exceptionTableTree))
+    }
+
+    private fun lineNumberTableTree(attribute: JvmLineNumberTableAttribute): Tree {
+        val lengthTree = Tree("lineNumberTableLength: ${attribute.lineNumberTableLength.formatDecimalHex()}")
+        val entries = attribute.lineNumberTable.mapIndexed { index, entry ->
+            Tree(
+                "entry[$index]", listOf(
+                    Tree("startPc: ${entry.startPc.formatDecimalHex()}"),
+                    Tree("lineNumber: ${entry.lineNumber.formatDecimalHex()}")
+                )
+            )
+        }
+        val tableTree = Tree("lineNumberTable(${entries.size})", entries)
+        return Tree("lineNumberTable", listOf(lengthTree, tableTree))
+    }
+
+    private fun localVariableTableTree(attribute: JvmLocalVariableTableAttribute): Tree {
+        val lengthTree = Tree("localVariableTableLength: ${attribute.localVariableTableLength.formatDecimalHex()}")
+        val entries = attribute.localVariableTable.mapIndexed { index, entry ->
+            Tree(
+                "entry[$index]", listOf(
+                    Tree("startPc: ${entry.startPc.formatDecimalHex()}"),
+                    Tree("length: ${entry.length.formatDecimalHex()}"),
+                    Tree("nameIndex: ${entry.nameIndex.formatDecimalHex()}"),
+                    Tree("descriptorIndex: ${entry.descriptorIndex.formatDecimalHex()}"),
+                    Tree("index: ${entry.index.formatDecimalHex()}")
+                )
+            )
+        }
+        val tableTree = Tree("localVariableTable(${entries.size})", entries)
+        return Tree("localVariableTable", listOf(lengthTree, tableTree))
+    }
+
+    private fun localVariableTypeTableTree(attribute: JvmLocalVariableTypeTableAttribute): Tree {
+        val lengthTree =
+            Tree("localVariableTypeTableLength: ${attribute.localVariableTypeTableLength.formatDecimalHex()}")
+        val entries = attribute.localVariableTypeTable.mapIndexed { index, entry ->
+            Tree(
+                "entry[$index]", listOf(
+                    Tree("startPc: ${entry.startPc.formatDecimalHex()}"),
+                    Tree("length: ${entry.length.formatDecimalHex()}"),
+                    Tree("nameIndex: ${entry.nameIndex.formatDecimalHex()}"),
+                    Tree("signatureIndex: ${entry.signatureIndex.formatDecimalHex()}"),
+                    Tree("index: ${entry.index.formatDecimalHex()}")
+                )
+            )
+        }
+        val tableTree = Tree("localVariableTypeTable(${entries.size})", entries)
+        return Tree("localVariableTypeTable", listOf(lengthTree, tableTree))
+    }
+
+    private fun sourceDebugExtensionTree(attribute: JvmSourceDebugExtensionAttribute): Tree {
+        val debugExtension = attribute.debugExtension()
+        val preview = if (debugExtension.length > 100) debugExtension.take(100) + "..." else debugExtension
+        return Tree(
+            "sourceDebugExtension", listOf(
+                Tree("length: ${debugExtension.length}"),
+                Tree("preview: $preview")
+            )
+        )
     }
 }

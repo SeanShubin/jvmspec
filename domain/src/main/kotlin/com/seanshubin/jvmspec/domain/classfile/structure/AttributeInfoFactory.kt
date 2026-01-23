@@ -20,6 +20,16 @@ object AttributeInfoFactory {
 
     val factoryMap: Map<String, (AttributeInfo, Map<UShort, ConstantInfo>, (DataInput, Map<UShort, ConstantInfo>) -> AttributeInfo) -> AttributeInfo> =
         mapOf(
-            AttributeCodeInfo.NAME to AttributeCodeInfo::fromAttributeInfo
+            AttributeCodeInfo.NAME to AttributeCodeInfo::fromAttributeInfo,
+            AttributeSourceFileInfo.NAME to AttributeSourceFileInfo::fromAttributeInfo,
+            AttributeConstantValueInfo.NAME to AttributeConstantValueInfo::fromAttributeInfo,
+            AttributeDeprecatedInfo.NAME to AttributeDeprecatedInfo::fromAttributeInfo,
+            AttributeSyntheticInfo.NAME to AttributeSyntheticInfo::fromAttributeInfo,
+            AttributeSignatureInfo.NAME to AttributeSignatureInfo::fromAttributeInfo,
+            AttributeExceptionsInfo.NAME to AttributeExceptionsInfo::fromAttributeInfo,
+            AttributeLineNumberTableInfo.NAME to AttributeLineNumberTableInfo::fromAttributeInfo,
+            AttributeLocalVariableTableInfo.NAME to AttributeLocalVariableTableInfo::fromAttributeInfo,
+            AttributeLocalVariableTypeTableInfo.NAME to AttributeLocalVariableTypeTableInfo::fromAttributeInfo,
+            AttributeSourceDebugExtensionInfo.NAME to AttributeSourceDebugExtensionInfo::fromAttributeInfo
         )
 }
