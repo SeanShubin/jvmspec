@@ -1,5 +1,6 @@
 package com.seanshubin.jvmspec.domain.classfile.structure
 
+import com.seanshubin.jvmspec.domain.classfile.structure.AnnotationStructure.Annotation
 import java.io.DataInput
 
 data class ParameterAnnotation(

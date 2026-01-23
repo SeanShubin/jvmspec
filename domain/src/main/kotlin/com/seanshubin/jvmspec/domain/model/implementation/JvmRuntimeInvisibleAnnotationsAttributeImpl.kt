@@ -1,6 +1,6 @@
 package com.seanshubin.jvmspec.domain.model.implementation
 
-import com.seanshubin.jvmspec.domain.classfile.structure.Annotation
+import com.seanshubin.jvmspec.domain.classfile.structure.AnnotationStructure.Annotation
 import com.seanshubin.jvmspec.domain.classfile.structure.AttributeRuntimeInvisibleAnnotationsInfo
 import com.seanshubin.jvmspec.domain.model.api.JvmClass
 import com.seanshubin.jvmspec.domain.model.api.JvmRuntimeInvisibleAnnotationsAttribute

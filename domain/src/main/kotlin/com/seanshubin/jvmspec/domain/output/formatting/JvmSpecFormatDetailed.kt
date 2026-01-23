@@ -913,7 +913,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
 
     private fun annotationTree(
         label: String,
-        annotation: com.seanshubin.jvmspec.domain.classfile.structure.Annotation
+        annotation: com.seanshubin.jvmspec.domain.classfile.structure.AnnotationStructure.Annotation
     ): Tree {
         val typeIndexTree = Tree("typeIndex: ${annotation.typeIndex.formatDecimalHex()}")
         val numPairsTree = Tree("numElementValuePairs: ${annotation.numElementValuePairs.formatDecimalHex()}")
@@ -926,7 +926,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
 
     private fun elementValuePairTree(
         label: String,
-        pair: com.seanshubin.jvmspec.domain.classfile.structure.ElementValuePair
+        pair: com.seanshubin.jvmspec.domain.classfile.structure.AnnotationStructure.ElementValuePair
     ): Tree {
         val nameIndexTree = Tree("elementNameIndex: ${pair.elementNameIndex.formatDecimalHex()}")
         val valueTree = elementValueTree("value", pair.value)
@@ -935,11 +935,11 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
 
     private fun elementValueTree(
         label: String,
-        elementValue: com.seanshubin.jvmspec.domain.classfile.structure.ElementValue
+        elementValue: com.seanshubin.jvmspec.domain.classfile.structure.AnnotationStructure.ElementValue
     ): Tree {
         val tagHex = "0x${"%02X".format(elementValue.tag.code)}"
         return when (elementValue) {
-            is com.seanshubin.jvmspec.domain.classfile.structure.ElementValue.ConstValueIndex -> {
+            is com.seanshubin.jvmspec.domain.classfile.structure.AnnotationStructure.ElementValue.ConstValueIndex -> {
                 Tree(
                     "$label: tag='${elementValue.tag}'($tagHex)", listOf(
                         Tree("constValueIndex: ${elementValue.constValueIndex.formatDecimalHex()}")
@@ -947,7 +947,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
                 )
             }
 
-            is com.seanshubin.jvmspec.domain.classfile.structure.ElementValue.EnumConstValue -> {
+            is com.seanshubin.jvmspec.domain.classfile.structure.AnnotationStructure.ElementValue.EnumConstValue -> {
                 Tree(
                     "$label: tag='${elementValue.tag}'($tagHex)", listOf(
                         Tree("typeNameIndex: ${elementValue.typeNameIndex.formatDecimalHex()}"),
@@ -956,7 +956,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
                 )
             }
 
-            is com.seanshubin.jvmspec.domain.classfile.structure.ElementValue.ClassInfoIndex -> {
+            is com.seanshubin.jvmspec.domain.classfile.structure.AnnotationStructure.ElementValue.ClassInfoIndex -> {
                 Tree(
                     "$label: tag='${elementValue.tag}'($tagHex)", listOf(
                         Tree("classInfoIndex: ${elementValue.classInfoIndex.formatDecimalHex()}")
@@ -964,14 +964,14 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
                 )
             }
 
-            is com.seanshubin.jvmspec.domain.classfile.structure.ElementValue.AnnotationValue -> {
+            is com.seanshubin.jvmspec.domain.classfile.structure.AnnotationStructure.ElementValue.AnnotationValue -> {
                 Tree(
                     "$label: tag='${elementValue.tag}'($tagHex)",
                     listOf(annotationTree("annotationValue", elementValue.annotationValue))
                 )
             }
 
-            is com.seanshubin.jvmspec.domain.classfile.structure.ElementValue.ArrayValue -> {
+            is com.seanshubin.jvmspec.domain.classfile.structure.AnnotationStructure.ElementValue.ArrayValue -> {
                 val numValuesTree = Tree("numValues: ${elementValue.numValues.formatDecimalHex()}")
                 val valueTrees = elementValue.values.mapIndexed { index, value ->
                     elementValueTree("value[$index]", value)

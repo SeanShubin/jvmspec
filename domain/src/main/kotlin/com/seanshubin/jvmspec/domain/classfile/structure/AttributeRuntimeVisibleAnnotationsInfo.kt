@@ -1,5 +1,6 @@
 package com.seanshubin.jvmspec.domain.classfile.structure
 
+import com.seanshubin.jvmspec.domain.classfile.structure.AnnotationStructure.Annotation
 import java.io.ByteArrayInputStream
 import java.io.DataInput
 import java.io.DataInputStream

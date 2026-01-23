@@ -1,7 +1,7 @@
 package com.seanshubin.jvmspec.domain.model.implementation
 
+import com.seanshubin.jvmspec.domain.classfile.structure.AnnotationStructure.ElementValue
 import com.seanshubin.jvmspec.domain.classfile.structure.AttributeAnnotationDefaultInfo
-import com.seanshubin.jvmspec.domain.classfile.structure.ElementValue
 import com.seanshubin.jvmspec.domain.model.api.JvmAnnotationDefaultAttribute
 import com.seanshubin.jvmspec.domain.model.api.JvmClass
 
