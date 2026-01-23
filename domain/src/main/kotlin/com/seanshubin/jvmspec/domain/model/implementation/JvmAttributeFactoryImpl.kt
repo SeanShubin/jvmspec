@@ -30,6 +30,8 @@ class JvmAttributeFactoryImpl : JvmAttributeFactory {
             is AttributeModuleInfo -> JvmModuleAttributeImpl(jvmClass, attributeInfo)
             is AttributeModuleMainClassInfo -> JvmModuleMainClassAttributeImpl(jvmClass, attributeInfo)
             is AttributeModulePackagesInfo -> JvmModulePackagesAttributeImpl(jvmClass, attributeInfo)
+            is AttributeModuleResolutionInfo -> JvmModuleResolutionAttributeImpl(jvmClass, attributeInfo)
+            is AttributeModuleHashesInfo -> JvmModuleHashesAttributeImpl(jvmClass, attributeInfo)
             is AttributeRecordInfo -> JvmRecordAttributeImpl(jvmClass, attributeInfo)
             is AttributeRuntimeVisibleAnnotationsInfo -> JvmRuntimeVisibleAnnotationsAttributeImpl(
                 jvmClass,

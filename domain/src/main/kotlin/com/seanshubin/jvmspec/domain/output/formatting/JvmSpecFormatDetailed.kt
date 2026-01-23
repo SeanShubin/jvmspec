@@ -228,6 +228,8 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
             is JvmModuleAttribute -> listOf(moduleTree(attribute))
             is JvmModuleMainClassAttribute -> listOf(moduleMainClassTree(attribute))
             is JvmModulePackagesAttribute -> listOf(modulePackagesTree(attribute))
+            is JvmModuleResolutionAttribute -> listOf(moduleResolutionTree(attribute))
+            is JvmModuleHashesAttribute -> listOf(moduleHashesTree(attribute))
             is JvmRecordAttribute -> listOf(recordTree(attribute))
             is JvmRuntimeVisibleAnnotationsAttribute -> listOf(runtimeVisibleAnnotationsTree(attribute))
             is JvmRuntimeInvisibleAnnotationsAttribute -> listOf(runtimeInvisibleAnnotationsTree(attribute))
@@ -795,6 +797,29 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         }
         val packageIndexListTree = Tree("packageIndex(${packageIndexTrees.size})", packageIndexTrees)
         return Tree("modulePackages", listOf(packageCountTree, packageIndexListTree))
+    }
+
+    private fun moduleResolutionTree(attribute: JvmModuleResolutionAttribute): Tree {
+        val resolutionFlagsTree = Tree("resolutionFlags: ${attribute.resolutionFlags.formatDecimalHex()}")
+        return Tree("moduleResolution", listOf(resolutionFlagsTree))
+    }
+
+    private fun moduleHashesTree(attribute: JvmModuleHashesAttribute): Tree {
+        val algorithmIndexTree = Tree("algorithmIndex: ${attribute.algorithmIndex.formatDecimalHex()}")
+        val algorithmTree = Tree("algorithm: ${attribute.algorithm()}")
+        val modulesCountTree = Tree("modulesCount: ${attribute.modulesCount.formatDecimalHex()}")
+        val moduleTrees = attribute.modules.mapIndexed { index, module ->
+            val hashHex = module.hash.joinToString("") { "%02X".format(it) }
+            Tree(
+                "module[$index]", listOf(
+                    Tree("moduleNameIndex: ${module.moduleNameIndex.formatDecimalHex()}"),
+                    Tree("hashLength: ${module.hashLength.formatDecimalHex()}"),
+                    Tree("hash: 0x$hashHex")
+                )
+            )
+        }
+        val modulesListTree = Tree("modules(${moduleTrees.size})", moduleTrees)
+        return Tree("moduleHashes", listOf(algorithmIndexTree, algorithmTree, modulesCountTree, modulesListTree))
     }
 
     private fun recordTree(attribute: JvmRecordAttribute): Tree {

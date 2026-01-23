@@ -42,6 +42,8 @@ object AttributeInfoFactory {
             AttributeModuleInfo.NAME to AttributeModuleInfo::fromAttributeInfo,
             AttributeModuleMainClassInfo.NAME to AttributeModuleMainClassInfo::fromAttributeInfo,
             AttributeModulePackagesInfo.NAME to AttributeModulePackagesInfo::fromAttributeInfo,
+            AttributeModuleResolutionInfo.NAME to AttributeModuleResolutionInfo::fromAttributeInfo,
+            AttributeModuleHashesInfo.NAME to AttributeModuleHashesInfo::fromAttributeInfo,
             AttributeRecordInfo.NAME to AttributeRecordInfo::fromAttributeInfo,
             AttributeRuntimeVisibleAnnotationsInfo.NAME to AttributeRuntimeVisibleAnnotationsInfo::fromAttributeInfo,
             AttributeRuntimeInvisibleAnnotationsInfo.NAME to AttributeRuntimeInvisibleAnnotationsInfo::fromAttributeInfo,
