@@ -9,8 +9,6 @@ class Runner(
     private val files: FilesContract,
     private val fileSelector: FileSelector,
     private val classAnalyzer: ClassAnalyzer,
-    private val analysisSummarizer: AnalysisSummarizer,
-    private val statsSummarizer: StatsSummarizer,
     private val qualityMetricsSummarizer: QualityMetricsSummarizer,
     private val qualityMetricsDetailSummarizer: QualityMetricsDetailSummarizer,
     private val htmlReportSummarizer: HtmlReportSummarizer,
@@ -30,7 +28,7 @@ class Runner(
             }
             val commands = analysisList.flatMap { analysis ->
                 classProcessor.processClass(analysis)
-            } + analysisSummarizer.summarize(analysisList) + statsSummarizer.summarize(stats) + qualityMetricsSummarizer.summarize(
+            } + qualityMetricsSummarizer.summarize(
                 analysisList
             ) + qualityMetricsDetailSummarizer.summarize(analysisList) + htmlReportSummarizer.summarize(analysisList) + htmlStatsSummarizer.summarize(
                 stats

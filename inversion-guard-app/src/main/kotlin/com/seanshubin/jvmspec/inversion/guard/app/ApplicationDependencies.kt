@@ -123,13 +123,6 @@ class ApplicationDependencies(
         environment,
         notifications::executingCommand
     )
-    private val analysisSummarizer: AnalysisSummarizer = AnalysisSummarizerImpl(
-        outputDir
-    )
-
-    private val statsSummarizer: StatsSummarizer = StatsSummarizerImpl(
-        outputDir
-    )
 
     private val qualityMetricsSummarizer: QualityMetricsSummarizer = QualityMetricsSummarizerImpl(
         outputDir
@@ -159,8 +152,6 @@ class ApplicationDependencies(
         files,
         fileSelector,
         classAnalyzer,
-        analysisSummarizer,
-        statsSummarizer,
         qualityMetricsSummarizer,
         qualityMetricsDetailSummarizer,
         htmlReportSummarizer,

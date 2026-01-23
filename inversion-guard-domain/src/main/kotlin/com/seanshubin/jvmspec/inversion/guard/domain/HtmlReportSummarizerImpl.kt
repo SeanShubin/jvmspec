@@ -403,7 +403,9 @@ class HtmlReportSummarizerImpl(
         val relativePath = calculateDisassemblyPath(analysis.jvmClass)
         val cssPath = calculateCssRelativePath(relativePath)
         val indexPath = calculateCssRelativePath(relativePath).replace("quality-metrics.css", "index.html")
-        val html = generateClassDisassemblyHtml(analysis.jvmClass.thisClassName, trees, cssPath, indexPath)
+        val textFileName = relativePath.fileName.toString().replace("-disassembly.html", "-disassembled.txt")
+        val html =
+            generateClassDisassemblyHtml(analysis.jvmClass.thisClassName, trees, cssPath, indexPath, textFileName)
 
         val path = outputDir.resolve(relativePath)
         return CreateTextFileCommand(path, html)
@@ -413,14 +415,15 @@ class HtmlReportSummarizerImpl(
         className: String,
         trees: List<Tree>,
         cssPath: String,
-        indexPath: String
+        indexPath: String,
+        textFilePath: String
     ): String {
         val html = Tag(
             "html",
             attributes = listOf("lang" to "en"),
             children = listOf(
                 createClassPageHead(className, cssPath),
-                createClassPageBody(className, trees, indexPath)
+                createClassPageBody(className, trees, indexPath, textFilePath)
             )
         )
         val doctype = "<!DOCTYPE html>"
@@ -441,13 +444,19 @@ class HtmlReportSummarizerImpl(
         )
     }
 
-    private fun createClassPageBody(className: String, trees: List<Tree>, indexPath: String): HtmlElement {
+    private fun createClassPageBody(
+        className: String,
+        trees: List<Tree>,
+        indexPath: String,
+        textFilePath: String
+    ): HtmlElement {
         val treeElements = trees.map { treeToHtml(it) }
 
         return Tag(
             "body",
             text("h1", "Class Disassembly: $className"),
             createBackLink(indexPath),
+            createTextFileLink(textFilePath),
             Tag(
                 "section",
                 attributes = listOf("id" to "disassembly", "class" to "disassembly-section"),
@@ -465,6 +474,20 @@ class HtmlReportSummarizerImpl(
                     "a",
                     attributes = listOf("href" to indexPath),
                     children = listOf(Text("← Back to Quality Metrics Report"))
+                )
+            )
+        )
+    }
+
+    private fun createTextFileLink(textFilePath: String): HtmlElement {
+        return Tag(
+            "nav",
+            attributes = listOf("class" to "back-navigation"),
+            children = listOf(
+                Tag(
+                    "a",
+                    attributes = listOf("href" to textFilePath),
+                    children = listOf(Text("View Raw Text Disassembly"))
                 )
             )
         )
