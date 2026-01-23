@@ -6,6 +6,7 @@ import com.seanshubin.jvmspec.domain.model.api.*
 class JvmCodeAttributeImpl(
     private val jvmClass: JvmClass,
     private val attributeCodeInfo: AttributeCodeInfo,
+    private val attributeFactory: JvmAttributeFactory
 ) : JvmCodeAttribute {
     override val maxStack: UShort = attributeCodeInfo.maxStack
     override val maxLocals: UShort = attributeCodeInfo.maxLocals
@@ -42,8 +43,8 @@ class JvmCodeAttributeImpl(
     }
 
     override fun attributes(): List<JvmAttribute> {
-        return attributeCodeInfo.attributes.map {
-            JvmAttributeImpl(jvmClass, it)
+        return attributeCodeInfo.attributes.map { attributeInfo ->
+            attributeFactory.createAttribute(jvmClass, attributeInfo)
         }
     }
 }

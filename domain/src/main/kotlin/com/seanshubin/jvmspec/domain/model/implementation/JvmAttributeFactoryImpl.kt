@@ -8,7 +8,7 @@ import com.seanshubin.jvmspec.domain.model.api.JvmClass
 class JvmAttributeFactoryImpl : JvmAttributeFactory {
     override fun createAttribute(jvmClass: JvmClass, attributeInfo: AttributeInfo): JvmAttribute =
         when (attributeInfo) {
-            is AttributeCodeInfo -> JvmCodeAttributeImpl(jvmClass, attributeInfo)
+            is AttributeCodeInfo -> JvmCodeAttributeImpl(jvmClass, attributeInfo, this)
             is AttributeStackMapTableInfo -> JvmStackMapTableAttributeImpl(jvmClass, attributeInfo)
             is AttributeSourceFileInfo -> JvmSourceFileAttributeImpl(jvmClass, attributeInfo)
             is AttributeConstantValueInfo -> JvmConstantValueAttributeImpl(jvmClass, attributeInfo)
