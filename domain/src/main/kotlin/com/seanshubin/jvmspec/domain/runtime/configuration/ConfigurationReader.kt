@@ -13,8 +13,8 @@ class ConfigurationReader(
         val inputDir = Path.of(inputDirName)
         val outputDirName = keyValueStore.load(listOf("outputDir")) as String
         val outputDir = Path.of(outputDirName)
-        val include = keyValueStore.load(listOf("include")).toTypedList<String>()
-        val exclude = keyValueStore.load(listOf("exclude")).toTypedList<String>()
+        val include = keyValueStore.load(listOf("includeFile")).toTypedList<String>()
+        val exclude = keyValueStore.load(listOf("excludeFile")).toTypedList<String>()
         val configuration = Configuration(
             inputDir,
             outputDir,
