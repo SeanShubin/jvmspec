@@ -207,6 +207,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         )
         val detailList = when (attribute) {
             is JvmCodeAttribute -> listOf(codeTree(attribute))
+            is JvmStackMapTableAttribute -> listOf(stackMapTableTree(attribute))
             is JvmSourceFileAttribute -> listOf(sourceFileTree(attribute))
             is JvmConstantValueAttribute -> listOf(constantValueTree(attribute))
             is JvmDeprecatedAttribute -> listOf(deprecatedTree(attribute))
@@ -224,6 +225,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
             is JvmPermittedSubclassesAttribute -> listOf(permittedSubclassesTree(attribute))
             is JvmBootstrapMethodsAttribute -> listOf(bootstrapMethodsTree(attribute))
             is JvmMethodParametersAttribute -> listOf(methodParametersTree(attribute))
+            is JvmModuleAttribute -> listOf(moduleTree(attribute))
             is JvmModuleMainClassAttribute -> listOf(moduleMainClassTree(attribute))
             is JvmModulePackagesAttribute -> listOf(modulePackagesTree(attribute))
             is JvmRecordAttribute -> listOf(recordTree(attribute))
@@ -259,6 +261,119 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
                 instructionsTree, exceptionTableTree, attributesTree
             )
         )
+    }
+
+    private fun stackMapTableTree(attribute: JvmStackMapTableAttribute): Tree {
+        val numberOfEntriesTree = Tree("numberOfEntries: ${attribute.numberOfEntries.formatDecimalHex()}")
+        val frameTrees = attribute.entries.mapIndexed { index, frame ->
+            stackMapFrameTree("frame[$index]", frame)
+        }
+        val framesTree = Tree("entries(${frameTrees.size})", frameTrees)
+        return Tree("stackMapTable", listOf(numberOfEntriesTree, framesTree))
+    }
+
+    private fun stackMapFrameTree(
+        label: String,
+        frame: com.seanshubin.jvmspec.domain.classfile.structure.StackMapFrame
+    ): Tree {
+        return when (frame) {
+            is com.seanshubin.jvmspec.domain.classfile.structure.StackMapFrame.SameFrame -> {
+                Tree("$label: same_frame(${frame.frameType})")
+            }
+
+            is com.seanshubin.jvmspec.domain.classfile.structure.StackMapFrame.SameLocals1StackItemFrame -> {
+                val stackTree = verificationTypeInfoTree("stack", frame.stack)
+                Tree("$label: same_locals_1_stack_item_frame(${frame.frameType})", listOf(stackTree))
+            }
+
+            is com.seanshubin.jvmspec.domain.classfile.structure.StackMapFrame.SameLocals1StackItemFrameExtended -> {
+                val offsetDeltaTree = Tree("offsetDelta: ${frame.offsetDelta.formatDecimalHex()}")
+                val stackTree = verificationTypeInfoTree("stack", frame.stack)
+                Tree(
+                    "$label: same_locals_1_stack_item_frame_extended(${frame.frameType})",
+                    listOf(offsetDeltaTree, stackTree)
+                )
+            }
+
+            is com.seanshubin.jvmspec.domain.classfile.structure.StackMapFrame.ChopFrame -> {
+                val offsetDeltaTree = Tree("offsetDelta: ${frame.offsetDelta.formatDecimalHex()}")
+                Tree("$label: chop_frame(${frame.frameType})", listOf(offsetDeltaTree))
+            }
+
+            is com.seanshubin.jvmspec.domain.classfile.structure.StackMapFrame.SameFrameExtended -> {
+                val offsetDeltaTree = Tree("offsetDelta: ${frame.offsetDelta.formatDecimalHex()}")
+                Tree("$label: same_frame_extended(${frame.frameType})", listOf(offsetDeltaTree))
+            }
+
+            is com.seanshubin.jvmspec.domain.classfile.structure.StackMapFrame.AppendFrame -> {
+                val offsetDeltaTree = Tree("offsetDelta: ${frame.offsetDelta.formatDecimalHex()}")
+                val localTrees = frame.locals.mapIndexed { index, local ->
+                    verificationTypeInfoTree("local[$index]", local)
+                }
+                val localsTree = Tree("locals(${localTrees.size})", localTrees)
+                Tree("$label: append_frame(${frame.frameType})", listOf(offsetDeltaTree, localsTree))
+            }
+
+            is com.seanshubin.jvmspec.domain.classfile.structure.StackMapFrame.FullFrame -> {
+                val offsetDeltaTree = Tree("offsetDelta: ${frame.offsetDelta.formatDecimalHex()}")
+                val numberOfLocalsTree = Tree("numberOfLocals: ${frame.numberOfLocals.formatDecimalHex()}")
+                val localTrees = frame.locals.mapIndexed { index, local ->
+                    verificationTypeInfoTree("local[$index]", local)
+                }
+                val localsTree = Tree("locals(${localTrees.size})", localTrees)
+                val numberOfStackItemsTree = Tree("numberOfStackItems: ${frame.numberOfStackItems.formatDecimalHex()}")
+                val stackTrees = frame.stack.mapIndexed { index, stackItem ->
+                    verificationTypeInfoTree("stack[$index]", stackItem)
+                }
+                val stackTree = Tree("stack(${stackTrees.size})", stackTrees)
+                Tree(
+                    "$label: full_frame(${frame.frameType})",
+                    listOf(offsetDeltaTree, numberOfLocalsTree, localsTree, numberOfStackItemsTree, stackTree)
+                )
+            }
+        }
+    }
+
+    private fun verificationTypeInfoTree(
+        label: String,
+        info: com.seanshubin.jvmspec.domain.classfile.structure.VerificationTypeInfo
+    ): Tree {
+        return when (info) {
+            is com.seanshubin.jvmspec.domain.classfile.structure.VerificationTypeInfo.TopVariable ->
+                Tree("$label: Top_variable_info(${info.tag})")
+
+            is com.seanshubin.jvmspec.domain.classfile.structure.VerificationTypeInfo.IntegerVariable ->
+                Tree("$label: Integer_variable_info(${info.tag})")
+
+            is com.seanshubin.jvmspec.domain.classfile.structure.VerificationTypeInfo.FloatVariable ->
+                Tree("$label: Float_variable_info(${info.tag})")
+
+            is com.seanshubin.jvmspec.domain.classfile.structure.VerificationTypeInfo.DoubleVariable ->
+                Tree("$label: Double_variable_info(${info.tag})")
+
+            is com.seanshubin.jvmspec.domain.classfile.structure.VerificationTypeInfo.LongVariable ->
+                Tree("$label: Long_variable_info(${info.tag})")
+
+            is com.seanshubin.jvmspec.domain.classfile.structure.VerificationTypeInfo.NullVariable ->
+                Tree("$label: Null_variable_info(${info.tag})")
+
+            is com.seanshubin.jvmspec.domain.classfile.structure.VerificationTypeInfo.UninitializedThisVariable ->
+                Tree("$label: UninitializedThis_variable_info(${info.tag})")
+
+            is com.seanshubin.jvmspec.domain.classfile.structure.VerificationTypeInfo.ObjectVariable ->
+                Tree(
+                    "$label: Object_variable_info(${info.tag})", listOf(
+                        Tree("cpoolIndex: ${info.cpoolIndex.formatDecimalHex()}")
+                    )
+                )
+
+            is com.seanshubin.jvmspec.domain.classfile.structure.VerificationTypeInfo.UninitializedVariable ->
+                Tree(
+                    "$label: Uninitialized_variable_info(${info.tag})", listOf(
+                        Tree("offset: ${info.offset.formatDecimalHex()}")
+                    )
+                )
+        }
     }
 
     private fun exceptionTableListTree(exceptions: List<JvmExceptionTable>): Tree {
@@ -577,6 +692,94 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         }
         val parametersListTree = Tree("parameters(${parameterTrees.size})", parameterTrees)
         return Tree("methodParameters", listOf(parametersCountTree, parametersListTree))
+    }
+
+    private fun moduleTree(attribute: JvmModuleAttribute): Tree {
+        val moduleNameIndexTree = Tree("moduleNameIndex: ${attribute.moduleNameIndex.formatDecimalHex()}")
+        val moduleNameTree = Tree("moduleName: ${attribute.moduleName()}")
+        val moduleFlagsTree = Tree("moduleFlags: ${attribute.moduleFlags.formatDecimalHex()}")
+        val moduleVersionIndexTree = Tree("moduleVersionIndex: ${attribute.moduleVersionIndex.formatDecimalHex()}")
+        val moduleVersionTree = Tree("moduleVersion: ${attribute.moduleVersion()}")
+
+        val requiresCountTree = Tree("requiresCount: ${attribute.requiresCount.formatDecimalHex()}")
+        val requiresTrees = attribute.requires.mapIndexed { index, req ->
+            Tree(
+                "requires[$index]", listOf(
+                    Tree("requiresIndex: ${req.requiresIndex.formatDecimalHex()}"),
+                    Tree("requiresFlags: ${req.requiresFlags.formatDecimalHex()}"),
+                    Tree("requiresVersionIndex: ${req.requiresVersionIndex.formatDecimalHex()}")
+                )
+            )
+        }
+        val requiresListTree = Tree("requires(${requiresTrees.size})", requiresTrees)
+
+        val exportsCountTree = Tree("exportsCount: ${attribute.exportsCount.formatDecimalHex()}")
+        val exportsTrees = attribute.exports.mapIndexed { index, exp ->
+            val exportsToTrees = exp.exportsToIndex.mapIndexed { toIndex, toValue ->
+                Tree("exportsToIndex[$toIndex]: ${toValue.formatDecimalHex()}")
+            }
+            val exportsToListTree = Tree("exportsToIndex(${exportsToTrees.size})", exportsToTrees)
+            Tree(
+                "exports[$index]", listOf(
+                    Tree("exportsIndex: ${exp.exportsIndex.formatDecimalHex()}"),
+                    Tree("exportsFlags: ${exp.exportsFlags.formatDecimalHex()}"),
+                    Tree("exportsToCount: ${exp.exportsToCount.formatDecimalHex()}"),
+                    exportsToListTree
+                )
+            )
+        }
+        val exportsListTree = Tree("exports(${exportsTrees.size})", exportsTrees)
+
+        val opensCountTree = Tree("opensCount: ${attribute.opensCount.formatDecimalHex()}")
+        val opensTrees = attribute.opens.mapIndexed { index, opn ->
+            val opensToTrees = opn.opensToIndex.mapIndexed { toIndex, toValue ->
+                Tree("opensToIndex[$toIndex]: ${toValue.formatDecimalHex()}")
+            }
+            val opensToListTree = Tree("opensToIndex(${opensToTrees.size})", opensToTrees)
+            Tree(
+                "opens[$index]", listOf(
+                    Tree("opensIndex: ${opn.opensIndex.formatDecimalHex()}"),
+                    Tree("opensFlags: ${opn.opensFlags.formatDecimalHex()}"),
+                    Tree("opensToCount: ${opn.opensToCount.formatDecimalHex()}"),
+                    opensToListTree
+                )
+            )
+        }
+        val opensListTree = Tree("opens(${opensTrees.size})", opensTrees)
+
+        val usesCountTree = Tree("usesCount: ${attribute.usesCount.formatDecimalHex()}")
+        val usesTrees = attribute.usesIndex.mapIndexed { index, usesIdx ->
+            Tree("usesIndex[$index]: ${usesIdx.formatDecimalHex()}")
+        }
+        val usesListTree = Tree("usesIndex(${usesTrees.size})", usesTrees)
+
+        val providesCountTree = Tree("providesCount: ${attribute.providesCount.formatDecimalHex()}")
+        val providesTrees = attribute.provides.mapIndexed { index, prov ->
+            val providesWithTrees = prov.providesWithIndex.mapIndexed { withIndex, withValue ->
+                Tree("providesWithIndex[$withIndex]: ${withValue.formatDecimalHex()}")
+            }
+            val providesWithListTree = Tree("providesWithIndex(${providesWithTrees.size})", providesWithTrees)
+            Tree(
+                "provides[$index]", listOf(
+                    Tree("providesIndex: ${prov.providesIndex.formatDecimalHex()}"),
+                    Tree("providesWithCount: ${prov.providesWithCount.formatDecimalHex()}"),
+                    providesWithListTree
+                )
+            )
+        }
+        val providesListTree = Tree("provides(${providesTrees.size})", providesTrees)
+
+        return Tree(
+            "module", listOf(
+                moduleNameIndexTree, moduleNameTree, moduleFlagsTree,
+                moduleVersionIndexTree, moduleVersionTree,
+                requiresCountTree, requiresListTree,
+                exportsCountTree, exportsListTree,
+                opensCountTree, opensListTree,
+                usesCountTree, usesListTree,
+                providesCountTree, providesListTree
+            )
+        )
     }
 
     private fun moduleMainClassTree(attribute: JvmModuleMainClassAttribute): Tree {

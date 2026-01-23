@@ -21,6 +21,7 @@ object AttributeInfoFactory {
     val factoryMap: Map<String, (AttributeInfo, Map<UShort, ConstantInfo>, (DataInput, Map<UShort, ConstantInfo>) -> AttributeInfo) -> AttributeInfo> =
         mapOf(
             AttributeCodeInfo.NAME to AttributeCodeInfo::fromAttributeInfo,
+            AttributeStackMapTableInfo.NAME to AttributeStackMapTableInfo::fromAttributeInfo,
             AttributeSourceFileInfo.NAME to AttributeSourceFileInfo::fromAttributeInfo,
             AttributeConstantValueInfo.NAME to AttributeConstantValueInfo::fromAttributeInfo,
             AttributeDeprecatedInfo.NAME to AttributeDeprecatedInfo::fromAttributeInfo,
@@ -38,6 +39,7 @@ object AttributeInfoFactory {
             AttributePermittedSubclassesInfo.NAME to AttributePermittedSubclassesInfo::fromAttributeInfo,
             AttributeBootstrapMethodsInfo.NAME to AttributeBootstrapMethodsInfo::fromAttributeInfo,
             AttributeMethodParametersInfo.NAME to AttributeMethodParametersInfo::fromAttributeInfo,
+            AttributeModuleInfo.NAME to AttributeModuleInfo::fromAttributeInfo,
             AttributeModuleMainClassInfo.NAME to AttributeModuleMainClassInfo::fromAttributeInfo,
             AttributeModulePackagesInfo.NAME to AttributeModulePackagesInfo::fromAttributeInfo,
             AttributeRecordInfo.NAME to AttributeRecordInfo::fromAttributeInfo,

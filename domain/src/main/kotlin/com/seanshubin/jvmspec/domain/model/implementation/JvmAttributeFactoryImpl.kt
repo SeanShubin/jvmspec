@@ -9,6 +9,7 @@ class JvmAttributeFactoryImpl : JvmAttributeFactory {
     override fun createAttribute(jvmClass: JvmClass, attributeInfo: AttributeInfo): JvmAttribute =
         when (attributeInfo) {
             is AttributeCodeInfo -> JvmCodeAttributeImpl(jvmClass, attributeInfo)
+            is AttributeStackMapTableInfo -> JvmStackMapTableAttributeImpl(jvmClass, attributeInfo)
             is AttributeSourceFileInfo -> JvmSourceFileAttributeImpl(jvmClass, attributeInfo)
             is AttributeConstantValueInfo -> JvmConstantValueAttributeImpl(jvmClass, attributeInfo)
             is AttributeDeprecatedInfo -> JvmDeprecatedAttributeImpl(jvmClass, attributeInfo)
@@ -26,6 +27,7 @@ class JvmAttributeFactoryImpl : JvmAttributeFactory {
             is AttributePermittedSubclassesInfo -> JvmPermittedSubclassesAttributeImpl(jvmClass, attributeInfo)
             is AttributeBootstrapMethodsInfo -> JvmBootstrapMethodsAttributeImpl(jvmClass, attributeInfo)
             is AttributeMethodParametersInfo -> JvmMethodParametersAttributeImpl(jvmClass, attributeInfo)
+            is AttributeModuleInfo -> JvmModuleAttributeImpl(jvmClass, attributeInfo)
             is AttributeModuleMainClassInfo -> JvmModuleMainClassAttributeImpl(jvmClass, attributeInfo)
             is AttributeModulePackagesInfo -> JvmModulePackagesAttributeImpl(jvmClass, attributeInfo)
             is AttributeRecordInfo -> JvmRecordAttributeImpl(jvmClass, attributeInfo)
