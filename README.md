@@ -1,5 +1,14 @@
 # JvmSpec
 
+Allows easy programmatic access to JVM class files according to the JVM Specification.
+
+## Jvm Spec Format
+
+Converts a JVM .class file into text form.
+The idea is to make it easy for the human to map every byte of a .class file to its corresponding meaning in the JVM
+Specification.
+
+## Inversion Guard App
 The idea here is to identify static invocations that should be inverted.
 
 ## Reports
