@@ -29,6 +29,37 @@ class JvmAttributeFactoryImpl : JvmAttributeFactory {
             is AttributeModuleMainClassInfo -> JvmModuleMainClassAttributeImpl(jvmClass, attributeInfo)
             is AttributeModulePackagesInfo -> JvmModulePackagesAttributeImpl(jvmClass, attributeInfo)
             is AttributeRecordInfo -> JvmRecordAttributeImpl(jvmClass, attributeInfo)
+            is AttributeRuntimeVisibleAnnotationsInfo -> JvmRuntimeVisibleAnnotationsAttributeImpl(
+                jvmClass,
+                attributeInfo
+            )
+
+            is AttributeRuntimeInvisibleAnnotationsInfo -> JvmRuntimeInvisibleAnnotationsAttributeImpl(
+                jvmClass,
+                attributeInfo
+            )
+
+            is AttributeRuntimeVisibleParameterAnnotationsInfo -> JvmRuntimeVisibleParameterAnnotationsAttributeImpl(
+                jvmClass,
+                attributeInfo
+            )
+
+            is AttributeRuntimeInvisibleParameterAnnotationsInfo -> JvmRuntimeInvisibleParameterAnnotationsAttributeImpl(
+                jvmClass,
+                attributeInfo
+            )
+
+            is AttributeRuntimeVisibleTypeAnnotationsInfo -> JvmRuntimeVisibleTypeAnnotationsAttributeImpl(
+                jvmClass,
+                attributeInfo
+            )
+
+            is AttributeRuntimeInvisibleTypeAnnotationsInfo -> JvmRuntimeInvisibleTypeAnnotationsAttributeImpl(
+                jvmClass,
+                attributeInfo
+            )
+
+            is AttributeAnnotationDefaultInfo -> JvmAnnotationDefaultAttributeImpl(jvmClass, attributeInfo)
             else -> JvmAttributeImpl(jvmClass, attributeInfo)
         }
 }

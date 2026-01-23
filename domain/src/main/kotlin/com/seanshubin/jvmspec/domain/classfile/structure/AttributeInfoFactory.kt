@@ -40,6 +40,13 @@ object AttributeInfoFactory {
             AttributeMethodParametersInfo.NAME to AttributeMethodParametersInfo::fromAttributeInfo,
             AttributeModuleMainClassInfo.NAME to AttributeModuleMainClassInfo::fromAttributeInfo,
             AttributeModulePackagesInfo.NAME to AttributeModulePackagesInfo::fromAttributeInfo,
-            AttributeRecordInfo.NAME to AttributeRecordInfo::fromAttributeInfo
+            AttributeRecordInfo.NAME to AttributeRecordInfo::fromAttributeInfo,
+            AttributeRuntimeVisibleAnnotationsInfo.NAME to AttributeRuntimeVisibleAnnotationsInfo::fromAttributeInfo,
+            AttributeRuntimeInvisibleAnnotationsInfo.NAME to AttributeRuntimeInvisibleAnnotationsInfo::fromAttributeInfo,
+            AttributeRuntimeVisibleParameterAnnotationsInfo.NAME to AttributeRuntimeVisibleParameterAnnotationsInfo::fromAttributeInfo,
+            AttributeRuntimeInvisibleParameterAnnotationsInfo.NAME to AttributeRuntimeInvisibleParameterAnnotationsInfo::fromAttributeInfo,
+            AttributeRuntimeVisibleTypeAnnotationsInfo.NAME to AttributeRuntimeVisibleTypeAnnotationsInfo::fromAttributeInfo,
+            AttributeRuntimeInvisibleTypeAnnotationsInfo.NAME to AttributeRuntimeInvisibleTypeAnnotationsInfo::fromAttributeInfo,
+            AttributeAnnotationDefaultInfo.NAME to AttributeAnnotationDefaultInfo::fromAttributeInfo
         )
 }

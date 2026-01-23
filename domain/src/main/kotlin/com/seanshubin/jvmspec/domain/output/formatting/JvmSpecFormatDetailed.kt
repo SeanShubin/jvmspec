@@ -227,6 +227,18 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
             is JvmModuleMainClassAttribute -> listOf(moduleMainClassTree(attribute))
             is JvmModulePackagesAttribute -> listOf(modulePackagesTree(attribute))
             is JvmRecordAttribute -> listOf(recordTree(attribute))
+            is JvmRuntimeVisibleAnnotationsAttribute -> listOf(runtimeVisibleAnnotationsTree(attribute))
+            is JvmRuntimeInvisibleAnnotationsAttribute -> listOf(runtimeInvisibleAnnotationsTree(attribute))
+            is JvmRuntimeVisibleParameterAnnotationsAttribute -> listOf(runtimeVisibleParameterAnnotationsTree(attribute))
+            is JvmRuntimeInvisibleParameterAnnotationsAttribute -> listOf(
+                runtimeInvisibleParameterAnnotationsTree(
+                    attribute
+                )
+            )
+
+            is JvmRuntimeVisibleTypeAnnotationsAttribute -> listOf(runtimeVisibleTypeAnnotationsTree(attribute))
+            is JvmRuntimeInvisibleTypeAnnotationsAttribute -> listOf(runtimeInvisibleTypeAnnotationsTree(attribute))
+            is JvmAnnotationDefaultAttribute -> listOf(annotationDefaultTree(attribute))
             else -> emptyList()
         }
         return Tree("attribute[$index]: $name", children + detailList)
@@ -599,5 +611,174 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         }
         val componentsTree = Tree("components(${componentTrees.size})", componentTrees)
         return Tree("record", listOf(componentsCountTree, componentsTree))
+    }
+
+    private fun runtimeVisibleAnnotationsTree(attribute: JvmRuntimeVisibleAnnotationsAttribute): Tree {
+        val numAnnotationsTree = Tree("numAnnotations: ${attribute.numAnnotations.formatDecimalHex()}")
+        val annotationTrees = attribute.annotations.mapIndexed { index, annotation ->
+            annotationTree("annotation[$index]", annotation)
+        }
+        val annotationsListTree = Tree("annotations(${annotationTrees.size})", annotationTrees)
+        return Tree("runtimeVisibleAnnotations", listOf(numAnnotationsTree, annotationsListTree))
+    }
+
+    private fun runtimeInvisibleAnnotationsTree(attribute: JvmRuntimeInvisibleAnnotationsAttribute): Tree {
+        val numAnnotationsTree = Tree("numAnnotations: ${attribute.numAnnotations.formatDecimalHex()}")
+        val annotationTrees = attribute.annotations.mapIndexed { index, annotation ->
+            annotationTree("annotation[$index]", annotation)
+        }
+        val annotationsListTree = Tree("annotations(${annotationTrees.size})", annotationTrees)
+        return Tree("runtimeInvisibleAnnotations", listOf(numAnnotationsTree, annotationsListTree))
+    }
+
+    private fun runtimeVisibleParameterAnnotationsTree(attribute: JvmRuntimeVisibleParameterAnnotationsAttribute): Tree {
+        val numParametersTree =
+            Tree("numParameters: ${attribute.numParameters.toInt()}(0x${"%02X".format(attribute.numParameters.toInt())})")
+        val parameterTrees = attribute.parameterAnnotations.mapIndexed { index, paramAnnotation ->
+            val numAnnotationsTree = Tree("numAnnotations: ${paramAnnotation.numAnnotations.formatDecimalHex()}")
+            val annotationTrees = paramAnnotation.annotations.mapIndexed { annotationIndex, annotation ->
+                annotationTree("annotation[$annotationIndex]", annotation)
+            }
+            val annotationsTree = Tree("annotations(${annotationTrees.size})", annotationTrees)
+            Tree("parameter[$index]", listOf(numAnnotationsTree, annotationsTree))
+        }
+        val parametersTree = Tree("parameterAnnotations(${parameterTrees.size})", parameterTrees)
+        return Tree("runtimeVisibleParameterAnnotations", listOf(numParametersTree, parametersTree))
+    }
+
+    private fun runtimeInvisibleParameterAnnotationsTree(attribute: JvmRuntimeInvisibleParameterAnnotationsAttribute): Tree {
+        val numParametersTree =
+            Tree("numParameters: ${attribute.numParameters.toInt()}(0x${"%02X".format(attribute.numParameters.toInt())})")
+        val parameterTrees = attribute.parameterAnnotations.mapIndexed { index, paramAnnotation ->
+            val numAnnotationsTree = Tree("numAnnotations: ${paramAnnotation.numAnnotations.formatDecimalHex()}")
+            val annotationTrees = paramAnnotation.annotations.mapIndexed { annotationIndex, annotation ->
+                annotationTree("annotation[$annotationIndex]", annotation)
+            }
+            val annotationsTree = Tree("annotations(${annotationTrees.size})", annotationTrees)
+            Tree("parameter[$index]", listOf(numAnnotationsTree, annotationsTree))
+        }
+        val parametersTree = Tree("parameterAnnotations(${parameterTrees.size})", parameterTrees)
+        return Tree("runtimeInvisibleParameterAnnotations", listOf(numParametersTree, parametersTree))
+    }
+
+    private fun runtimeVisibleTypeAnnotationsTree(attribute: JvmRuntimeVisibleTypeAnnotationsAttribute): Tree {
+        val numAnnotationsTree = Tree("numAnnotations: ${attribute.numAnnotations.formatDecimalHex()}")
+        val annotationTrees = attribute.annotations.mapIndexed { index, typeAnnotation ->
+            typeAnnotationTree("typeAnnotation[$index]", typeAnnotation)
+        }
+        val annotationsListTree = Tree("annotations(${annotationTrees.size})", annotationTrees)
+        return Tree("runtimeVisibleTypeAnnotations", listOf(numAnnotationsTree, annotationsListTree))
+    }
+
+    private fun runtimeInvisibleTypeAnnotationsTree(attribute: JvmRuntimeInvisibleTypeAnnotationsAttribute): Tree {
+        val numAnnotationsTree = Tree("numAnnotations: ${attribute.numAnnotations.formatDecimalHex()}")
+        val annotationTrees = attribute.annotations.mapIndexed { index, typeAnnotation ->
+            typeAnnotationTree("typeAnnotation[$index]", typeAnnotation)
+        }
+        val annotationsListTree = Tree("annotations(${annotationTrees.size})", annotationTrees)
+        return Tree("runtimeInvisibleTypeAnnotations", listOf(numAnnotationsTree, annotationsListTree))
+    }
+
+    private fun annotationDefaultTree(attribute: JvmAnnotationDefaultAttribute): Tree {
+        val defaultValueTree = elementValueTree("defaultValue", attribute.defaultValue)
+        return Tree("annotationDefault", listOf(defaultValueTree))
+    }
+
+    private fun annotationTree(
+        label: String,
+        annotation: com.seanshubin.jvmspec.domain.classfile.structure.Annotation
+    ): Tree {
+        val typeIndexTree = Tree("typeIndex: ${annotation.typeIndex.formatDecimalHex()}")
+        val numPairsTree = Tree("numElementValuePairs: ${annotation.numElementValuePairs.formatDecimalHex()}")
+        val pairTrees = annotation.elementValuePairs.mapIndexed { index, pair ->
+            elementValuePairTree("pair[$index]", pair)
+        }
+        val pairsTree = Tree("elementValuePairs(${pairTrees.size})", pairTrees)
+        return Tree(label, listOf(typeIndexTree, numPairsTree, pairsTree))
+    }
+
+    private fun elementValuePairTree(
+        label: String,
+        pair: com.seanshubin.jvmspec.domain.classfile.structure.ElementValuePair
+    ): Tree {
+        val nameIndexTree = Tree("elementNameIndex: ${pair.elementNameIndex.formatDecimalHex()}")
+        val valueTree = elementValueTree("value", pair.value)
+        return Tree(label, listOf(nameIndexTree, valueTree))
+    }
+
+    private fun elementValueTree(
+        label: String,
+        elementValue: com.seanshubin.jvmspec.domain.classfile.structure.ElementValue
+    ): Tree {
+        val tagHex = "0x${"%02X".format(elementValue.tag.code)}"
+        return when (elementValue) {
+            is com.seanshubin.jvmspec.domain.classfile.structure.ElementValue.ConstValueIndex -> {
+                Tree(
+                    "$label: tag='${elementValue.tag}'($tagHex)", listOf(
+                        Tree("constValueIndex: ${elementValue.constValueIndex.formatDecimalHex()}")
+                    )
+                )
+            }
+
+            is com.seanshubin.jvmspec.domain.classfile.structure.ElementValue.EnumConstValue -> {
+                Tree(
+                    "$label: tag='${elementValue.tag}'($tagHex)", listOf(
+                        Tree("typeNameIndex: ${elementValue.typeNameIndex.formatDecimalHex()}"),
+                        Tree("constNameIndex: ${elementValue.constNameIndex.formatDecimalHex()}")
+                    )
+                )
+            }
+
+            is com.seanshubin.jvmspec.domain.classfile.structure.ElementValue.ClassInfoIndex -> {
+                Tree(
+                    "$label: tag='${elementValue.tag}'($tagHex)", listOf(
+                        Tree("classInfoIndex: ${elementValue.classInfoIndex.formatDecimalHex()}")
+                    )
+                )
+            }
+
+            is com.seanshubin.jvmspec.domain.classfile.structure.ElementValue.AnnotationValue -> {
+                Tree(
+                    "$label: tag='${elementValue.tag}'($tagHex)",
+                    listOf(annotationTree("annotationValue", elementValue.annotationValue))
+                )
+            }
+
+            is com.seanshubin.jvmspec.domain.classfile.structure.ElementValue.ArrayValue -> {
+                val numValuesTree = Tree("numValues: ${elementValue.numValues.formatDecimalHex()}")
+                val valueTrees = elementValue.values.mapIndexed { index, value ->
+                    elementValueTree("value[$index]", value)
+                }
+                val valuesTree = Tree("values(${valueTrees.size})", valueTrees)
+                Tree("$label: tag='${elementValue.tag}'($tagHex)", listOf(numValuesTree, valuesTree))
+            }
+        }
+    }
+
+    private fun typeAnnotationTree(
+        label: String,
+        typeAnnotation: com.seanshubin.jvmspec.domain.classfile.structure.TypeAnnotation
+    ): Tree {
+        val targetTypeHex = "0x${"%02X".format(typeAnnotation.targetType.toInt())}"
+        val targetTypeTree = Tree("targetType: ${typeAnnotation.targetType.toInt()}($targetTypeHex)")
+        val targetInfoHex = typeAnnotation.targetInfo.joinToString("") { "%02X".format(it) }
+        val targetInfoTree = Tree("targetInfo: 0x$targetInfoHex")
+        val targetPathLengthHex = "0x${"%02X".format(typeAnnotation.targetPathLength.toInt())}"
+        val targetPathLengthTree =
+            Tree("targetPathLength: ${typeAnnotation.targetPathLength.toInt()}($targetPathLengthHex)")
+        val targetPathHex = typeAnnotation.targetPath.joinToString("") { "%02X".format(it) }
+        val targetPathTree = Tree("targetPath: 0x$targetPathHex")
+        val typeIndexTree = Tree("typeIndex: ${typeAnnotation.typeIndex.formatDecimalHex()}")
+        val numPairsTree = Tree("numElementValuePairs: ${typeAnnotation.numElementValuePairs.formatDecimalHex()}")
+        val pairTrees = typeAnnotation.elementValuePairs.mapIndexed { index, pair ->
+            elementValuePairTree("pair[$index]", pair)
+        }
+        val pairsTree = Tree("elementValuePairs(${pairTrees.size})", pairTrees)
+        return Tree(
+            label, listOf(
+                targetTypeTree, targetInfoTree, targetPathLengthTree, targetPathTree,
+                typeIndexTree, numPairsTree, pairsTree
+            )
+        )
     }
 }
