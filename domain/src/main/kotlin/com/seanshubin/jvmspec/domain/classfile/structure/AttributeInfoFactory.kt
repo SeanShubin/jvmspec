@@ -30,6 +30,16 @@ object AttributeInfoFactory {
             AttributeLineNumberTableInfo.NAME to AttributeLineNumberTableInfo::fromAttributeInfo,
             AttributeLocalVariableTableInfo.NAME to AttributeLocalVariableTableInfo::fromAttributeInfo,
             AttributeLocalVariableTypeTableInfo.NAME to AttributeLocalVariableTypeTableInfo::fromAttributeInfo,
-            AttributeSourceDebugExtensionInfo.NAME to AttributeSourceDebugExtensionInfo::fromAttributeInfo
+            AttributeSourceDebugExtensionInfo.NAME to AttributeSourceDebugExtensionInfo::fromAttributeInfo,
+            AttributeInnerClassesInfo.NAME to AttributeInnerClassesInfo::fromAttributeInfo,
+            AttributeEnclosingMethodInfo.NAME to AttributeEnclosingMethodInfo::fromAttributeInfo,
+            AttributeNestHostInfo.NAME to AttributeNestHostInfo::fromAttributeInfo,
+            AttributeNestMembersInfo.NAME to AttributeNestMembersInfo::fromAttributeInfo,
+            AttributePermittedSubclassesInfo.NAME to AttributePermittedSubclassesInfo::fromAttributeInfo,
+            AttributeBootstrapMethodsInfo.NAME to AttributeBootstrapMethodsInfo::fromAttributeInfo,
+            AttributeMethodParametersInfo.NAME to AttributeMethodParametersInfo::fromAttributeInfo,
+            AttributeModuleMainClassInfo.NAME to AttributeModuleMainClassInfo::fromAttributeInfo,
+            AttributeModulePackagesInfo.NAME to AttributeModulePackagesInfo::fromAttributeInfo,
+            AttributeRecordInfo.NAME to AttributeRecordInfo::fromAttributeInfo
         )
 }

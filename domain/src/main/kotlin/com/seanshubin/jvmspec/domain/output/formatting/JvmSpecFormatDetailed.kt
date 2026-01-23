@@ -217,6 +217,16 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
             is JvmLocalVariableTableAttribute -> listOf(localVariableTableTree(attribute))
             is JvmLocalVariableTypeTableAttribute -> listOf(localVariableTypeTableTree(attribute))
             is JvmSourceDebugExtensionAttribute -> listOf(sourceDebugExtensionTree(attribute))
+            is JvmInnerClassesAttribute -> listOf(innerClassesTree(attribute))
+            is JvmEnclosingMethodAttribute -> listOf(enclosingMethodTree(attribute))
+            is JvmNestHostAttribute -> listOf(nestHostTree(attribute))
+            is JvmNestMembersAttribute -> listOf(nestMembersTree(attribute))
+            is JvmPermittedSubclassesAttribute -> listOf(permittedSubclassesTree(attribute))
+            is JvmBootstrapMethodsAttribute -> listOf(bootstrapMethodsTree(attribute))
+            is JvmMethodParametersAttribute -> listOf(methodParametersTree(attribute))
+            is JvmModuleMainClassAttribute -> listOf(moduleMainClassTree(attribute))
+            is JvmModulePackagesAttribute -> listOf(modulePackagesTree(attribute))
+            is JvmRecordAttribute -> listOf(recordTree(attribute))
             else -> emptyList()
         }
         return Tree("attribute[$index]: $name", children + detailList)
@@ -466,5 +476,128 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
                 Tree("preview: $preview")
             )
         )
+    }
+
+    private fun innerClassesTree(attribute: JvmInnerClassesAttribute): Tree {
+        val numberOfClassesTree = Tree("numberOfClasses: ${attribute.numberOfClasses.formatDecimalHex()}")
+        val classTrees = attribute.classes.mapIndexed { index, innerClass ->
+            Tree(
+                "class[$index]", listOf(
+                    Tree("innerClassInfoIndex: ${innerClass.innerClassInfoIndex.formatDecimalHex()}"),
+                    Tree("outerClassInfoIndex: ${innerClass.outerClassInfoIndex.formatDecimalHex()}"),
+                    Tree("innerNameIndex: ${innerClass.innerNameIndex.formatDecimalHex()}"),
+                    Tree("innerClassAccessFlags: ${innerClass.innerClassAccessFlags.formatDecimalHex()}")
+                )
+            )
+        }
+        val classesTree = Tree("classes(${classTrees.size})", classTrees)
+        return Tree("innerClasses", listOf(numberOfClassesTree, classesTree))
+    }
+
+    private fun enclosingMethodTree(attribute: JvmEnclosingMethodAttribute): Tree {
+        val classIndexTree = Tree("classIndex: ${attribute.classIndex.formatDecimalHex()}")
+        val classNameTree = Tree("className: ${attribute.className()}")
+        val methodIndexTree = Tree("methodIndex: ${attribute.methodIndex.formatDecimalHex()}")
+        return Tree("enclosingMethod", listOf(classIndexTree, classNameTree, methodIndexTree))
+    }
+
+    private fun nestHostTree(attribute: JvmNestHostAttribute): Tree {
+        val hostClassIndexTree = Tree("hostClassIndex: ${attribute.hostClassIndex.formatDecimalHex()}")
+        val hostClassNameTree = Tree("hostClassName: ${attribute.hostClassName()}")
+        return Tree("nestHost", listOf(hostClassIndexTree, hostClassNameTree))
+    }
+
+    private fun nestMembersTree(attribute: JvmNestMembersAttribute): Tree {
+        val numberOfClassesTree = Tree("numberOfClasses: ${attribute.numberOfClasses.formatDecimalHex()}")
+        val classNames = attribute.classNames()
+        val classTrees = attribute.classes.mapIndexed { index, classIndex ->
+            Tree(
+                "class[$index]: ${classNames[index]}", listOf(
+                    Tree("classIndex: ${classIndex.formatDecimalHex()}")
+                )
+            )
+        }
+        val classesTree = Tree("classes(${classTrees.size})", classTrees)
+        return Tree("nestMembers", listOf(numberOfClassesTree, classesTree))
+    }
+
+    private fun permittedSubclassesTree(attribute: JvmPermittedSubclassesAttribute): Tree {
+        val numberOfClassesTree = Tree("numberOfClasses: ${attribute.numberOfClasses.formatDecimalHex()}")
+        val classNames = attribute.classNames()
+        val classTrees = attribute.classes.mapIndexed { index, classIndex ->
+            Tree(
+                "class[$index]: ${classNames[index]}", listOf(
+                    Tree("classIndex: ${classIndex.formatDecimalHex()}")
+                )
+            )
+        }
+        val classesTree = Tree("classes(${classTrees.size})", classTrees)
+        return Tree("permittedSubclasses", listOf(numberOfClassesTree, classesTree))
+    }
+
+    private fun bootstrapMethodsTree(attribute: JvmBootstrapMethodsAttribute): Tree {
+        val numBootstrapMethodsTree = Tree("numBootstrapMethods: ${attribute.numBootstrapMethods.formatDecimalHex()}")
+        val methodTrees = attribute.bootstrapMethods.mapIndexed { index, method ->
+            val argTrees = method.bootstrapArguments.mapIndexed { argIndex, arg ->
+                Tree("arg[$argIndex]: ${arg.formatDecimalHex()}")
+            }
+            Tree(
+                "method[$index]", listOf(
+                    Tree("bootstrapMethodRef: ${method.bootstrapMethodRef.formatDecimalHex()}"),
+                    Tree("numBootstrapArguments: ${method.numBootstrapArguments.formatDecimalHex()}"),
+                    Tree("bootstrapArguments(${argTrees.size})", argTrees)
+                )
+            )
+        }
+        val bootstrapMethodsListTree = Tree("bootstrapMethods(${methodTrees.size})", methodTrees)
+        return Tree("bootstrapMethods", listOf(numBootstrapMethodsTree, bootstrapMethodsListTree))
+    }
+
+    private fun methodParametersTree(attribute: JvmMethodParametersAttribute): Tree {
+        val parametersCountTree = Tree("parametersCount: ${attribute.parametersCount}")
+        val parameterTrees = attribute.parameters.mapIndexed { index, parameter ->
+            Tree(
+                "parameter[$index]", listOf(
+                    Tree("nameIndex: ${parameter.nameIndex.formatDecimalHex()}"),
+                    Tree("accessFlags: ${parameter.accessFlags.formatDecimalHex()}")
+                )
+            )
+        }
+        val parametersListTree = Tree("parameters(${parameterTrees.size})", parameterTrees)
+        return Tree("methodParameters", listOf(parametersCountTree, parametersListTree))
+    }
+
+    private fun moduleMainClassTree(attribute: JvmModuleMainClassAttribute): Tree {
+        val mainClassIndexTree = Tree("mainClassIndex: ${attribute.mainClassIndex.formatDecimalHex()}")
+        val mainClassNameTree = Tree("mainClassName: ${attribute.mainClassName()}")
+        return Tree("moduleMainClass", listOf(mainClassIndexTree, mainClassNameTree))
+    }
+
+    private fun modulePackagesTree(attribute: JvmModulePackagesAttribute): Tree {
+        val packageCountTree = Tree("packageCount: ${attribute.packageCount.formatDecimalHex()}")
+        val packageIndexTrees = attribute.packageIndex.mapIndexed { index, packageIdx ->
+            Tree("package[$index]: ${packageIdx.formatDecimalHex()}")
+        }
+        val packageIndexListTree = Tree("packageIndex(${packageIndexTrees.size})", packageIndexTrees)
+        return Tree("modulePackages", listOf(packageCountTree, packageIndexListTree))
+    }
+
+    private fun recordTree(attribute: JvmRecordAttribute): Tree {
+        val componentsCountTree = Tree("componentsCount: ${attribute.componentsCount.formatDecimalHex()}")
+        val componentTrees = attribute.components.mapIndexed { index, component ->
+            val attributeTrees = component.attributes.mapIndexed { attrIndex, attr ->
+                Tree("attribute[$attrIndex]: ${attr.attributeIndex.formatDecimalHex()}")
+            }
+            Tree(
+                "component[$index]", listOf(
+                    Tree("nameIndex: ${component.nameIndex.formatDecimalHex()}"),
+                    Tree("descriptorIndex: ${component.descriptorIndex.formatDecimalHex()}"),
+                    Tree("attributesCount: ${component.attributesCount.formatDecimalHex()}"),
+                    Tree("attributes(${attributeTrees.size})", attributeTrees)
+                )
+            )
+        }
+        val componentsTree = Tree("components(${componentTrees.size})", componentTrees)
+        return Tree("record", listOf(componentsCountTree, componentsTree))
     }
 }

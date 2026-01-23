@@ -19,6 +19,16 @@ class JvmAttributeFactoryImpl : JvmAttributeFactory {
             is AttributeLocalVariableTableInfo -> JvmLocalVariableTableAttributeImpl(jvmClass, attributeInfo)
             is AttributeLocalVariableTypeTableInfo -> JvmLocalVariableTypeTableAttributeImpl(jvmClass, attributeInfo)
             is AttributeSourceDebugExtensionInfo -> JvmSourceDebugExtensionAttributeImpl(jvmClass, attributeInfo)
+            is AttributeInnerClassesInfo -> JvmInnerClassesAttributeImpl(jvmClass, attributeInfo)
+            is AttributeEnclosingMethodInfo -> JvmEnclosingMethodAttributeImpl(jvmClass, attributeInfo)
+            is AttributeNestHostInfo -> JvmNestHostAttributeImpl(jvmClass, attributeInfo)
+            is AttributeNestMembersInfo -> JvmNestMembersAttributeImpl(jvmClass, attributeInfo)
+            is AttributePermittedSubclassesInfo -> JvmPermittedSubclassesAttributeImpl(jvmClass, attributeInfo)
+            is AttributeBootstrapMethodsInfo -> JvmBootstrapMethodsAttributeImpl(jvmClass, attributeInfo)
+            is AttributeMethodParametersInfo -> JvmMethodParametersAttributeImpl(jvmClass, attributeInfo)
+            is AttributeModuleMainClassInfo -> JvmModuleMainClassAttributeImpl(jvmClass, attributeInfo)
+            is AttributeModulePackagesInfo -> JvmModulePackagesAttributeImpl(jvmClass, attributeInfo)
+            is AttributeRecordInfo -> JvmRecordAttributeImpl(jvmClass, attributeInfo)
             else -> JvmAttributeImpl(jvmClass, attributeInfo)
         }
 }
