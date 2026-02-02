@@ -498,11 +498,13 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
         val hex = String.format("%04X", decimal)
         return "$decimal(0x$hex)"
     }
+
     private fun Int.formatDecimalHex(): String {
         val decimal = this
         val hex = String.format("%08X", decimal)
         return "$decimal(0x$hex)"
     }
+
     private fun ConstantPoolTag.formatNameId(): String {
         return "${name}_$id"
     }

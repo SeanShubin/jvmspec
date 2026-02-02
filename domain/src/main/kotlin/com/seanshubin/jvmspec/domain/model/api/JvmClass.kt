@@ -23,6 +23,7 @@ interface JvmClass {
     fun complexity(): Int {
         return methods().sumOf { method -> method.complexity() }
     }
+
     fun lookupClassName(classIndex: UShort): String {
         val classConstant = constants.getValue(classIndex) as JvmConstant.JvmConstantClass
         return classConstant.nameUtf8.value
