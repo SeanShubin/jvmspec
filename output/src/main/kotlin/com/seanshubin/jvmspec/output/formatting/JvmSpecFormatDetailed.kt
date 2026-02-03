@@ -2,6 +2,10 @@ package com.seanshubin.jvmspec.output.formatting
 
 import com.seanshubin.jvmspec.classfile.specification.AccessFlag
 import com.seanshubin.jvmspec.classfile.specification.ConstantPoolTag
+import com.seanshubin.jvmspec.classfile.structure.AnnotationStructure
+import com.seanshubin.jvmspec.classfile.structure.StackMapFrame
+import com.seanshubin.jvmspec.classfile.structure.TypeAnnotation
+import com.seanshubin.jvmspec.classfile.structure.VerificationTypeInfo
 import com.seanshubin.jvmspec.infrastructure.collections.Tree
 import com.seanshubin.jvmspec.model.api.*
 import java.util.*
@@ -276,19 +280,19 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
 
     private fun stackMapFrameTree(
         label: String,
-        frame: com.seanshubin.jvmspec.classfile.structure.StackMapFrame
+        frame: StackMapFrame
     ): Tree {
         return when (frame) {
-            is com.seanshubin.jvmspec.classfile.structure.StackMapFrame.SameFrame -> {
+            is StackMapFrame.SameFrame -> {
                 Tree("$label: same_frame(${frame.frameType})")
             }
 
-            is com.seanshubin.jvmspec.classfile.structure.StackMapFrame.SameLocals1StackItemFrame -> {
+            is StackMapFrame.SameLocals1StackItemFrame -> {
                 val stackTree = verificationTypeInfoTree("stack", frame.stack)
                 Tree("$label: same_locals_1_stack_item_frame(${frame.frameType})", listOf(stackTree))
             }
 
-            is com.seanshubin.jvmspec.classfile.structure.StackMapFrame.SameLocals1StackItemFrameExtended -> {
+            is StackMapFrame.SameLocals1StackItemFrameExtended -> {
                 val offsetDeltaTree = Tree("offsetDelta: ${frame.offsetDelta.formatDecimalHex()}")
                 val stackTree = verificationTypeInfoTree("stack", frame.stack)
                 Tree(
@@ -297,17 +301,17 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
                 )
             }
 
-            is com.seanshubin.jvmspec.classfile.structure.StackMapFrame.ChopFrame -> {
+            is StackMapFrame.ChopFrame -> {
                 val offsetDeltaTree = Tree("offsetDelta: ${frame.offsetDelta.formatDecimalHex()}")
                 Tree("$label: chop_frame(${frame.frameType})", listOf(offsetDeltaTree))
             }
 
-            is com.seanshubin.jvmspec.classfile.structure.StackMapFrame.SameFrameExtended -> {
+            is StackMapFrame.SameFrameExtended -> {
                 val offsetDeltaTree = Tree("offsetDelta: ${frame.offsetDelta.formatDecimalHex()}")
                 Tree("$label: same_frame_extended(${frame.frameType})", listOf(offsetDeltaTree))
             }
 
-            is com.seanshubin.jvmspec.classfile.structure.StackMapFrame.AppendFrame -> {
+            is StackMapFrame.AppendFrame -> {
                 val offsetDeltaTree = Tree("offsetDelta: ${frame.offsetDelta.formatDecimalHex()}")
                 val localTrees = frame.locals.mapIndexed { index, local ->
                     verificationTypeInfoTree("local[$index]", local)
@@ -316,7 +320,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
                 Tree("$label: append_frame(${frame.frameType})", listOf(offsetDeltaTree, localsTree))
             }
 
-            is com.seanshubin.jvmspec.classfile.structure.StackMapFrame.FullFrame -> {
+            is StackMapFrame.FullFrame -> {
                 val offsetDeltaTree = Tree("offsetDelta: ${frame.offsetDelta.formatDecimalHex()}")
                 val numberOfLocalsTree = Tree("numberOfLocals: ${frame.numberOfLocals.formatDecimalHex()}")
                 val localTrees = frame.locals.mapIndexed { index, local ->
@@ -338,38 +342,38 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
 
     private fun verificationTypeInfoTree(
         label: String,
-        info: com.seanshubin.jvmspec.classfile.structure.VerificationTypeInfo
+        info: VerificationTypeInfo
     ): Tree {
         return when (info) {
-            is com.seanshubin.jvmspec.classfile.structure.VerificationTypeInfo.TopVariable ->
+            is VerificationTypeInfo.TopVariable ->
                 Tree("$label: Top_variable_info(${info.tag})")
 
-            is com.seanshubin.jvmspec.classfile.structure.VerificationTypeInfo.IntegerVariable ->
+            is VerificationTypeInfo.IntegerVariable ->
                 Tree("$label: Integer_variable_info(${info.tag})")
 
-            is com.seanshubin.jvmspec.classfile.structure.VerificationTypeInfo.FloatVariable ->
+            is VerificationTypeInfo.FloatVariable ->
                 Tree("$label: Float_variable_info(${info.tag})")
 
-            is com.seanshubin.jvmspec.classfile.structure.VerificationTypeInfo.DoubleVariable ->
+            is VerificationTypeInfo.DoubleVariable ->
                 Tree("$label: Double_variable_info(${info.tag})")
 
-            is com.seanshubin.jvmspec.classfile.structure.VerificationTypeInfo.LongVariable ->
+            is VerificationTypeInfo.LongVariable ->
                 Tree("$label: Long_variable_info(${info.tag})")
 
-            is com.seanshubin.jvmspec.classfile.structure.VerificationTypeInfo.NullVariable ->
+            is VerificationTypeInfo.NullVariable ->
                 Tree("$label: Null_variable_info(${info.tag})")
 
-            is com.seanshubin.jvmspec.classfile.structure.VerificationTypeInfo.UninitializedThisVariable ->
+            is VerificationTypeInfo.UninitializedThisVariable ->
                 Tree("$label: UninitializedThis_variable_info(${info.tag})")
 
-            is com.seanshubin.jvmspec.classfile.structure.VerificationTypeInfo.ObjectVariable ->
+            is VerificationTypeInfo.ObjectVariable ->
                 Tree(
                     "$label: Object_variable_info(${info.tag})", listOf(
                         Tree("cpoolIndex: ${info.cpoolIndex.formatDecimalHex()}")
                     )
                 )
 
-            is com.seanshubin.jvmspec.classfile.structure.VerificationTypeInfo.UninitializedVariable ->
+            is VerificationTypeInfo.UninitializedVariable ->
                 Tree(
                     "$label: Uninitialized_variable_info(${info.tag})", listOf(
                         Tree("offset: ${info.offset.formatDecimalHex()}")
@@ -915,7 +919,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
 
     private fun annotationTree(
         label: String,
-        annotation: com.seanshubin.jvmspec.classfile.structure.AnnotationStructure.Annotation
+        annotation: AnnotationStructure.Annotation
     ): Tree {
         val typeIndexTree = Tree("typeIndex: ${annotation.typeIndex.formatDecimalHex()}")
         val numPairsTree = Tree("numElementValuePairs: ${annotation.numElementValuePairs.formatDecimalHex()}")
@@ -928,7 +932,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
 
     private fun elementValuePairTree(
         label: String,
-        pair: com.seanshubin.jvmspec.classfile.structure.AnnotationStructure.ElementValuePair
+        pair: AnnotationStructure.ElementValuePair
     ): Tree {
         val nameIndexTree = Tree("elementNameIndex: ${pair.elementNameIndex.formatDecimalHex()}")
         val valueTree = elementValueTree("value", pair.value)
@@ -937,11 +941,11 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
 
     private fun elementValueTree(
         label: String,
-        elementValue: com.seanshubin.jvmspec.classfile.structure.AnnotationStructure.ElementValue
+        elementValue: AnnotationStructure.ElementValue
     ): Tree {
         val tagHex = "0x${"%02X".format(elementValue.tag.code)}"
         return when (elementValue) {
-            is com.seanshubin.jvmspec.classfile.structure.AnnotationStructure.ElementValue.ConstValueIndex -> {
+            is AnnotationStructure.ElementValue.ConstValueIndex -> {
                 Tree(
                     "$label: tag='${elementValue.tag}'($tagHex)", listOf(
                         Tree("constValueIndex: ${elementValue.constValueIndex.formatDecimalHex()}")
@@ -949,7 +953,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
                 )
             }
 
-            is com.seanshubin.jvmspec.classfile.structure.AnnotationStructure.ElementValue.EnumConstValue -> {
+            is AnnotationStructure.ElementValue.EnumConstValue -> {
                 Tree(
                     "$label: tag='${elementValue.tag}'($tagHex)", listOf(
                         Tree("typeNameIndex: ${elementValue.typeNameIndex.formatDecimalHex()}"),
@@ -958,7 +962,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
                 )
             }
 
-            is com.seanshubin.jvmspec.classfile.structure.AnnotationStructure.ElementValue.ClassInfoIndex -> {
+            is AnnotationStructure.ElementValue.ClassInfoIndex -> {
                 Tree(
                     "$label: tag='${elementValue.tag}'($tagHex)", listOf(
                         Tree("classInfoIndex: ${elementValue.classInfoIndex.formatDecimalHex()}")
@@ -966,14 +970,14 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
                 )
             }
 
-            is com.seanshubin.jvmspec.classfile.structure.AnnotationStructure.ElementValue.AnnotationValue -> {
+            is AnnotationStructure.ElementValue.AnnotationValue -> {
                 Tree(
                     "$label: tag='${elementValue.tag}'($tagHex)",
                     listOf(annotationTree("annotationValue", elementValue.annotationValue))
                 )
             }
 
-            is com.seanshubin.jvmspec.classfile.structure.AnnotationStructure.ElementValue.ArrayValue -> {
+            is AnnotationStructure.ElementValue.ArrayValue -> {
                 val numValuesTree = Tree("numValues: ${elementValue.numValues.formatDecimalHex()}")
                 val valueTrees = elementValue.values.mapIndexed { index, value ->
                     elementValueTree("value[$index]", value)
@@ -986,7 +990,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
 
     private fun typeAnnotationTree(
         label: String,
-        typeAnnotation: com.seanshubin.jvmspec.classfile.structure.TypeAnnotation
+        typeAnnotation: TypeAnnotation
     ): Tree {
         val targetTypeHex = "0x${"%02X".format(typeAnnotation.targetType.toInt())}"
         val targetTypeTree = Tree("targetType: ${typeAnnotation.targetType.toInt()}($targetTypeHex)")

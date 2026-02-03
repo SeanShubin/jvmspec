@@ -4,6 +4,7 @@ import com.seanshubin.jvmspec.infrastructure.collections.Tree
 import com.seanshubin.jvmspec.inversion.guard.domain.HtmlElement.Companion.text
 import com.seanshubin.jvmspec.inversion.guard.domain.HtmlElement.Tag
 import com.seanshubin.jvmspec.inversion.guard.domain.HtmlElement.Text
+import com.seanshubin.jvmspec.model.api.JvmClass
 import com.seanshubin.jvmspec.output.formatting.JvmSpecFormat
 import java.nio.charset.StandardCharsets
 import java.nio.file.Path
@@ -371,7 +372,7 @@ class HtmlReportSummarizerImpl(
         return CreateTextFileCommand(path, content)
     }
 
-    private fun calculateDisassemblyPath(jvmClass: com.seanshubin.jvmspec.model.api.JvmClass): Path {
+    private fun calculateDisassemblyPath(jvmClass: JvmClass): Path {
         val relativePath = baseDir.relativize(jvmClass.origin).parent
         val classFileName = jvmClass.origin.fileName.toString().removeSuffix(".class")
         return relativePath.resolve("$classFileName-disassembly.html")

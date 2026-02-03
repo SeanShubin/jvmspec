@@ -1,7 +1,10 @@
 package com.seanshubin.jvmspec.model.implementation
 
 import com.seanshubin.jvmspec.classfile.specification.AccessFlag
+import com.seanshubin.jvmspec.classfile.structure.AttributeInfo
 import com.seanshubin.jvmspec.classfile.structure.ClassFile
+import com.seanshubin.jvmspec.classfile.structure.FieldInfo
+import com.seanshubin.jvmspec.classfile.structure.MethodInfo
 import com.seanshubin.jvmspec.model.api.*
 import java.nio.file.Path
 import java.util.*
@@ -32,7 +35,7 @@ class JvmClassImpl(
         }
 
     override fun methods(): List<JvmMethod> {
-        val toJvmMethod = { methodInfo: com.seanshubin.jvmspec.classfile.structure.MethodInfo ->
+        val toJvmMethod = { methodInfo: MethodInfo ->
             methodFactory.createMethod(this, methodInfo)
         }
         return classFile.methods.map(toJvmMethod)
@@ -45,7 +48,7 @@ class JvmClassImpl(
     }
 
     override fun fields(): List<JvmField> {
-        val toJvmField = { fieldInfo: com.seanshubin.jvmspec.classfile.structure.FieldInfo ->
+        val toJvmField = { fieldInfo: FieldInfo ->
             fieldFactory.createField(this, fieldInfo)
         }
         return classFile.fields.map(toJvmField)
@@ -54,7 +57,7 @@ class JvmClassImpl(
     override val accessFlags: Set<AccessFlag> = classFile.accessFlags
 
     override fun attributes(): List<JvmAttribute> {
-        val toJvmAttribute = { attributeInfo: com.seanshubin.jvmspec.classfile.structure.AttributeInfo ->
+        val toJvmAttribute = { attributeInfo: AttributeInfo ->
             attributeFactory.createAttribute(this, attributeInfo)
         }
         return classFile.attributes.map(toJvmAttribute)

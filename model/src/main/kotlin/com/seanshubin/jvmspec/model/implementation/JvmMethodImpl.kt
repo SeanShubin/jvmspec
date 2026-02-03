@@ -2,6 +2,7 @@ package com.seanshubin.jvmspec.model.implementation
 
 import com.seanshubin.jvmspec.classfile.descriptor.Signature
 import com.seanshubin.jvmspec.classfile.specification.AccessFlag
+import com.seanshubin.jvmspec.classfile.structure.AttributeInfo
 import com.seanshubin.jvmspec.classfile.structure.MethodInfo
 import com.seanshubin.jvmspec.model.api.*
 
@@ -30,7 +31,7 @@ class JvmMethodImpl(
     }
 
     override fun attributes(): List<JvmAttribute> {
-        val toJvmAttribute = { attribute: com.seanshubin.jvmspec.classfile.structure.AttributeInfo ->
+        val toJvmAttribute = { attribute: AttributeInfo ->
             attributeFactory.createAttribute(jvmClass, attribute)
         }
         return methodInfo.attributes.map(toJvmAttribute)
