@@ -1,6 +1,6 @@
 package com.seanshubin.jvmspec.inversion.guard.domain
 
-import com.seanshubin.jvmspec.domain.model.api.JvmClass
+import com.seanshubin.jvmspec.model.api.JvmClass
 
 data class ClassAnalysis(
     val jvmClass: JvmClass,

@@ -1,6 +1,6 @@
 package com.seanshubin.jvmspec.inversion.guard.domain
 
-import com.seanshubin.jvmspec.domain.infrastructure.serialization.JsonMappers.toJson
+import com.seanshubin.jvmspec.infrastructure.serialization.JsonMappers.toJson
 import java.nio.file.Path
 
 data class CreateJsonFileCommand(

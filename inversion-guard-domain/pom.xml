@@ -5,7 +5,32 @@
     <dependencies>
         <dependency>
             <groupId>com.seanshubin.jvmspec</groupId>
-            <artifactId>jvmspec-domain</artifactId>
+            <artifactId>jvmspec-analysis</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.seanshubin.jvmspec</groupId>
+            <artifactId>jvmspec-classfile</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.seanshubin.jvmspec</groupId>
+            <artifactId>jvmspec-infrastructure</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.seanshubin.jvmspec</groupId>
+            <artifactId>jvmspec-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.seanshubin.jvmspec</groupId>
+            <artifactId>jvmspec-output</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.seanshubin.jvmspec</groupId>
+            <artifactId>jvmspec-runtime</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

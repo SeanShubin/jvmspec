@@ -1,6 +1,6 @@
 package com.seanshubin.jvmspec.inversion.guard.domain
 
-import com.seanshubin.jvmspec.domain.infrastructure.collections.Tree
+import com.seanshubin.jvmspec.infrastructure.collections.Tree
 import java.nio.file.Path
 
 data class CreateFileCommand(val path: Path, val roots: List<Tree>) : Command {

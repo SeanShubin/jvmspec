@@ -41,7 +41,13 @@
         </dependencies>
     </dependencyManagement>
     <modules>
-        <module>domain</module>
+        <module>infrastructure</module>
+        <module>javadoc</module>
+        <module>analysis</module>
+        <module>classfile</module>
+        <module>model</module>
+        <module>output</module>
+        <module>runtime</module>
         <module>samples</module>
         <module>console</module>
         <module>inversion-guard-domain</module>

@@ -1,10 +1,10 @@
 package com.seanshubin.jvmspec.console
 
-import com.seanshubin.jvmspec.domain.runtime.application.Integrations
-import com.seanshubin.jvmspec.domain.runtime.configuration.Configuration
-import com.seanshubin.jvmspec.domain.runtime.configuration.ConfigurationReader
-import com.seanshubin.jvmspec.domain.runtime.storage.JsonFileKeyValueStore
-import com.seanshubin.jvmspec.domain.runtime.storage.KeyValueStore
+import com.seanshubin.jvmspec.runtime.application.Integrations
+import com.seanshubin.jvmspec.runtime.configuration.Configuration
+import com.seanshubin.jvmspec.runtime.configuration.ConfigurationReader
+import com.seanshubin.jvmspec.runtime.storage.JsonFileKeyValueStore
+import com.seanshubin.jvmspec.runtime.storage.KeyValueStore
 import java.nio.file.Paths
 
 class DependenciesWithArgs(

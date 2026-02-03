@@ -1,8 +1,8 @@
 package com.seanshubin.jvmspec.inversion.guard.domain
 
-import com.seanshubin.jvmspec.domain.analysis.filtering.MatchedFilterEvent
-import com.seanshubin.jvmspec.domain.analysis.filtering.UnmatchedFilterEvent
-import com.seanshubin.jvmspec.domain.analysis.statistics.Stats
+import com.seanshubin.jvmspec.analysis.filtering.MatchedFilterEvent
+import com.seanshubin.jvmspec.analysis.filtering.UnmatchedFilterEvent
+import com.seanshubin.jvmspec.analysis.statistics.Stats
 import com.seanshubin.jvmspec.inversion.guard.domain.HtmlElement.Companion.text
 import com.seanshubin.jvmspec.inversion.guard.domain.HtmlElement.Tag
 import com.seanshubin.jvmspec.inversion.guard.domain.HtmlElement.Text

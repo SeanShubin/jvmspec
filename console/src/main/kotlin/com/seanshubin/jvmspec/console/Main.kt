@@ -1,7 +1,7 @@
 package com.seanshubin.jvmspec.console
 
-import com.seanshubin.jvmspec.domain.runtime.application.Integrations
-import com.seanshubin.jvmspec.domain.runtime.application.ProductionIntegrations
+import com.seanshubin.jvmspec.runtime.application.Integrations
+import com.seanshubin.jvmspec.runtime.application.ProductionIntegrations
 
 object Main {
     @JvmStatic

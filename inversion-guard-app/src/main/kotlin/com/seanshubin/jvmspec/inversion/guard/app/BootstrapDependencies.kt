@@ -2,10 +2,10 @@ package com.seanshubin.jvmspec.inversion.guard.app
 
 import com.seanshubin.jvmspec.configuration.FixedPathJsonFileKeyValueStoreFactory
 import com.seanshubin.jvmspec.configuration.FixedPathJsonFileKeyValueStoreFactoryImpl
-import com.seanshubin.jvmspec.domain.runtime.application.Integrations
 import com.seanshubin.jvmspec.inversion.guard.domain.ConfiguredRunnerFactory
 import com.seanshubin.jvmspec.rules.JsonRuleLoader
 import com.seanshubin.jvmspec.rules.RuleLoader
+import com.seanshubin.jvmspec.runtime.application.Integrations
 
 class BootstrapDependencies(
     private val args: Array<String>,

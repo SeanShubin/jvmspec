@@ -1,9 +1,9 @@
 package com.seanshubin.jvmspec.inversion.guard.domain
 
 import com.seanshubin.jvmspec.configuration.FixedPathJsonFileKeyValueStoreFactory
-import com.seanshubin.jvmspec.domain.infrastructure.types.TypeSafety.toTypedList
-import com.seanshubin.jvmspec.domain.runtime.application.Integrations
+import com.seanshubin.jvmspec.infrastructure.types.TypeSafety.toTypedList
 import com.seanshubin.jvmspec.rules.RuleLoader
+import com.seanshubin.jvmspec.runtime.application.Integrations
 import java.nio.file.Path
 
 class ConfiguredRunnerFactory(

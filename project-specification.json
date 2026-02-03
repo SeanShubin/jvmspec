@@ -40,7 +40,36 @@
     }
   },
   "modules": {
-    "domain": [
+    "infrastructure": [
+      "jackson",
+      "jackson-time",
+      "contract"
+    ],
+    "javadoc": [
+      "contract"
+    ],
+    "analysis": [
+      "contract"
+    ],
+    "classfile": [
+      "infrastructure",
+      "contract"
+    ],
+    "model": [
+      "classfile",
+      "contract"
+    ],
+    "output": [
+      "classfile",
+      "infrastructure",
+      "model",
+      "contract"
+    ],
+    "runtime": [
+      "analysis",
+      "infrastructure",
+      "model",
+      "output",
       "jackson",
       "jackson-time",
       "contract"
@@ -49,10 +78,19 @@
       "contract"
     ],
     "console": [
-      "domain"
+      "analysis",
+      "infrastructure",
+      "model",
+      "output",
+      "runtime"
     ],
     "inversion-guard-domain": [
-      "domain",
+      "analysis",
+      "classfile",
+      "infrastructure",
+      "model",
+      "output",
+      "runtime",
       "rules",
       "configuration"
     ],

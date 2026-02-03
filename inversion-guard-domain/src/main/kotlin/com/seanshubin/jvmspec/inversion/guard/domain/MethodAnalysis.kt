@@ -1,6 +1,6 @@
 package com.seanshubin.jvmspec.inversion.guard.domain
 
-import com.seanshubin.jvmspec.domain.classfile.descriptor.Signature
+import com.seanshubin.jvmspec.classfile.descriptor.Signature
 
 data class MethodAnalysis(
     val className: String,

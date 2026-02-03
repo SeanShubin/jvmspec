@@ -1,8 +1,8 @@
 package com.seanshubin.jvmspec.inversion.guard.domain
 
-import com.seanshubin.jvmspec.domain.infrastructure.filesystem.PathUtil.removeExtension
-import com.seanshubin.jvmspec.domain.model.api.JvmClass
-import com.seanshubin.jvmspec.domain.output.formatting.JvmSpecFormat
+import com.seanshubin.jvmspec.infrastructure.filesystem.PathUtil.removeExtension
+import com.seanshubin.jvmspec.model.api.JvmClass
+import com.seanshubin.jvmspec.output.formatting.JvmSpecFormat
 import java.nio.file.Path
 
 class ClassProcessorImpl(
