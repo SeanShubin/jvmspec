@@ -43,27 +43,27 @@
     "infrastructure": [
       "jackson",
       "jackson-time",
-      "contract"
+      "di-contract"
     ],
     "javadoc": [
-      "contract"
+      "di-contract"
     ],
     "analysis": [
-      "contract"
+      "di-contract"
     ],
     "classfile": [
       "infrastructure",
-      "contract"
+      "di-contract"
     ],
     "model": [
       "classfile",
-      "contract"
+      "di-contract"
     ],
     "output": [
       "classfile",
       "infrastructure",
       "model",
-      "contract"
+      "di-contract"
     ],
     "runtime": [
       "analysis",
@@ -72,10 +72,12 @@
       "output",
       "jackson",
       "jackson-time",
-      "contract"
+      "di-contract",
+      "dynamic-core",
+      "dynamic-json"
     ],
     "samples": [
-      "contract"
+      "di-contract"
     ],
     "console": [
       "analysis",
@@ -91,8 +93,7 @@
       "model",
       "output",
       "runtime",
-      "rules",
-      "configuration"
+      "rules"
     ],
     "inversion-guard-app": [
       "inversion-guard-domain"
@@ -101,12 +102,37 @@
       "jackson",
       "jackson-time"
     ],
-    "configuration": [
+    "dynamic-core": [],
+    "dynamic-json": [
+      "dynamic-core",
+      "di-delegate",
       "jackson",
-      "jackson-time",
-      "contract"
+      "jackson-time"
     ],
-    "contract": []
+    "di-contract": [],
+    "di-delegate": [
+      "di-contract"
+    ]
   },
-  "javaVersion": "25"
+  "sourceDependencies": [
+    {
+      "sourceProjectPath": "../kotlin-reusable",
+      "moduleMapping": {
+        "dynamic-core": "dynamic-core",
+        "dynamic-json": "dynamic-json",
+        "di-contract": "di-contract",
+        "di-delegate": "di-delegate"
+      }
+    }
+  ],
+  "javaVersion": "25",
+  "exports": [
+    "analysis",
+    "infrastructure",
+    "classfile",
+    "model",
+    "output",
+    "runtime",
+    "rules"
+  ]
 }

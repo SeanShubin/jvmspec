@@ -1,6 +1,6 @@
 package com.seanshubin.jvmspec.inversion.guard.domain
 
-import com.seanshubin.jvmspec.contract.FilesContract
+import com.seanshubin.jvmspec.di.contract.FilesContract
 import java.nio.file.Path
 
 class FileSelectorImpl(

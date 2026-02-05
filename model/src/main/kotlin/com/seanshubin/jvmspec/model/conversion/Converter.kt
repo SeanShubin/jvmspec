@@ -1,7 +1,7 @@
 package com.seanshubin.jvmspec.model.conversion
 
 import com.seanshubin.jvmspec.classfile.structure.ClassFile
-import com.seanshubin.jvmspec.contract.FilesContract
+import com.seanshubin.jvmspec.di.contract.FilesContract
 import com.seanshubin.jvmspec.model.api.JvmClass
 import com.seanshubin.jvmspec.model.api.JvmClassFactory
 import java.io.DataInput

@@ -1,7 +1,7 @@
 package com.seanshubin.jvmspec.configuration
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.seanshubin.jvmspec.contract.FilesContract
+import com.seanshubin.jvmspec.di.contract.FilesContract
 import java.nio.charset.StandardCharsets
 import java.nio.file.Path
 

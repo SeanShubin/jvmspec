@@ -1,7 +1,7 @@
 package com.seanshubin.jvmspec.runtime.application
 
 import com.seanshubin.jvmspec.analysis.filtering.Filter
-import com.seanshubin.jvmspec.contract.FilesContract
+import com.seanshubin.jvmspec.di.contract.FilesContract
 import com.seanshubin.jvmspec.infrastructure.command.Command
 import com.seanshubin.jvmspec.infrastructure.command.CreateDirectories
 import com.seanshubin.jvmspec.infrastructure.time.Timer

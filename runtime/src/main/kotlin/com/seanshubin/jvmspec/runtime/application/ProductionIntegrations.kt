@@ -1,7 +1,7 @@
 package com.seanshubin.jvmspec.runtime.application
 
-import com.seanshubin.jvmspec.contract.FilesContract
-import com.seanshubin.jvmspec.contract.FilesDelegate
+import com.seanshubin.jvmspec.di.contract.FilesContract
+import com.seanshubin.jvmspec.di.delegate.FilesDelegate
 import java.time.Clock
 
 object ProductionIntegrations : Integrations {

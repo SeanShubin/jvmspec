@@ -1,6 +1,6 @@
 package com.seanshubin.jvmspec.runtime.application
 
-import com.seanshubin.jvmspec.contract.FilesContract
+import com.seanshubin.jvmspec.di.contract.FilesContract
 import java.time.Clock
 
 interface Integrations {

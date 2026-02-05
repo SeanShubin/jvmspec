@@ -1,6 +1,6 @@
 package com.seanshubin.jvmspec.samples
 
-import com.seanshubin.jvmspec.contract.FilesDelegate
+import com.seanshubin.jvmspec.di.contract.FilesDelegate
 import java.time.Clock
 
 class Dependencies {

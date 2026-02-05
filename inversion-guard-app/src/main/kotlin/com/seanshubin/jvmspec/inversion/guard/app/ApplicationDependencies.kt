@@ -4,7 +4,7 @@ import com.seanshubin.jvmspec.analysis.filtering.Filter
 import com.seanshubin.jvmspec.analysis.filtering.RegexFilter
 import com.seanshubin.jvmspec.analysis.statistics.Stats
 import com.seanshubin.jvmspec.analysis.statistics.StatsImpl
-import com.seanshubin.jvmspec.contract.FilesContract
+import com.seanshubin.jvmspec.di.contract.FilesContract
 import com.seanshubin.jvmspec.infrastructure.time.Timer
 import com.seanshubin.jvmspec.inversion.guard.domain.*
 import com.seanshubin.jvmspec.model.api.JvmAttributeFactory

@@ -1,7 +1,7 @@
 package com.seanshubin.jvmspec.console
 
 import com.seanshubin.jvmspec.analysis.filtering.RegexFilter
-import com.seanshubin.jvmspec.contract.FilesContract
+import com.seanshubin.jvmspec.di.contract.FilesContract
 import com.seanshubin.jvmspec.infrastructure.command.CommandRunner
 import com.seanshubin.jvmspec.infrastructure.command.CommandRunnerImpl
 import com.seanshubin.jvmspec.infrastructure.command.Environment
