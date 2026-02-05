@@ -48,10 +48,6 @@
         <module>model</module>
         <module>output</module>
         <module>runtime</module>
-        <module>samples</module>
-        <module>console</module>
-        <module>inversion-guard-domain</module>
-        <module>inversion-guard-app</module>
         <module>rules</module>
         <module>dynamic-core</module>
         <module>dynamic-json</module>

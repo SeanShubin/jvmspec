@@ -76,28 +76,6 @@
       "dynamic-core",
       "dynamic-json"
     ],
-    "samples": [
-      "di-contract"
-    ],
-    "console": [
-      "analysis",
-      "infrastructure",
-      "model",
-      "output",
-      "runtime"
-    ],
-    "inversion-guard-domain": [
-      "analysis",
-      "classfile",
-      "infrastructure",
-      "model",
-      "output",
-      "runtime",
-      "rules"
-    ],
-    "inversion-guard-app": [
-      "inversion-guard-domain"
-    ],
     "rules": [
       "jackson",
       "jackson-time"
