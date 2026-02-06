@@ -41,6 +41,7 @@
         </dependencies>
     </dependencyManagement>
     <modules>
+        <module>console</module>
         <module>infrastructure</module>
         <module>javadoc</module>
         <module>analysis</module>

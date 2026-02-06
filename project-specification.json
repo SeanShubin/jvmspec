@@ -40,6 +40,9 @@
     }
   },
   "modules": {
+    "console": [
+      "runtime"
+    ],
     "infrastructure": [
       "jackson",
       "jackson-time",
@@ -91,6 +94,9 @@
     "di-delegate": [
       "di-contract"
     ]
+  },
+  "entryPoints": {
+    "console": "com.seanshubin.jvmspec.console.EntryPoint"
   },
   "sourceDependencies": [
     {
