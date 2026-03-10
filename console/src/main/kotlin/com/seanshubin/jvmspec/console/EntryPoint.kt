@@ -1,12 +1,14 @@
 package com.seanshubin.jvmspec.console
 
-import com.seanshubin.jvmspec.runtime.application.Integrations
-import com.seanshubin.jvmspec.runtime.application.ProductionIntegrations
+import com.seanshubin.jvmspec.composition.Application
+import com.seanshubin.jvmspec.composition.Integrations
+import kotlin.system.exitProcess
 
 object EntryPoint {
     @JvmStatic
     fun main(args: Array<String>) {
-        val integrations: Integrations = ProductionIntegrations
-        ArgsDependencies(args, integrations).runner.run()
+        val integrations: Integrations = ProductionIntegrations(args)
+        val exitCode = Application.execute(integrations)
+        exitProcess(exitCode)
     }
 }

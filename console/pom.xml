@@ -5,7 +5,12 @@
     <dependencies>
         <dependency>
             <groupId>com.seanshubin.jvmspec</groupId>
-            <artifactId>jvmspec-runtime</artifactId>
+            <artifactId>jvmspec-composition</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.seanshubin.jvmspec</groupId>
+            <artifactId>jvmspec-di-delegate</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

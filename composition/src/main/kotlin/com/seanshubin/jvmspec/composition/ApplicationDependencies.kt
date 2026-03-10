@@ -1,14 +1,21 @@
-package com.seanshubin.jvmspec.runtime.application
+package com.seanshubin.jvmspec.composition
 
 import com.seanshubin.jvmspec.di.contract.FilesContract
-import com.seanshubin.jvmspec.model.api.*
-import com.seanshubin.jvmspec.model.implementation.*
+import com.seanshubin.jvmspec.model.api.JvmAttributeFactory
+import com.seanshubin.jvmspec.model.api.JvmClassFactory
+import com.seanshubin.jvmspec.model.api.JvmFieldFactory
+import com.seanshubin.jvmspec.model.api.JvmMethodFactory
+import com.seanshubin.jvmspec.model.implementation.JvmAttributeFactoryImpl
+import com.seanshubin.jvmspec.model.implementation.JvmClassFactoryImpl
+import com.seanshubin.jvmspec.model.implementation.JvmFieldFactoryImpl
+import com.seanshubin.jvmspec.model.implementation.JvmMethodFactoryImpl
 import com.seanshubin.jvmspec.output.formatting.JvmSpecFormat
 import com.seanshubin.jvmspec.output.formatting.JvmSpecFormatDetailed
+import com.seanshubin.jvmspec.runtime.application.Runner
 import java.nio.file.Path
 import java.nio.file.Paths
 
-class Dependencies(
+class ApplicationDependencies(
     integrations: Integrations,
     classFilePathString: String
 ) {

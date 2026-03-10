@@ -41,6 +41,10 @@
   },
   "modules": {
     "console": [
+      "composition",
+      "di-delegate"
+    ],
+    "composition": [
       "runtime"
     ],
     "infrastructure": [
