@@ -994,11 +994,12 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
     ): Tree {
         val targetTypeHex = "0x${"%02X".format(typeAnnotation.targetType.toInt())}"
         val targetTypeTree = Tree("targetType: ${typeAnnotation.targetType.toInt()}($targetTypeHex)")
-        val targetInfoTree = Tree("targetInfo: ${typeAnnotation.targetInfo.toHexString()}")
-        val targetPathLengthHex = "0x${"%02X".format(typeAnnotation.targetPathLength.toInt())}"
+        val targetInfoTree = Tree("targetInfo: ${typeAnnotation.targetInfo}")
+        val targetPathLength = typeAnnotation.typePath.path.size
+        val targetPathLengthHex = "0x${"%02X".format(targetPathLength)}"
         val targetPathLengthTree =
-            Tree("targetPathLength: ${typeAnnotation.targetPathLength.toInt()}($targetPathLengthHex)")
-        val targetPathTree = Tree("targetPath: ${typeAnnotation.targetPath.toHexString()}")
+            Tree("targetPathLength: $targetPathLength($targetPathLengthHex)")
+        val targetPathTree = Tree("targetPath: ${typeAnnotation.typePath}")
         val typeIndexTree = Tree("typeIndex: ${typeAnnotation.typeIndex.formatDecimalHex()}")
         val numPairsTree = Tree("numElementValuePairs: ${typeAnnotation.numElementValuePairs.formatDecimalHex()}")
         val pairTrees = typeAnnotation.elementValuePairs.mapIndexed { index, pair ->
