@@ -12,8 +12,8 @@ import java.util.*
 
 class JvmSpecFormatDetailed : JvmSpecFormat {
     override fun classTreeList(jvmClass: JvmClass): List<Tree> {
-        val minorHex = String.format("0x%04X", jvmClass.minorVersion.toInt())
-        val majorHex = String.format("0x%04X", jvmClass.majorVersion.toInt())
+        val minorHex = String.format("0x%04X", jvmClass.minorVersion)
+        val majorHex = String.format("0x%04X", jvmClass.majorVersion)
         return listOf(
             Tree("origin: ${jvmClass.origin}"),
             Tree("magic: ${hexUpper(jvmClass.magic)}"),
@@ -173,7 +173,7 @@ class JvmSpecFormatDetailed : JvmSpecFormat {
 
     private fun dynamicConstantTree(tagLabel: String, constant: JvmConstant.Dynamic): Tree {
         val index = constant.bootstrapMethodAttrIndex
-        val hexIndex = String.format("0x%04X", index.toInt())
+        val hexIndex = String.format("0x%04X", index)
         return Tree(
             "$tagLabel: bootstrap=$index($hexIndex)", listOf(
                 Tree("bootstrap_method_attr_index: $index($hexIndex)"),
