@@ -83,10 +83,6 @@
       "dynamic-core",
       "dynamic-json"
     ],
-    "rules": [
-      "jackson",
-      "jackson-time"
-    ],
     "dynamic-core": [],
     "dynamic-json": [
       "dynamic-core",
@@ -120,7 +116,6 @@
     "classfile",
     "model",
     "output",
-    "runtime",
-    "rules"
+    "runtime"
   ]
 }
