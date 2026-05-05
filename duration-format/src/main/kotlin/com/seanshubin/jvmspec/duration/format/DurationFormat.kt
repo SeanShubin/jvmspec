@@ -1,4 +1,12 @@
-package com.seanshubin.jvmspec.infrastructure.time
+package com.seanshubin.jvmspec.duration.format
+
+//
+// This file was imported from: ../kotlin-reusable
+// Module: duration-format
+//
+// Before editing this file, consider whether updating the source project
+// and re-importing would be a better approach.
+//
 
 class DurationFormat(private val scales: List<Scale>, val padded: Boolean) {
     fun parse(s: String): Long {

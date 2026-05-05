@@ -1,7 +1,7 @@
 package com.seanshubin.jvmspec.console
 
 import com.seanshubin.jvmspec.composition.Application
-import com.seanshubin.jvmspec.infrastructure.time.DurationFormat
+import com.seanshubin.jvmspec.duration.format.DurationFormat
 import java.nio.file.Files
 import java.nio.file.Paths
 

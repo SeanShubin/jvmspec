@@ -2,7 +2,7 @@ package com.seanshubin.jvmspec.runtime.application
 
 import com.seanshubin.jvmspec.infrastructure.command.Command
 import com.seanshubin.jvmspec.infrastructure.command.CommandRunner
-import com.seanshubin.jvmspec.infrastructure.time.DurationFormat
+import com.seanshubin.jvmspec.duration.format.DurationFormat
 import java.nio.file.Path
 
 class LineEmittingNotifications(
