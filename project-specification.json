@@ -120,5 +120,6 @@
     "model",
     "output",
     "runtime"
-  ]
+  ],
+  "generateCodeStructure": true
 }
